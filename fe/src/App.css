@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  width: 100%;
+}
+
+/* 모바일용 레이아웃 */
+@media (max-width: 768px) {
+  .container {
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
