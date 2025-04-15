@@ -1,0 +1,79 @@
+.main-contents {
+  width: 100%;
+  height: 100%;
+}
+
+.main-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 7px;
+}
+
+.toggle-container {
+  margin-right: 25px;
+}
+
+.view-type-list {
+  display: flex;
+  flex-flow: column;
+}
+  .view-type-list > .content-item {
+    display: flex;
+    flex-direction: row;
+    height: 60px;
+    padding: 5px;
+  }
+  .view-type-list > .content-item > img {
+    height: 60px;
+  }
+
+  .view-type-list > .content-item > .item-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .view-type-album {
+    display: flex;
+    flex-flow: wrap row;
+  }
+  
+    .view-type-album > .content-item {
+      display: flex;
+      flex-direction: column;
+      width: 28.081%;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 0 48px 3.378378378378378%
+    }
+
+  .view-type-album > .content-item > img {
+    width: fit-content;
+    width: 100%;
+    max-height: fit-content;
+  }
+
+.item-title {
+  list-style: none;
+  text-align : left;
+  overflow: hidden;
+  text-overflow : ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.item-detail {
+  /* height: 50px; */
+  text-align : left;
+  overflow: hidden;
+  text-overflow : ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #7f7f7f;
+  font-size: 0.8125rem;
+  line-height: 1.2rem;
+}

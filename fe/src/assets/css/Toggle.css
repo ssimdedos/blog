@@ -1,0 +1,54 @@
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-input {
+  display: none;
+}
+
+.toggle {
+  position: relative;
+  width: 70px;
+  height: 19px;
+  border-radius: 16px;
+  background-color: #dfdfdf;
+  transition: all 0.3s;
+  padding: 2px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.toggle-button {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 17.2px;
+  height: 17.2px;
+  border-radius: 50%;
+  background-color: rgb(63, 63, 63);
+  transition: all 0.3s;
+}
+
+.toggle-input:checked + .toggle {
+  background-color: #969696;
+}
+
+.toggle-input:checked + .toggle .toggle-button {
+  transform: translateX(52.8px);
+}
+
+.toggle-text {
+  display: inline-block;
+  width: 100%;
+  color: rgba(0,0,0,0.6);
+  font-size: 13px;
+  text-align: right;
+  margin-left: -9px;
+  font-weight: 600;
+}
+.toggle-input:checked + .toggle .toggle-text {
+  text-align: left;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 8.5px;
+}
