@@ -1,5 +1,5 @@
 import './Board.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ToggleBtn from '../components/ToggleBtn';
 import content_img from '../assets/img/content_img.jpg';
 
@@ -7,6 +7,9 @@ import content_img from '../assets/img/content_img.jpg';
 const Board = ({children, category}) => {
   const [toggleIsOn, setToggleIsOn] = useState(false);
 
+  useEffect(()=> {
+    console.log(category);
+  }, []);
   const contentList = [
     {
       "name": "레오나르도 다 빈치",
@@ -69,10 +72,10 @@ const Board = ({children, category}) => {
           <div className="main-header">
             <h3>전체 글 10개</h3>
             <div className='toggle-container'>
-              <ToggleBtn onClick={radioChange} isOn={toggleIsOn} index={['목록형', '앨범형']} />
+              <ToggleBtn onClick={radioChange} isOn={toggleIsOn} index={['앨범형', '목록형']} />
             </div>
           </div>
-          <div className={toggleIsOn === false ? "main-contents view-type-list" : "main-contents view-type-album" } >
+          <div className={toggleIsOn === false ? "main-contents view-type-album" : "main-contents view-type-list" } >
             {contentList.map((con, i) => (
               <div className='content-item' key={`content-id-${i + 1}`} >
                 <div className='item-img-container' >

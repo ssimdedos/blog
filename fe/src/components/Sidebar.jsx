@@ -1,11 +1,24 @@
+import { useEffect, useState } from "react";
+import { fetchCategory } from "../api/category";
+
 const SidebarComp = () => {
+  const [categoryList, setCategoryList] = useState({});
+  useEffect(()=> {
+    console.log('useEffect');
+    fetchCategory().then(data => {
+      console.log(data);
+      setCategoryList(data);
+    });
+  }, []);
   return(
     <div>
-      <h2>카테고리 목록</h2>
-      <h5>여행</h5>
-      <h5>글과 시</h5>
-      <h5>AI가 써주는 글</h5>
-      <h5>기타</h5>
+      {
+        categoryList.map((c, i) => (
+          <li key={`cate-id-${i+1}`}>
+            <h2>{c}</h2>
+          </ li>
+        ))
+      }
     </div>
   );
 };
