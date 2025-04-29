@@ -1,4 +1,4 @@
-const db = require('../db/db.js');
+const db = require('../db/db');
 
 exports.getAllCategories = (req, res) => {
   // console.log(req.body);

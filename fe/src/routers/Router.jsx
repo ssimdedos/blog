@@ -4,17 +4,19 @@ import Main from '../pages/Main';
 import HeaderRouter from './HeaderRouter';
 import SideBarRouter from './SideBarRouter';
 import MainLayout from '../layouts/MainLayout';
+import Category from '../pages/Category';
 
 const AppRouter = () => {
   return (
     <Router>
-        <div>
-          {/* <HeaderRouter /> */}
-          <SideBarRouter />
-          <Routes>
-            <Route path='/' element={<MainLayout><Main /></MainLayout>} />
-          </Routes>
-        </div>
+      {/* <HeaderRouter /> */}
+      {/* <SideBarRouter /> */}
+      <MainLayout>
+        <Routes>
+          <Route path='/' element={<Main />} />
+          <Route path='category/:id' element={<Category /> } />
+        </Routes>
+      </MainLayout>
     </Router>
   );
 };

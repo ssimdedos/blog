@@ -4,8 +4,11 @@ import axios from 'axios';
 const API_BASE_URL = '/api/posts'; // 백엔드 API 주소
 
 // 게시글 목록 가져오기
-export async function fetchPosts() {
-  const res = await axios.get(API_BASE_URL);
+export async function fetchPosts(id) {
+  const res = await axios.get(API_BASE_URL, {
+    params: { categoryId: id }
+  });
+  console.log(res.data);
   return res.data;
 }
 

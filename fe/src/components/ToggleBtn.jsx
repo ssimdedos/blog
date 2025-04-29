@@ -14,7 +14,7 @@ const ToggleBtn = ({children, onClick, isOn, index}) => {
   }
 
   return (
-    <div class="toggle-wrap">
+    <div className="toggle-wrap">
       <input type="checkbox" value={btnTxt} id="toggle" class="toggle-input" onChange={changeTxt} checked={isOn} />
       <label for="toggle" class="toggle">
         <span class="toggle-button">
