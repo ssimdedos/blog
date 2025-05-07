@@ -5,9 +5,12 @@ import { Link } from 'react-router-dom';
 const HeaderComp = () => {
   return(
     <div>
-      <Link to={'/'} className='home-btn' >
+      <a href='/' className='home-btn' >
         <p className="font-header" >Idea de mis dedos</p>
-      </Link>
+      </a>
+      {/* <Link to={'/'} className='home-btn' >
+        <p className="font-header" >Idea de mis dedos</p>
+      </Link> */}
     </div>
   );
 };

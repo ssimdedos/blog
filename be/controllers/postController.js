@@ -6,7 +6,7 @@ exports.getAllPosts = (req, res) => {
   let query = 'SELECT * FROM posts';
 
   if(id!='all') {
-    console.log('카테고리 들어옴');
+    // console.log('카테고리 들어옴');
     query = query+` WHERE category_id=${id}`;
     console.log(query);
   } else {
@@ -17,9 +17,9 @@ exports.getAllPosts = (req, res) => {
       console.log(err);
       return res.status(500).send('DB err post.get');
     } else {
-      rows.forEach(e => {
-        console.log(e);
-      });
+      // rows.forEach(e => {
+      //   console.log(e);
+      // });
       res.json(rows);
     }
   });
