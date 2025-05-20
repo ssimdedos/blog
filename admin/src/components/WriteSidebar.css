@@ -1,0 +1,11 @@
+.post-btn {
+  cursor: pointer;
+  justify-items: center;
+  background-color: bisque;
+  margin: 3px;
+  border-radius: 13%;
+}
+
+.post-btn:hover {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}

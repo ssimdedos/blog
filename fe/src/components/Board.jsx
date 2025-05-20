@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 const Board = ({children, category}) => {
   const [toggleIsOn, setToggleIsOn] = useState(false);
   const [contentList, setContentList] = useState({});
+  const [categoryName, setCategoryName] = useState(' ');
   let { id } = useParams();
 
   useEffect(()=> {
@@ -15,8 +16,14 @@ const Board = ({children, category}) => {
       id = category;
     }
     fetchPosts(id).then(data => {
-      console.log(data);
-      setContentList(data);
+      // console.log(data);
+      if (id == 'all') {
+        setContentList(data);
+
+      } else {
+        setContentList(data.data1);
+        setCategoryName(data.data2[0].name);
+      }
     })
     
   }, [category, id]);
@@ -28,7 +35,7 @@ const Board = ({children, category}) => {
   return (
         <div className="main-container">
           <div className="main-header">
-            <h3>전체 글 10개</h3>
+            <h3>{category=='all'?'전체':categoryName} <br />글 {contentList.length}개</h3>
             <div className='toggle-container'>
               <ToggleBtn onClick={radioChange} isOn={toggleIsOn} index={['앨범형', '목록형']} />
             </div>

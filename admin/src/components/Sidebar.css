@@ -1,0 +1,11 @@
+.category-li {
+  list-style: none;
+  padding: 3px 12px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid #eee; /* 항목 구분선 */
+}
+
+a {
+  text-decoration: none;
+  color: #333333;
+}

@@ -1,13 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import ReactQuill, { Quill } from 'react-quill-new';
 import { ImageResize } from 'quill-image-resize-module-ts';
 import 'react-quill-new/dist/quill.snow.css';
 
+
 Quill.register('modules/ImageResize', ImageResize);
 
-const CustomEditor = () => {
+const CustomEditor = ({ setContent }) => {
 
-  const [content, setContent] = useState('');
+  const handleEditorChange = (value) => {
+    setContent(value);
+  }
 
   const modules = useMemo(() => {
     return {
@@ -32,26 +35,8 @@ const CustomEditor = () => {
     'link', 'image', 'color', 'background'
     ];
 
-  const handleEditorChange = (value) => {
-    setContent(value); // 상태 업데이트
-  };
-
   return (
-    <div>
-      <div>
-        <label>
-          제목<input type='text' placeholder='제목을 입력하세요' /><br />
-        </label>
-        <label>
-          부제목<input type='text' placeholder='필수 항목 아님' /><br />
-        </label>
-        <label>
-          작성자<input type='text' placeholder='Idea de mis dedos' /><br />
-        </label>
-        <label>
-          슬러그<input type='text' placeholder='슬러그를 입력하세요' /><br />
-        </label>
-      </div>
+    <div className='write-container'>
       <div>
         <ReactQuill theme="snow" modules={modules} formats={formats}
           style={{ height: "55vh", width: "100%" }}

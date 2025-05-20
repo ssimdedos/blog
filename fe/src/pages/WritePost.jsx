@@ -3,7 +3,7 @@ import CustomEditor from "../components/CustomEditor.tsx"
 const WritePost = () => {
   return (
     <div>
-      <h2>글 쓰기</h2>
+      <h2>게시글 작성</h2>
       <CustomEditor />
     </div>
   )

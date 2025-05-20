@@ -1,0 +1,11 @@
+.font-header {
+  margin: 0;
+  padding: 8px 0 0 8px;
+  font-size: 25px;
+}
+
+.font-footer { 
+  margin: 7px;
+  color: #929292;
+  font-size: 15px;
+}
