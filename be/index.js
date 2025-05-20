@@ -6,6 +6,7 @@ const dbPromise = require('./db/db');
 
 const postRoutes = require('./routes/postRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const subCategoryRoutes = require('./routes/subCategoryRoutes');
 
 const app = express();
 
@@ -13,8 +14,13 @@ const port = process.env.SERVERPORT;
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(express.json()); // JSON 형식의 요청 본문을 파싱
+app.use(express.urlencoded({ extended: true })); // URL-encoded 형식의 요청 본문을 파싱
+
 app.use('/api/posts', postRoutes);
 app.use('/api/category', categoryRoutes);
+app.use('/api/subcategory', subCategoryRoutes);
 
 app.get('/', (req, res) => {
   // res.sendFile(path.join(__dirname, 'public/index.html'));

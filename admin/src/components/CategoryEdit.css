@@ -1,0 +1,29 @@
+.category-table {
+  display: flex;
+  flex-direction: row;
+  border: solid 1px;
+}
+
+.cate-ul {
+  list-style: none;
+  border: dashed 1px #2e2e2e;
+  margin: auto;
+  padding-left: 0;
+  height: 24px;
+  width: 100%;
+  justify-items: left;
+}
+
+.cate-ul:hover {
+  cursor: pointer;
+}
+
+
+
+.cate-input {
+  cursor: pointer;
+  width: 79.5%;
+  margin: 3px 0 0 1px;
+  border-style: none;
+  white-space: nowrap;
+}
