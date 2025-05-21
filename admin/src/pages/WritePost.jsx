@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { createPost } from "../api/posts.js";
+import { createPost, imageSaveFromContents } from "../api/posts.js";
 import CustomEditor from "../components/CustomEditor.tsx"
 import WriteSidebarComp from "../components/WriteSidebar.jsx";
 import './WritePost.css';
 
 const WritePost = () => {
+  // 게시글 컴포넌트 데이터터
   const [content, setContent] = useState("");
   const [inputs, setInputs] = useState({
     title: "",
@@ -13,29 +14,71 @@ const WritePost = () => {
     slug: "",
     content: "",
   });
-  
+
+
   const { title, subtitle, author, slug } = inputs;
-  
+  // 게시글 데이터 수집 핸들러러
   const inputHandlerChange = (e) => {
     const { name, value } = e.target;
     setInputs({
       ...inputs,
-      [name] : value,
+      [name]: value,
     });
   };
+  // 게시글 등록
+  const clickPostbtn = async (data) => {
 
-  const clickPostbtn = (data) => {
-    createPost(data);
+    if (inputs['title'] === "") {
+      alert('제목을 입력해주세요.');
+      return
+    } else if (inputs['slug'] === "") {
+      alert('슬러그를 입력해주세요.');
+      return
+    }
+
+    const { finalContent, thumbnailUrl, imgUrlArray } = await imageSaveFromContents(inputs['content']);
+
+    const postDataToSend = {
+      'title': inputs.title,
+      'subtitle': inputs.subtitle.length > 0 ? inputs.subtitle : null,
+      'author': inputs.author,
+      'slug': inputs.slug,
+      'content': finalContent,
+      'thumbnail': thumbnailUrl,
+      'category': data.category,
+      'subcategory': data.subcategory,
+      'isPublished': data.isPublished ? 1 : 0,
+      'tags': data.tags,
+      'isPinned': data.isPinned ? 1 : 0,
+      'tempImgPath': imgUrlArray 
+    }
+
+    try {
+      const response = await createPost(postDataToSend);
+      console.log('게시글 등록 성공: ', response);
+      setInputs({
+        title: "",
+        subtitle: "",
+        author: "idea de mis dedos",
+        slug: "",
+        content: "",
+      });
+    } catch (error) {
+      console.error('게시글 등록 실패: ', error);
+      alert('게시글 등록에 실패했습니다.');
+    }
   };
-
-  useEffect(()=> {
+  // 게시글 수정 시 인풋 객체에 콘텐츠 담기기
+  useEffect(() => {
     // console.log(content);
     setInputs({
       ...inputs,
-      ['content'] : content,
+      ['content']: content,
     });
     // console.log(inputs);
-  },[content]);
+  }, [content]);
+
+
 
   return (
     <div className="write-container">

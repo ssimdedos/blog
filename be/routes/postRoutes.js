@@ -3,5 +3,7 @@ const router = express.Router();
 const postController = require('../controllers/postController');
 
 router.get('/', postController.getAllPosts);
+router.post('/', postController.createPost);
+router.post('/uploadImgFolder', postController.uploadImages);
 
 module.exports = router;

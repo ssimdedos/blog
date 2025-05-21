@@ -1,7 +1,45 @@
+```
 # blog
 blog for hobby
 
 ### detail
+📦 admin
+ ┣ 📂 node_modules/
+ ┣ 📂 public/
+ ┗ 📂 src/
+ ┃ ┣ 📂 api/
+ ┃ ┃ ┣ 📜 category.js //카테고리 편집
+ ┃ ┃ ┗ 📜 posts.js //게시글 등록록
+ ┃ ┣ 📂 assets/
+ ┃ ┃ ┗ 📂 css/
+ ┃ ┣ 📂 components/
+ ┃ ┃ ┣ 📜 CategoryEdit.css
+ ┃ ┃ ┣ 📜 CategoryEdit.jsx
+ ┃ ┃ ┣ 📜 CustomEditor.css
+ ┃ ┃ ┣ 📜 CustomEditor.tsx
+ ┃ ┃ ┣ 📜 Footer.jsx
+ ┃ ┃ ┣ 📜 Header.css
+ ┃ ┃ ┣ 📜 Header.jsx
+ ┃ ┃ ┣ 📜 Sidebar.jsx
+ ┃ ┃ ┣ 📜 WriteSidebar.css
+ ┃ ┃ ┗ 📜 WriteSidebar.jsx
+ ┃ ┣ 📂 layouts/
+ ┃ ┃ ┣ 📜 MainLayout.css
+ ┃ ┃ ┗ 📜 MainLayout.jsx
+ ┃ ┣ 📂 pages/
+ ┃ ┃ ┣ 📜 Main.css
+ ┃ ┃ ┣ 📜 Main.jsx
+ ┃ ┃ ┣ 📜 WritePost.css
+ ┃ ┃ ┗ 📜 WritePost.jsx
+ ┃ ┣ 📂 routers/
+ ┃ ┃ ┗ 📜 Router.jsx
+ ┃ ┣ 📜 App.css
+ ┃ ┣ 📜 App.js
+ ┃ ┗ 📜 index.js
+ ┣ 📜 .gitignore
+ ┣ 📜 package-lock.json
+ ┣ 📜 package.json
+ ┗ 📜 README.md
 
 📦be
  ┣ 📂controllers // 각종 요청
@@ -49,3 +87,5 @@ blog for hobby
  ┣ 📜README.md
  ┣ 📜package-lock.json
  ┗ 📜package.json
+ 
+```

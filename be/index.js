@@ -13,7 +13,8 @@ const app = express();
 const port = process.env.SERVERPORT;
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'uploads', 'images'))); 
 
 app.use(express.json()); // JSON 형식의 요청 본문을 파싱
 app.use(express.urlencoded({ extended: true })); // URL-encoded 형식의 요청 본문을 파싱
