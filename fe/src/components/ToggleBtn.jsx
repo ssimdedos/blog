@@ -15,9 +15,9 @@ const ToggleBtn = ({children, onClick, isOn, index}) => {
 
   return (
     <div className="toggle-wrap">
-      <input type="checkbox" value={btnTxt} id="toggle" class="toggle-input" onChange={changeTxt} checked={isOn} />
-      <label for="toggle" class="toggle">
-        <span class="toggle-button">
+      <input type="checkbox" value={btnTxt} id="toggle" className="toggle-input" onChange={changeTxt} checked={isOn} />
+      <label htmlFor="toggle" className="toggle">
+        <span className="toggle-button">
         </span>
         <span className='toggle-text' >{btnTxt}</span>
       </label>

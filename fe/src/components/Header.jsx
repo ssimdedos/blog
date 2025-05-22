@@ -4,13 +4,15 @@ import { Link } from 'react-router-dom';
 
 const HeaderComp = () => {
   return(
-    <div>
-      <a href='/' className='home-btn' >
-        <p className="font-header" >Idea de mis dedos</p>
+    <div >
+      <a href='/' className='home-btn'>
+        <div className='logo-box'>
+          <img src='http://localhost:7303/images/logo/logo192.png' />
+        </div>
+        <div className='font-box' >
+          <p className="font-header" >내 손가락들의 생각:<span style={{fontSize:'17px'}} > Idea de mis dedos</span></p>
+        </div>
       </a>
-      {/* <Link to={'/'} className='home-btn' >
-        <p className="font-header" >Idea de mis dedos</p>
-      </Link> */}
     </div>
   );
 };

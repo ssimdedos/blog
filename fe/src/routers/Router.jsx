@@ -5,6 +5,7 @@ import HeaderRouter from './HeaderRouter';
 import MainLayout from '../layouts/MainLayout';
 import Category from '../pages/Category';
 import WritePost from '../pages/WritePost';
+import Pages from '../pages/Pages';
 
 const AppRouter = () => {
   return (
@@ -16,6 +17,7 @@ const AppRouter = () => {
           <Route path='/' element={<Main />} />
           <Route path='category/:id' element={<Category /> } />
           <Route path='/write' element={<WritePost />} />
+          <Route path='/pages/:id/:slug' element={<Pages />} />
         </Routes>
       </MainLayout>
     </Router>

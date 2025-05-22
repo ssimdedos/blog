@@ -3,7 +3,7 @@ body {
   padding: 0;
   box-sizing: border-box;
   font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   color: #333;
   width: 100%;
 }
@@ -14,5 +14,64 @@ body {
     box-sizing: border-box;
     flex-direction: column;
     gap: 10px;
+  }
+}
+
+/* --- 반응형 미디어 쿼리 --- */
+
+/* 모바일 (768px 이하) - 사이드바와 콘텐츠가 세로로 나열 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* 세로 방향으로 변경 */
+    margin-top: var(--header-height); /* 헤더 아래로 */
+    width: 95%; /* 모바일에서 더 넓게 */
+    gap: var(--content-padding); /* 컨테이너 내 세로 간격 */
+  }
+
+  .sidebar {
+    width: 100%; /* 모바일에서 사이드바 전체 너비 차지 */
+    flex: none; /* flex-basis 고정 해제 */
+    order: 1; /* 콘텐츠영역역 위로 보내기 (기본 콘텐츠가 먼저 나오도록) */
+    box-shadow: var(--shadow-light); /* 그림자 유지 */
+  }
+
+  .content {
+    width: 100%; /* 콘텐츠도 전체 너비 차지 */
+    order: 2; /* 콘텐츠가 사이드바보다 아래에 나오도록 */
+    box-shadow: var(--shadow-light); /* 그림자 유지 */
+  }
+
+  .header {
+    height: auto; /* 내용에 따라 높이 조절 */
+    padding: 15px 5%; /* 모바일에서 좌우 여백 */
+    flex-direction: column; /* 헤더 내부 요소 세로 정렬 (필요시) */
+    text-align: center; /* 헤더 내용 중앙 정렬 (필요시) */
+  }
+
+  .footer {
+    width: 95%; /* 모바일에서 푸터도 더 넓게 */
+    margin-top: 20px; /* 컨테이너와 푸터 간격 */
+    padding: 10px 5%; /* 모바일 푸터 좌우 여백 */
+  }
+}
+
+/* 매우 작은 모바일 (600px 이하) */
+@media (max-width: 600px) {
+  .container {
+    padding: var(--content-padding) 10px; /* 좌우 패딩 줄이기 */
+  }
+
+  .header {
+    padding: 15px 10px; /* 좌우 패딩 더 줄이기 */
+  }
+
+  .footer {
+    padding: 10px 10px; /* 좌우 패딩 더 줄이기 */
+  }
+
+  .post-detail-container { /* 게시글 상세 페이지의 max-width도 줄여줄 수 있음 */
+    max-width: 100%;
+    margin: 20px 10px;
+    padding: 15px;
   }
 }

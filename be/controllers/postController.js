@@ -2,6 +2,7 @@ const db = require('../db/db');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const striptags = require('striptags');
 
 
 const UPLOAD_PATH = path.join(__dirname, '../', 'uploads/images');
@@ -62,7 +63,7 @@ const upload = multer({
 exports.getAllPosts = (req, res) => {
   // console.log(req.query.categoryId);
   const id = req.query.categoryId;
-  let query = 'SELECT * FROM posts';
+  let query = 'SELECT id, thumbnail, title, sub_title, content, created_at, category_id, slug FROM posts';
   let query2 = 'SELECT name FROM categories';
 
   if (id != 'all') {
@@ -78,18 +79,31 @@ exports.getAllPosts = (req, res) => {
       console.log(err);
       return res.status(500).send('DB err post.get');
     } else {
+      const stripedPosts = rows1.map(row => {
+        const unixTime = parseInt(row.created_at);
+        const date = new Date(unixTime);
+        const formattedDateKR = date.toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        });
+        return ({
+          ...row,
+          summary: striptags(row.content).substring(0, 150),
+          created_at: formattedDateKR
+        })
+      });
       if (id != 'all') {
         db.all(query2, (err, rows2) => {
           if (err) {
             console.log(err);
             return res.status(500).send('DB err categories.get name');
           } else {
-            // console.log(rows2);
-            res.json({ data1: rows1, data2: rows2 });
+            res.json({ data1: stripedPosts, data2: rows2 });
           }
         });
       } else {
-        res.json(rows1);
+        res.json(stripedPosts);
       }
     }
   });
@@ -203,7 +217,7 @@ exports.createPost = async (req, res) => {
     res.status(201).json({ success: true, message: '게시글 완전 등록 완료', postId: postId, newImageUrls: newImageUrls });
   } catch (err) {
     console.error('Error creating post:', err);
-    res.status(500).json({ success: false, message: '게시글 등록 실패패' });
+    res.status(500).json({ success: false, message: '게시글 등록 실패' });
   }
 
 
@@ -223,3 +237,31 @@ exports.deletePostImages = async (postId) => {
     console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
   }
 };
+
+// 게시글 하나 불러오기
+exports.getPost = async (req, res) => {
+  const postId = req.params.id;
+  const query = `SELECT * FROM posts WHERE id = ?`;
+
+  try {
+    db.get(query, postId, (err, row) => {
+      if (err) console.error('DB에서 게시글 못 불러옴: ', err)
+      else {
+        const unixTime = parseInt(row.created_at);
+        const date = new Date(unixTime);
+        const formattedDateKR = date.toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        });
+        console.log(formattedDateKR);
+        row['created_at'] = formattedDateKR;
+        res.json(row);
+      }
+    });
+  } catch (err) {
+    console.error('게시글 못가져옴', err);
+    res.status(500).json({ success: false, message: '게시글 불러오기 실패' })
+  }
+
+}

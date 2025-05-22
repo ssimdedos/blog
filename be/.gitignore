@@ -147,3 +147,6 @@ de
 .db
 .sqlite
 .sqlite3
+
+upload/
+upload/images
