@@ -36,7 +36,7 @@ const WritePost = () => {
       return
     }
 
-    const { finalContent, thumbnailUrl, imgUrlArray } = await imageSaveFromContents(inputs['content']);
+    const { finalContent, thumbnailUrl, imgUrlArray, imgOldPathArray } = await imageSaveFromContents(inputs['content']);
 
     const postDataToSend = {
       'title': inputs.title,
@@ -50,19 +50,20 @@ const WritePost = () => {
       'isPublished': data.isPublished ? 1 : 0,
       'tags': data.tags,
       'isPinned': data.isPinned ? 1 : 0,
-      'tempImgPath': imgUrlArray 
+      'tempImgPath': imgOldPathArray 
     }
 
     try {
       const response = await createPost(postDataToSend);
       console.log('게시글 등록 성공: ', response);
-      setInputs({
-        title: "",
-        subtitle: "",
-        author: "idea de mis dedos",
-        slug: "",
-        content: "",
-      });
+      // setInputs({
+      //   title: "",
+      //   subtitle: "",
+      //   author: "idea de mis dedos",
+      //   slug: "",
+      //   content: "",
+      // });
+      window.location.reload();
     } catch (error) {
       console.error('게시글 등록 실패: ', error);
       alert('게시글 등록에 실패했습니다.');

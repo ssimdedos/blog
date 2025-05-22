@@ -107,12 +107,13 @@ exports.uploadImages = (req, res) => {
     console.log("파일 업로드 성공: ", req.file);
 
     const fileUrl = `${BASE_URL}/images/${path.relative(UPLOAD_PATH, req.file.path).replace(/\\/g, '/')}`;
-
+    // console.log(path.relative(UPLOAD_PATH, req.file.path).replace(/\\/g, '/'));
     res.status(200).json({
       success: true,
       message: '이미지 저장 완료',
       url: fileUrl, // 클라이언트에서 사용할 이미지 URL
-      fileName: req.file.filename // 저장된 파일명
+      fileName: req.file.filename, // 저장된 파일명
+      filePath: req.file.path
     });
   });
 };
@@ -172,6 +173,7 @@ exports.createPost = async (req, res) => {
 
     const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, postId);
     let finalContent = content;
+    const newThumbnailUrl = newImageUrls[0];
 
     tempImgPath.forEach((oldPath, index) => {
       const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
@@ -179,11 +181,10 @@ exports.createPost = async (req, res) => {
     });
 
     // 바뀐 content로 업데이트
-    await db.run(`UPDATE posts SET content = ? WHERE id = ?`, [finalContent, postId]);
+    await db.run(`UPDATE posts SET content = ? thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, postId]);
 
     // tag 등록 및 tag post 관계 설정
     const tagArray = tags.replace(/\s+/g, '').split(',');
-    console.log(tagArray);
     if (tagArray.length > 0) {
       for (let i = 0; i < tagArray.length; i++) {
         let tagId;

@@ -9,7 +9,9 @@ const db = new sql.Database(db_path, (err) => {
 });
 
 // db.run('DROP TABLE posts');
-db.run('DROP TABLE tags');
+// db.run('DROP TABLE tags');
+// db.run('DROP TABLE subcategories');
+// db.run('DROP TABLE pots_tags');
 
 db.run(`CREATE TABLE IF NOT EXISTS posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,6 +33,31 @@ db.run(`CREATE TABLE IF NOT EXISTS posts (
   order_index INTEGER DEFAULT 0,
   FOREIGN KEY (category_id) REFERENCES categories(id),
   FOREIGN KEY (sub_category_id) REFERENCES subcategories(id)
+)`, (err) => {
+  if (err) console.log(err);
+});
+
+db.run(`CREATE TABLE IF NOT EXISTS tags (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL
+)`, (err) => {
+  if (err) console.log(err);
+});
+
+db.run(`CREATE TABLE IF NOT EXISTS post_tags (
+  post_id INTEGER,
+  tag_id INTEGER,
+  FOREIGN KEY (post_id) REFERENCES posts(id),
+  FOREIGN KEY (tag_id) REFERENCES tags(id)
+)`, (err) => {
+  if (err) console.log(err);
+});
+
+db.run(`CREATE TABLE IF NOT EXISTS subcategories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  category_id INTEGER,
+  FOREIGN KEY (category_id) REFERENCES categories(id)
 )`, (err) => {
   if (err) console.log(err);
 });

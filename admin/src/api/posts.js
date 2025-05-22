@@ -46,6 +46,8 @@ export async function imageSaveFromContents(content) {
       // 게시글에 이미지가 있을 경우 정규식 추출
     const imgSrcArray = [];
     const imgUrlArray = [];
+    const imgOldPathArray = [];
+
     const gainSource = /<img[^>]*src=["']([^"']*)["'][^>]*>/g;
     // 이미지 처리
     let match;
@@ -90,7 +92,9 @@ export async function imageSaveFromContents(content) {
         if (response.data.success) {
           console.log('이미지 서버에 업로드 성공', response.data);
           imgUrlArray.push(response.data.url);
-          console.log('imgUrlArray에 추가', imgUrlArray); 
+          imgOldPathArray.push(response.data.filePath);
+          
+          // console.log('imgUrlArray에 추가', imgUrlArray); 
         } else {
           console.log('이미지 서버 업로드 실패 응답:', response);
           alert('이미지를 서버에 업로드하는데에 실패했습니다.');
@@ -114,7 +118,8 @@ export async function imageSaveFromContents(content) {
     const finalData = {
       finalContent,
       'thumbnailUrl': imgUrlArray.length > 0 ? imgUrlArray[0] : null,
-      imgUrlArray
+      imgUrlArray,
+      imgOldPathArray
     }
     return finalData
 }
