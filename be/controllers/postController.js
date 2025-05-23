@@ -254,7 +254,6 @@ exports.getPost = async (req, res) => {
           month: 'numeric',
           day: 'numeric'
         });
-        console.log(formattedDateKR);
         row['created_at'] = formattedDateKR;
         res.json(row);
       }

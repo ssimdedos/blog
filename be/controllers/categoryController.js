@@ -1,3 +1,4 @@
+const e = require('express');
 const db = require('../db/db');
 
 exports.getAllCategories = (req, res) => {
@@ -18,18 +19,29 @@ exports.getAllCategories = (req, res) => {
 exports.getAllSubCategories = (req, res) => {
   // console.log(req.query.categoryId);
   let id = req.query.categoryId;
+  let query = `SELECT * FROM subcategories`;
   if(id == undefined) id=1;
-  db.all(`SELECT * FROM subcategories WHERE category_id=${id}`, (err, rows) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).send('DB err category.get');
-    } else {
-      // rows.forEach(e => {
-      //   console.log(e);
-      // });
-      res.json(rows);
-    }
-  });
+  if(id !== 'all') {
+    query += ` WHERE category_id = ?`;
+    db.all(query, [id], (err, rows) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send('DB err category.get');
+      } else {
+        res.json(rows);
+      }
+    });
+  } else if (id === 'all') {
+    db.all(query, (err, rows) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send('DB err category.get');
+      } else {
+        res.json(rows);
+      }
+    });
+
+  }
 }
 
 exports.createSubCategory = (req, res) => {
