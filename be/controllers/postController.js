@@ -1,12 +1,13 @@
 const db = require('../db/db');
+require('dotenv').config();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const striptags = require('striptags');
 
 
-const UPLOAD_PATH = path.join(__dirname, '../', 'uploads/images');
-const BASE_URL = 'http://localhost:7303';
+const UPLOAD_PATH = path.join(__dirname, '../', process.env.UPLOAD_PATH);
+const BASE_URL = process.env.BASE_URL;
 // 없으면 업로드폴더 생성
 try {
   fs.mkdirSync(UPLOAD_PATH, { recursive: true }); // recursive: true는 상위 디렉토리도 함께 생성
@@ -62,15 +63,23 @@ const upload = multer({
 
 exports.getAllPosts = (req, res) => {
   // console.log(req.query.categoryId);
-  const id = req.query.categoryId;
+  let id;
+  if (req.query.categoryId) {
+    id = req.query.categoryId;
+  } else if (req.query.subcategoryId) {
+    id = req.query.subcategoryId;
+  }
   let query = 'SELECT id, thumbnail, title, sub_title, content, created_at, category_id, slug FROM posts';
-  let query2 = 'SELECT name FROM categories';
+  let query2 = 'SELECT name FROM';
 
   if (id != 'all') {
-    // console.log('카테고리 들어옴');
-    query = query + ` WHERE category_id=${id}`;
-    query2 = query2 + ` WHERE id=${id}`;
-    // console.log(query);
+    if (req.query.categoryId) {
+      query = query + ` WHERE category_id=${id}`;
+      query2 = query2 + ` categories WHERE id=${id}`;
+    } else if (req.query.subcategoryId) {
+      query = query + ` WHERE sub_category_id=${id}`;
+      query2 = query2 + ` subcategories WHERE id=${id}`;
+    }
   } else {
     // console.log('all들어옴');
   }

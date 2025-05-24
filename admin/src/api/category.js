@@ -1,5 +1,6 @@
 // src/api/posts.js
 import axios from 'axios';
+require('dotenv').config();
 
 const API_BASE_URL = '/api/category'; // 백엔드 API 주소
 const API_BASE_URL_SUB = '/api/subcategory'; // 백엔드 API 주소

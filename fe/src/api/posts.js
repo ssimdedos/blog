@@ -8,13 +8,26 @@ export async function fetchPosts(id) {
   const res = await axios.get(API_BASE_URL, {
     params: { categoryId: id }
   });
-  if (id=='all') {
+  if (id == 'all') {
     return res.data;
   } else {
     // console.log(res.data.data2);
     return res.data;
   }
-  
+}
+
+// 서브카테고리 게시글 목록 가져오기
+
+export async function fetchPostsSubcategory(id) {
+  const res = await axios.get(API_BASE_URL, {
+    params: { subcategoryId: id }
+  });
+  if (id == 'all') {
+    return res.data;
+  } else {
+    // console.log(res.data.data2);
+    return res.data;
+  }
 }
 
 // 게시글 하나 가져오기

@@ -13,6 +13,7 @@ const Pages = () => {
     try {
       fetchPost(id).then((data) => {
         setPostData(data);
+        console.log(data);
       });
     } catch (err) {
       console.err('Error', err);
@@ -65,7 +66,6 @@ const Pages = () => {
         {/* {htmlToDOM(postData.content)} */}
       </div>
 
-      {/* 게시글 태그 (있을 경우)
       {postData.tags && postData.tags.length > 0 && (
         <div className="post-tags">
           {postData.tags.map(tag => (
@@ -73,7 +73,7 @@ const Pages = () => {
           ))}
         </div>
       )}
-      */}
+     
 
       {/* 하단 네비게이션 또는 댓글 섹션 등 추가 가능 */}
       <div className="post-navigation">

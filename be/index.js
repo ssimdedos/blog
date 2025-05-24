@@ -11,10 +11,11 @@ const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const app = express();
 
 const port = process.env.SERVERPORT;
+const BASE_URL = process.env.BASE_URL;
 
 app.use(cors());
 // app.use(express.static(path.join(__dirname, 'public')));
-app.use('/images', express.static(path.join(__dirname, 'uploads', 'images'))); 
+app.use('/images', express.static(path.join(__dirname, process.env.UPLOAD_PATH))); 
 
 app.use(express.json()); // JSON 형식의 요청 본문을 파싱
 app.use(express.urlencoded({ extended: true })); // URL-encoded 형식의 요청 본문을 파싱
@@ -29,8 +30,8 @@ app.get('/', (req, res) => {
 });
 
 
-app.listen(port, ()=> {
-  console.log(`This app is listening on port 'ec2-3-27-135-106.ap-southeast-2.compute.amazonaws.com:${port}'`);
+app.listen(port, '0.0.0.0',()=> {
+  console.log(`This app is listening on port '${BASE_URL}'`);
 });
 
 // db 종료

@@ -1,31 +1,43 @@
 import './Board.css';
 import { useEffect, useState } from "react";
 import ToggleBtn from '../components/ToggleBtn';
-import { fetchPosts } from '../api/posts';
+import { fetchPosts, fetchPostsSubcategory } from '../api/posts';
 import { Link, useParams } from 'react-router-dom';
 
 
-const Board = ({children, category}) => {
+const Board = ({children, category, subcategory}) => {
   const [toggleIsOn, setToggleIsOn] = useState(false);
   const [contentList, setContentList] = useState({});
   const [categoryName, setCategoryName] = useState(' ');
-  let { id } = useParams();
+  let { id, sub_id } = useParams();
 
   useEffect(()=> {
-    if(id == undefined) {
+    if(category === 'all') {
       id = category;
     }
-    fetchPosts(id).then(data => {
-      // console.log(data);
-      if (id == 'all') {
-        setContentList(data);
-      } else {
-        setContentList(data.data1);
-        setCategoryName(data.data2[0].name);
-      }
-    })
+    if (subcategory === undefined) {
+      fetchPosts(id).then(data => {
+        // console.log(data);
+        if (id == 'all') {
+          setContentList(data);
+        } else {
+          setContentList(data.data1);
+          setCategoryName(data.data2[0].name);
+        }
+      });
+    } else {
+      fetchPostsSubcategory(subcategory).then(data => {
+        // console.log(data);
+        if (id == 'all') {
+          setContentList(data);
+        } else {
+          setContentList(data.data1);
+          setCategoryName(data.data2[0].name);
+        }
+      });
+    }
     
-  }, [category, id]);
+  }, [category, id, sub_id]);
 
   const radioChange = () => {
     setToggleIsOn(!toggleIsOn);

@@ -72,7 +72,7 @@ const SidebarComp = () => {
                       .filter((e) => e.category_id === c.id)
                       .map((e) => (
                         <li className="subcategory-li" key={`subcategory-id-${e.id}`}>
-                          <Link to={`/subcategory/${e.id}`} className="subcategory-link">
+                          <Link to={`/category/${c.id}/sub/${e.id}`} className="subcategory-link">
                             └ {e.name}
                           </Link>
                         </li>
