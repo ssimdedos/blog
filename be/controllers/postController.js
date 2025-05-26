@@ -63,57 +63,77 @@ const upload = multer({
 
 exports.getAllPosts = (req, res) => {
   // console.log(req.query.categoryId);
+  const { pageNum } = req.query;
   let id;
+  const limit = 9;
   if (req.query.categoryId) {
     id = req.query.categoryId;
   } else if (req.query.subcategoryId) {
     id = req.query.subcategoryId;
   }
-  let query = 'SELECT id, thumbnail, title, sub_title, content, created_at, category_id, slug FROM posts';
+  let query = 'SELECT id, thumbnail, title, sub_title, content, created_at, category_id, slug FROM posts WHERE is_published = 1';
   let query2 = 'SELECT name FROM';
+  let query3 = `SELECT COUNT(*) FROM posts`;
 
   if (id != 'all') {
     if (req.query.categoryId) {
-      query = query + ` WHERE category_id=${id}`;
+      query = query + ` AND category_id=${id} ORDER BY CAST(created_at as INTEGER) DESC`;
       query2 = query2 + ` categories WHERE id=${id}`;
+      query3 = query3 + ` WHERE category_id=${id}`;
     } else if (req.query.subcategoryId) {
-      query = query + ` WHERE sub_category_id=${id}`;
+      query = query + ` AND sub_category_id=${id} ORDER BY CAST(created_at as INTEGER) DESC`;
       query2 = query2 + ` subcategories WHERE id=${id}`;
-    }
+      query3 = query3 + ` WHERE sub_category_id=${id}`;
+    } 
   } else {
+    query = query + ` ORDER BY CAST(created_at as INTEGER) DESC`;
     // console.log('all들어옴');
+  }
+  if (pageNum) {
+    query = query + ` LIMIT ${limit} OFFSET ${pageNum > 1 ? (pageNum - 1) * limit - 1 : 0}`
+    // query = query + ` LIMIT ${9} OFFSET 0`;
   }
   db.all(query, (err, rows1) => {
     if (err) {
       console.log(err);
       return res.status(500).send('DB err post.get');
     } else {
-      const stripedPosts = rows1.map(row => {
-        const unixTime = parseInt(row.created_at);
-        const date = new Date(unixTime);
-        const formattedDateKR = date.toLocaleDateString('ko-KR', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric'
+      // console.log(rows1);
+      let postCtn;
+      let totalPages;
+      db.get(query3, (err, row2) => {
+        if(row2 !== undefined) {
+          postCtn = row2['COUNT(*)'];
+          totalPages = Math.ceil(postCtn / limit);
+        } else postCtn = 0;
+        const stripedPosts = rows1.map(row => {
+          const unixTime = parseInt(row.created_at);
+          const date = new Date(unixTime);
+          const formattedDateKR = date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+          });
+          return ({
+            ...row,
+            summary: striptags(row.content).substring(0, 150),
+            created_at: formattedDateKR
+          });
         });
-        return ({
-          ...row,
-          summary: striptags(row.content).substring(0, 150),
-          created_at: formattedDateKR
-        })
+        if (id != 'all') {
+          db.all(query2, (err, rows3) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).send('DB err categories.get name');
+            } else {
+              res.json({ data1: stripedPosts, data2: rows3, postCtn: postCtn, totalPages: totalPages });
+            }
+          });
+        } else {
+          // console.log(stripedPosts);
+          res.json({ stripedPosts, postCtn,totalPages });
+        }
       });
-      if (id != 'all') {
-        db.all(query2, (err, rows2) => {
-          if (err) {
-            console.log(err);
-            return res.status(500).send('DB err categories.get name');
-          } else {
-            res.json({ data1: stripedPosts, data2: rows2 });
-          }
-        });
-      } else {
-        res.json(stripedPosts);
-      }
     }
   });
 }
@@ -196,7 +216,14 @@ exports.createPost = async (req, res) => {
 
     const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, postId);
     let finalContent = content;
-    const newThumbnailUrl = newImageUrls[0];
+    let newThumbnailUrl;
+    if(newImageUrls[0] == undefined) {
+      // newThumbnailUrl = path.join(`${BASE_URL}/images/${path.relative(UPLOAD_PATH,'logo','logo192.png').replace(/\\/g, '/')}`);
+      newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
+      console.log(newThumbnailUrl);
+    } else {
+      newThumbnailUrl = newImageUrls[0];
+    }
 
     tempImgPath.forEach((oldPath, index) => {
       const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
@@ -204,7 +231,7 @@ exports.createPost = async (req, res) => {
     });
 
     // 바뀐 content로 업데이트
-    await db.run(`UPDATE posts SET content = ? thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, postId]);
+    await db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, postId]);
 
     // tag 등록 및 tag post 관계 설정
     const tagArray = tags.replace(/\s+/g, '').split(',');

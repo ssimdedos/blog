@@ -4,23 +4,24 @@ import axios from 'axios';
 const API_BASE_URL = '/api/posts'; // 백엔드 API 주소
 
 // 게시글 목록 가져오기
-export async function fetchPosts(id) {
+export async function fetchPosts(id, pageNum) {
   const res = await axios.get(API_BASE_URL, {
-    params: { categoryId: id }
+    params: { categoryId: id, pageNum: pageNum }
   });
+  // console.log(res.data);
   if (id == 'all') {
     return res.data;
   } else {
-    // console.log(res.data.data2);
+    // console.log(res.data.data3);
     return res.data;
   }
 }
 
 // 서브카테고리 게시글 목록 가져오기
 
-export async function fetchPostsSubcategory(id) {
+export async function fetchPostsSubcategory(id, pageNum) {
   const res = await axios.get(API_BASE_URL, {
-    params: { subcategoryId: id }
+    params: { subcategoryId: id, pageNum: pageNum }
   });
   if (id == 'all') {
     return res.data;
