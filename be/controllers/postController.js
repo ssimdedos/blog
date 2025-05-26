@@ -8,6 +8,9 @@ const striptags = require('striptags');
 
 const UPLOAD_PATH = path.join(__dirname, '../', process.env.UPLOAD_PATH);
 const BASE_URL = process.env.BASE_URL;
+const date = new Date();
+const date2 = String(date.getFullYear()) + '_' + (date.getMonth() + 1).toString().padStart(2, '0') + '_' + date.getDate().toString().padStart(2, '0');
+const todayUploadDir = path.join(UPLOAD_PATH, date2);
 // 없으면 업로드폴더 생성
 try {
   fs.mkdirSync(UPLOAD_PATH, { recursive: true }); // recursive: true는 상위 디렉토리도 함께 생성
@@ -20,9 +23,6 @@ try {
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // 이미지 저장 경로 지정
-    const date = new Date();
-    const date2 = String(date.getFullYear()) + '_' + (date.getMonth() + 1).toString().padStart(2, '0') + '_' + date.getDate().toString().padStart(2, '0');
-    const todayUploadDir = path.join(UPLOAD_PATH, date2);
     fs.mkdir(todayUploadDir, { recursive: true }, (err) => {
       if (err) return cb(err);
       cb(null, todayUploadDir);
@@ -84,7 +84,7 @@ exports.getAllPosts = (req, res) => {
       query = query + ` AND sub_category_id=${id} ORDER BY CAST(created_at as INTEGER) DESC`;
       query2 = query2 + ` subcategories WHERE id=${id}`;
       query3 = query3 + ` WHERE sub_category_id=${id}`;
-    } 
+    }
   } else {
     query = query + ` ORDER BY CAST(created_at as INTEGER) DESC`;
     // console.log('all들어옴');
@@ -102,7 +102,7 @@ exports.getAllPosts = (req, res) => {
       let postCtn;
       let totalPages;
       db.get(query3, (err, row2) => {
-        if(row2 !== undefined) {
+        if (row2 !== undefined) {
           postCtn = row2['COUNT(*)'];
           totalPages = Math.ceil(postCtn / limit);
         } else postCtn = 0;
@@ -131,7 +131,7 @@ exports.getAllPosts = (req, res) => {
           });
         } else {
           // console.log(stripedPosts);
-          res.json({ stripedPosts, postCtn,totalPages });
+          res.json({ stripedPosts, postCtn, totalPages });
         }
       });
     }
@@ -187,6 +187,14 @@ exports.moveImagesToPostFolder = async (oldFilePaths, postId) => {
         console.error(`Error moving file ${oldPath}: ${renameErr}`);
         // 클라이언트에게는 원래 임시 URL 또는 에러를 반환할 수 있으므로 상황에 맞게 처리
       }
+      try {
+        if (fs.existsSync(todayUploadDir)) {
+          await fs.promises.rm(todayUploadDir, { recursive: true, force: true });
+          console.log(`Deleted image directory for post ID: ${postId}`);
+        }
+      } catch (err) {
+        console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
+      }
     }
     return newFileUrls; // 이동된 파일들의 새로운 URL 목록 반환
   } catch (mkdirErr) {
@@ -217,7 +225,7 @@ exports.createPost = async (req, res) => {
     const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, postId);
     let finalContent = content;
     let newThumbnailUrl;
-    if(newImageUrls[0] == undefined) {
+    if (newImageUrls[0] == undefined) {
       // newThumbnailUrl = path.join(`${BASE_URL}/images/${path.relative(UPLOAD_PATH,'logo','logo192.png').replace(/\\/g, '/')}`);
       newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
       console.log(newThumbnailUrl);
