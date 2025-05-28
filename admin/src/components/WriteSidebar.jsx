@@ -19,13 +19,20 @@ const WriteSidebarComp = ({clickPostbtn}) => {
     fetchSubcategory(e.target.value).then(data => {
       // console.log(data);
       setSubCategoryList(data);
+      if (data.length != 0) {
+        // console.log(data[0].id);
+        setSelectedSubcategory(data[0].id);
+      } else {
+        setSelectedSubcategory(0);
+      }
     });
   }
 
   const SubcategoryHandler = (e) => {
     console.log(e.target.value);
-    // setSelectedSubcategory()
+    setSelectedSubcategory(e.target.value);
   }
+
 
   useEffect(()=> {
     // console.log('useEffect');
@@ -41,7 +48,7 @@ const WriteSidebarComp = ({clickPostbtn}) => {
         // console.log(data[0].id);
         setSelectedSubcategory(data[0].id);
       } else {
-        setSelectedCategory(0);
+        setSelectedSubcategory(0);
       }
     });
   }, []);
@@ -69,7 +76,7 @@ const WriteSidebarComp = ({clickPostbtn}) => {
       <div className="sub-category-list">
         <h3>부 카테고리 목록</h3>
         <select onChange={SubcategoryHandler} >
-          {subCategoryList.length == 0 ? <option selected value={0} >없음</option> :<></>}
+          {subCategoryList.length == 0 ? <option defaultValue value={0} >없음</option> :<></>}
           {subCategoryList.length != undefined ? subCategoryList.map((v, i) => (<option key={'subcate_'+i} value={v.id} >{v.name}</option>)) : <h5>로딩 중</h5>}
         </select>
       </div>
