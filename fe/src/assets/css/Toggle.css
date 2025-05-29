@@ -1,6 +1,7 @@
 .toggle-wrap {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .toggle-input {
@@ -14,14 +15,14 @@
   border-radius: 16px;
   background-color: #dfdfdf;
   transition: all 0.3s;
-  padding: 2px;
+  padding: 2.5px;
   cursor: pointer;
-  display: inline-block;
+  flex-shrink: 0;
 }
 
 .toggle-button {
   position: absolute;
-  top: 2px;
+  top: 3.8px;
   left: 2px;
   width: 17.2px;
   height: 17.2px;
@@ -39,13 +40,12 @@
 }
 
 .toggle-text {
-  display: inline-block;
+  font-family: 'MaruBuri';
   width: 100%;
   color: rgba(0,0,0,0.6);
   font-size: 13px;
   text-align: right;
-  margin-left: -9px;
-  font-weight: 600;
+  margin-left: 24px;
 }
 .toggle-input:checked + .toggle .toggle-text {
   text-align: left;

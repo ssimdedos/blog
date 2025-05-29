@@ -1,19 +1,26 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { fetchPost } from "../api/posts";
 import parse from "html-react-parser";
 import './Pages.css';
+import './PagesPostDetails.css';
 
 const Pages = () => {
   const [postData, setPostData] = useState({});
+  const [tags, setTags] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const [formerPost, setFormerPost] = useState({});
+  const [nextPost, setNextPost] = useState({});
 
   const getPost = async (id) => {
     try {
       fetchPost(id).then((data) => {
-        setPostData(data);
-        console.log(data);
+        // console.log(data);
+        setPostData(data.post);
+        setTags(data.tags);
+        setFormerPost(data.formerPost);
+        setNextPost(data.nextPost)
       });
     } catch (err) {
       console.err('Error', err);
@@ -42,7 +49,7 @@ const Pages = () => {
           </div>
         )
       }
-      < h1 className="post-title">{postData.title}</h1>
+      < h3 className="post-title">{postData.title}</h3>
       {
         postData.sub_title && (
           <h2 className="post-subtitle">{postData.sub_title}</h2>
@@ -66,9 +73,9 @@ const Pages = () => {
         {/* {htmlToDOM(postData.content)} */}
       </div>
 
-      {postData.tags && postData.tags.length > 0 && (
+      {tags && tags.length > 0 && (
         <div className="post-tags">
-          {postData.tags.map(tag => (
+          {tags.map(tag => (
             <span key={tag.id} className="post-tag">#{tag.name}</span>
           ))}
         </div>
@@ -77,6 +84,24 @@ const Pages = () => {
 
       {/* 하단 네비게이션 또는 댓글 섹션 등 추가 가능 */}
       <div className="post-navigation">
+        {nextPost ? 
+          <div className="post-next">
+            <Link to={`/pages/${nextPost.id}/${nextPost.slug}`} >
+              <img src={nextPost.thumbnail} />
+              <span>다음 포스트</span>
+              <span>{nextPost.title}</span>
+            </Link>
+          </div>
+        : <></>}
+        {formerPost ?
+          <div className="post-former">
+            <Link to={`/pages/${formerPost.id}/${formerPost.slug}`} >
+              <img src={formerPost.thumbnail} />
+              <span>이전 포스트</span>
+              <span>{formerPost.title}</span>
+            </Link>
+          </div>
+        :<></> }
         {/* 이전/다음 게시글 링크 */}
       </div>
 

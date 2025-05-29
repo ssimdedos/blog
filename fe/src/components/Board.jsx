@@ -21,8 +21,6 @@ const Board = ({children, category, subcategory}) => {
     }
     if (subcategory == undefined) {
       fetchPosts(id, pageNum).then(data => {
-        console.log('유즈이펙트');
-        console.log(pageNum);
         // console.log(data.stripedPosts);
         if (id == 'all') {
           setContentList(data.stripedPosts);

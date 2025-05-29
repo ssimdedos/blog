@@ -40,7 +40,8 @@
 
 /* 3. 게시글 제목 */
 .post-title {
-  font-size: 2.8em; /* 큰 제목 크기 */
+  font-family: 'MaruBuriSemiBold';
+  font-size: 1.8em; /* 큰 제목 크기 */
   color: #222; /* 진한 글자색 */
   margin-bottom: 15px; /* 부제목 또는 메타 정보와의 간격 */
   text-align: center; /* 제목 중앙 정렬 */
@@ -50,7 +51,8 @@
 
 /* 4. 게시글 부제목 */
 .post-subtitle {
-  font-size: 1.6em; /* 부제목 크기 */
+  font-family: 'MaruBuriSemiBold';
+  font-size: 1.2em; /* 부제목 크기 */
   color: #555; /* 약간 연한 글자색 */
   margin-bottom: 25px; /* 메타 정보와의 간격 */
   text-align: center; /* 부제목 중앙 정렬 */
@@ -59,6 +61,7 @@
 
 /* 5. 게시글 메타 정보 (작성자, 날짜 등) */
 .post-meta {
+  font-family: 'MaruBuriLight';
   font-size: 0.95em; /* 작은 글씨 크기 */
   color: #777; /* 회색 글자색 */
   text-align: center; /* 중앙 정렬 */
@@ -86,7 +89,8 @@
 
 /* 7. 게시글 본문 내용 (HTML 파싱된 영역) */
 .post-content {
-  font-size: 1.1em; /* 본문 글자 크기 */
+  font-family: 'MaruBuri';
+  font-size: 1.05em; /* 본문 글자 크기 */
   line-height: 1.8; /* 본문 줄 간격 */
   color: #333; /* 본문 글자색 */
   word-wrap: break-word; /* 긴 단어가 잘리도록 */
@@ -205,4 +209,13 @@
   color: #aaa;
   margin: 50px 0;
   font-style: italic;
+}
+
+.post-tag {
+  font-size: 13px;
+  margin: 2px 5.5px;
+  padding: 2px 5.5px;
+  background-color: rgba(132, 160, 188, 0.3);
+  border-radius: 10%;
+  color: rgba(0, 0, 0, 0.5);
 }

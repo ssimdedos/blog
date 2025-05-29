@@ -286,6 +286,9 @@ exports.deletePostImages = async (postId) => {
 exports.getPost = async (req, res) => {
   const postId = req.params.id;
   const query = `SELECT * FROM posts WHERE id = ?`;
+  const query2 = `SELECT t.id, t.name FROM tags t JOIN post_tags pt ON t.id = pt.tag_id WHERE pt.post_id = ?`;
+  const query3 = `SELECT id, title, slug, thumbnail FROM posts WHERE id < ? AND is_published = 1 ORDER BY id DESC LIMIT 1`;
+  const query4 = `SELECT id, title, slug, thumbnail FROM posts WHERE id > ? AND is_published = 1 ORDER BY id LIMIT 1`;
 
   try {
     db.get(query, postId, (err, row) => {
@@ -299,7 +302,15 @@ exports.getPost = async (req, res) => {
           day: 'numeric'
         });
         row['created_at'] = formattedDateKR;
-        res.json(row);
+        db.all(query2, [postId], (err, rows) => {
+          if(err) console.error(`게시글 Tag 불러오기 err, `, err);
+          // console.log(rows);
+          db.get(query3, [postId], (err, row2) => {
+            db.get(query4, [postId], (err, row3) => {
+              res.json({post:row, tags:rows, formerPost:row2, nextPost:row3});
+            });
+          });
+        });
       }
     });
   } catch (err) {
