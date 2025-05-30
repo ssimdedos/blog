@@ -44,6 +44,19 @@ exports.getAllSubCategories = (req, res) => {
   }
 }
 
+exports.deleteCategory = (req, res) => {
+  // console.log(req.params.id);
+  let query = `DELETE FROM categories WHERE id='${req.params.id}'`;
+  db.run(query, (err) => {
+    if (err) {
+      console.log(err);
+      res.json(err);
+    } else {
+      res.json({'msg':'카테고리가 삭제되었습니다.'});
+    }
+  });
+}
+
 exports.createSubCategory = (req, res) => {
   // console.log(req.body);
   const {name, category_id} = req.body;
@@ -67,6 +80,20 @@ exports.deleteSubCategory = (req, res) => {
       res.json(err);
     } else {
       res.json({'msg':'서브카테고리가 삭제되었습니다.'});
+    }
+  });
+}
+
+exports.editCategory = (req, res) => {
+  // console.log(req.params.id);
+  const {id, name} = req.params;
+  let query = `UPDATE categories SET name = ? WHERE id = ?`;
+  db.run(query, [name, id], (err) => {
+    if (err) {
+      console.log(err);
+      res.json(err);
+    } else {
+      res.json({'msg':'카테고리 명이 변경되었습니다.'});
     }
   });
 }

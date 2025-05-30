@@ -40,12 +40,12 @@
 }
 
 .toggle-text {
-  font-family: 'MaruBuri';
+  font-family: 'Pretendard-Regular';
   width: 100%;
   color: rgba(0,0,0,0.6);
   font-size: 13px;
   text-align: right;
-  margin-left: 24px;
+  margin-left: 27px;
 }
 .toggle-input:checked + .toggle .toggle-text {
   text-align: left;

@@ -27,3 +27,12 @@
   border-style: none;
   white-space: nowrap;
 }
+
+.cate-add-ul {
+  display: flex;
+  flex-direction: row;
+}
+
+.subcate-add-btn {
+  width: 40px;
+}
