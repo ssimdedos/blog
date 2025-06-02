@@ -10,14 +10,20 @@ export async function fetchCategory() {
   return res.data;
 }
 
+// 카테고리 추가
+export async function createCategory(postData) {
+  const res = await axios.post(API_BASE_URL, postData);
+  return res.data;
+}
 // 카테고리 삭제
 export async function deleteCategory(postData) {
   const res = await axios.delete(`${API_BASE_URL}/${postData}`);
   return res.data;
 }
+
 // 카테고리명 변경
 export async function editCategoryName(postData) {
-  console.log(postData);
+  // console.log(postData);
   const res = await axios.put(`${API_BASE_URL}/${postData.id}/${postData.name}`);
   return res.data;
 }

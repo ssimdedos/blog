@@ -1,0 +1,200 @@
+/* PostManagement.css */
+
+.post-management-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* 필터 섹션 */
+.filter-section {
+  display: flex;
+  flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+  gap: 15px; /* 필터 그룹 간 간격 */
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  justify-content: center; /* 필터들을 중앙 정렬 */
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-section label {
+  font-weight: bold;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.filter-section input[type="date"],
+.filter-section select {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* 테이블 Wrapper (테이블 스크롤 가능하게) */
+.post-table-wrapper {
+  overflow-x: auto; /* 테이블이 넘치면 가로 스크롤 */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+}
+
+/* 게시글 목록 테이블 */
+.post-management-table {
+  width: 100%;
+  border-collapse: collapse; /* 테이블 셀 간격 제거 */
+  min-width: 800px; /* 테이블 최소 너비 (스크롤을 유도) */
+}
+
+.post-management-table thead th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  white-space: nowrap; /* 헤더 텍스트 줄바꿈 방지 */
+}
+
+.post-management-table tbody td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  color: #555;
+  vertical-align: middle; /* 셀 내용 수직 중앙 정렬 */
+}
+
+.post-management-table tbody tr:hover {
+  background-color: #fcfcfc; /* 호버 시 배경색 */
+}
+
+.post-management-table tbody tr:last-child td {
+  border-bottom: none; /* 마지막 행의 하단 테두리 제거 */
+}
+
+/* 제목 셀 스타일 */
+.post-title-cell {
+  max-width: 250px; /* 제목 셀 최대 너비 설정 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트 ... 처리 */
+}
+
+/* 체크박스 스타일 */
+.post-management-table input[type="checkbox"] {
+  transform: scale(1.2); /* 체크박스 크기 키우기 */
+  cursor: pointer;
+}
+
+/* 작업 버튼 */
+.action-button {
+  padding: 6px 10px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: background-color 0.2s ease;
+  white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+}
+
+.edit-button {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.edit-button:hover {
+  background-color: #0056b3;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+/* 게시글 없음 메시지 */
+.no-posts-found {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-style: italic;
+}
+
+
+/* --- 반응형 디자인 --- */
+@media (max-width: 768px) {
+  .post-management-container {
+    margin: 20px 10px;
+    padding: 15px;
+  }
+
+  .filter-section {
+    flex-direction: column; /* 모바일에서 필터들을 세로로 쌓기 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    gap: 10px;
+  }
+
+  .filter-group {
+    width: 100%; /* 필터 그룹 전체 너비 */
+    justify-content: space-between; /* 라벨과 인풋을 양 끝으로 */
+  }
+
+  .filter-section input[type="date"],
+  .filter-section select {
+    flex-grow: 1; /* 인풋/셀렉트가 남은 공간 채우기 */
+  }
+
+  .post-table-wrapper {
+    /* overflow-x: auto; 가 이미 가로 스크롤을 제공하므로 추가 스타일은 필요 없을 수 있습니다. */
+  }
+
+  .post-management-table {
+    font-size: 0.9em; /* 테이블 폰트 크기 줄임 */
+    min-width: 600px; /* 여전히 스크롤을 유도하기 위한 최소 너비 유지 */
+  }
+
+  .post-management-table thead th,
+  .post-management-table tbody td {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-management-container {
+    padding: 10px;
+  }
+
+  .post-management-table {
+    font-size: 0.8em;
+  }
+
+  .action-button {
+    padding: 4px 8px;
+    font-size: 0.75em;
+  }
+
+  .post-management-table input[type="checkbox"] {
+    transform: scale(1); /* 작은 화면에서 체크박스 크기 원상복귀 */
+  }
+}

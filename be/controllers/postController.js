@@ -71,7 +71,7 @@ exports.getAllPosts = (req, res) => {
   } else if (req.query.subcategoryId) {
     id = req.query.subcategoryId;
   }
-  let query = 'SELECT id, thumbnail, title, sub_title, content, created_at, category_id, slug FROM posts WHERE is_published = 1';
+  let query = `SELECT id, thumbnail, title, sub_title, content, created_at, category_id, slug FROM posts WHERE is_published = 1 AND deleted_at = '0'`;
   let query2 = 'SELECT name FROM';
   let query3 = `SELECT COUNT(*) FROM posts`;
 
@@ -137,6 +137,106 @@ exports.getAllPosts = (req, res) => {
     }
   });
 }
+
+exports.getAllPostsAdmin = (req, res) => {
+  // console.log(req.query);
+  const filters = req.query;
+  console.log(filters);
+
+  const page = parseInt(filters.page) || 1; // 기본 1페이지
+  const limit = parseInt(filters.limit) || 10; // 기본 10개씩 (문제에서 10개씩 끊어온다고 함)
+  const offset = (page - 1) * limit;
+
+  // 쿼리 빌더 초기화
+  let baseQuery = `
+    SELECT id, created_at, category_id, sub_category_id, author, title, is_published, is_pinned
+    FROM posts
+    WHERE deleted_at = '0'
+  `;
+  let countQuery = `
+    SELECT COUNT(*) AS count FROM posts WHERE deleted_at = '0'
+  `;
+  const queryParams = []; // SQL 파라미터 바인딩용 배열
+
+  // 필터 조건 추가
+  if (filters.startDate) {
+    baseQuery += ` AND created_at >= ?`;
+    countQuery += ` AND created_at >= ?`;
+    queryParams.push(filters.startDate);
+  }
+  if (filters.endDate) {
+    baseQuery += ` AND created_at <= ?`;
+    countQuery += ` AND created_at <= ?`;
+    queryParams.push(filters.endDate);
+  }
+  if (filters.categoryId && filters.categoryId !== 'all') {
+    baseQuery += ` AND category_id = ?`;
+    countQuery += ` AND category_id = ?`;
+    queryParams.push(parseInt(filters.categoryId));
+  }
+  if (filters.author && filters.author !== 'all') {
+    baseQuery += ` AND author = ?`;
+    countQuery += ` AND author = ?`;
+    queryParams.push(filters.author);
+  }
+  if (filters.isPublished && filters.isPublished !== 'all') {
+    baseQuery += ` AND is_published = ?`;
+    countQuery += ` AND is_published = ?`;
+    queryParams.push(parseInt(filters.isPublished));
+  }
+
+  // 정렬 순서 (관리자 페이지에서는 ID 내림차순이 일반적)
+  baseQuery += ` ORDER BY id DESC`;
+
+  // 게시글 조회용 파라미터 (LIMIT, OFFSET 포함)
+  const postsQueryParams = [...queryParams, limit, offset];
+
+  // 총 게시글 수 조회용 파라미터 (LIMIT, OFFSET 제외)
+  const countQueryParams = [...queryParams];
+  // 1. 게시글 데이터 조회
+  db.all(baseQuery + ` LIMIT ? OFFSET ?`, postsQueryParams, (err, posts) => {
+    if (err) {
+      console.error('Error fetching posts in getAllPostsAdmin:', err);
+      return res.status(500).json({ success: false, message: '게시글 목록을 불러오는 데 실패했습니다.' });
+    }
+    // 2. 총 게시글 수 조회
+    db.get(countQuery, countQueryParams, (err, totalPostsResult) => {
+      if (err) {
+        console.error('Error fetching total posts count:', err);
+        return res.status(500).json({ success: false, message: '총 게시글 수를 불러오는 데 실패했습니다.' });
+      }
+
+      const totalPosts = totalPostsResult.count;
+      const totalPages = Math.ceil(totalPosts / limit);
+
+
+
+      // 4. 게시글 데이터 가공
+      const processedPosts = posts.map(post => {
+        // const formattedDate = post.created_at; // 이미 포맷된 경우
+        const unixTime = parseInt(post.created_at);
+        const formattedDate = new Date(unixTime).toLocaleDateString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric' }); // ISO 8601 -> YYYY. M. D.
+
+
+        return {
+          ...post,
+          created_at: formattedDate
+        };
+      });
+
+      // 5. 최종 응답 전송
+      res.status(200).json({
+        success: true,
+        posts: processedPosts,
+        currentPage: page,
+        limit: limit,
+        totalPosts: totalPosts,
+        totalPages: totalPages,
+      });
+    }); // db.get (countQuery) 콜백 끝
+  }); // db.all (baseQuery) 콜백 끝
+};
+
 
 exports.uploadImages = (req, res) => {
   upload(req, res, (err) => {
@@ -287,8 +387,8 @@ exports.getPost = async (req, res) => {
   const postId = req.params.id;
   const query = `SELECT * FROM posts WHERE id = ?`;
   const query2 = `SELECT t.id, t.name FROM tags t JOIN post_tags pt ON t.id = pt.tag_id WHERE pt.post_id = ?`;
-  const query3 = `SELECT id, title, slug, thumbnail FROM posts WHERE id < ? AND is_published = 1 ORDER BY id DESC LIMIT 1`;
-  const query4 = `SELECT id, title, slug, thumbnail FROM posts WHERE id > ? AND is_published = 1 ORDER BY id LIMIT 1`;
+  const query3 = `SELECT id, title, slug, thumbnail FROM posts WHERE id < ? AND is_published = 1 AND deleted_at = 0 ORDER BY id DESC LIMIT 1`;
+  const query4 = `SELECT id, title, slug, thumbnail FROM posts WHERE id > ? AND is_published = 1 AND deleted_at = 0 ORDER BY id LIMIT 1`;
 
   try {
     db.get(query, postId, (err, row) => {
@@ -303,11 +403,11 @@ exports.getPost = async (req, res) => {
         });
         row['created_at'] = formattedDateKR;
         db.all(query2, [postId], (err, rows) => {
-          if(err) console.error(`게시글 Tag 불러오기 err, `, err);
+          if (err) console.error(`게시글 Tag 불러오기 err, `, err);
           // console.log(rows);
           db.get(query3, [postId], (err, row2) => {
             db.get(query4, [postId], (err, row3) => {
-              res.json({post:row, tags:rows, formerPost:row2, nextPost:row3});
+              res.json({ post: row, tags: rows, formerPost: row2, nextPost: row3 });
             });
           });
         });

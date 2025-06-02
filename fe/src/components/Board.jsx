@@ -28,7 +28,6 @@ const Board = ({children, category, subcategory}) => {
           setContentList(data.data1);
           setCategoryName(data.data2[0].name);
         }
-        // console.log(data.postCtn);
         setPostCtn(data.postCtn);
         setTotalPages(data.totalPages);
       });

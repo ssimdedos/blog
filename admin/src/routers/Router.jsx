@@ -4,6 +4,7 @@ import Main from '../pages/Main';
 import MainLayout from '../layouts/MainLayout';
 import WritePost from '../pages/WritePost';
 import CategoryEdit from '../components/CategoryEdit';
+import PostsEdit from '../components/PostsEdit';
 
 const AppRouter = () => {
   return (
@@ -13,6 +14,7 @@ const AppRouter = () => {
           <Route path='/' element={<Main />} />
           <Route path='/dashboard' element={<Main />} />
           <Route path='/categoryedit' element={<CategoryEdit />} />
+          <Route path='/postsedit' element={<PostsEdit />} />
           <Route path='/write' element={<WritePost />} />
         </Routes>
       </MainLayout>

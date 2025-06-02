@@ -97,3 +97,16 @@ exports.editCategory = (req, res) => {
     }
   });
 }
+
+exports.createCategory = (req, res) => {
+  const { name } = req.body;
+  let query = `INSERT INTO categories (name) VALUES (?)`;
+  db.run(query, [name], (err) => {
+    if (err) {
+      console.log(err);
+      res.json(err);
+    } else {
+      res.json({'msg':'카테고리가 생성성되었습니다.'});
+    }
+  });
+}

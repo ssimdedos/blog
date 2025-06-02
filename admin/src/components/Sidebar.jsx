@@ -15,8 +15,9 @@ const SidebarComp = () => {
   return(
     <div>
       <Link to={'dashboard'}><h3>대시보드</h3></Link>
-      <Link to={'categoryedit'}><h3>카테고리</h3></Link>
-      <Link to={'write'}><h3>포스팅</h3></Link>
+      <Link to={'categoryedit'}><h3>카테고리 관리</h3></Link>
+      <Link to={'postsedit'}><h3>게시글 관리</h3></Link>
+      <Link to={'write'}><h3>글 작성</h3></Link>
     </div>
   );
 };
