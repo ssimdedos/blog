@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { createPost, imageSaveFromContents } from "../api/posts.js";
 import CustomEditor from "../components/CustomEditor.tsx"
-import WriteSidebarComp from "../components/WriteSidebar.jsx";
 import './WritePost.css';
 import { useParams } from "react-router-dom";
+import UpdateSidebarComp from "../components/UpdateSidebar..jsx";
 
-const WritePost = () => {
+const UpdatePost = () => {
+  // url에 id값 존재 여부 확인
+  const { id } = useParams();
+
   // 게시글 컴포넌트 데이터
   const [content, setContent] = useState("");
   const [inputs, setInputs] = useState({
@@ -14,6 +17,13 @@ const WritePost = () => {
     author: "idea de mis dedos",
     slug: "",
     content: "",
+  });
+  const [sidebarInputs, setSidebarInputs] = useState({
+    categoryId: 1,
+    subcategoryId: 0,
+    isPublished: true,
+    isPinned: false,
+    tags: ''
   });
 
 
@@ -104,9 +114,9 @@ const WritePost = () => {
         </div>
         <CustomEditor setContent={setContent} content = {content} />
       </div>
-      <WriteSidebarComp clickPostbtn={clickPostbtn} />
+      <UpdateSidebarComp clickPostbtn={clickPostbtn} />
     </div>
   )
 }
 
-export default WritePost;
+export default UpdatePost;

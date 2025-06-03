@@ -141,6 +141,14 @@ h1 {
   font-style: italic;
 }
 
+.reload-btn {
+  background-color:lightblue;
+}
+.reload-btn:hover {
+  background-color:rgb(121, 171, 188);
+  color:#dedede;
+}
+
 
 /* --- 반응형 디자인 --- */
 @media (max-width: 768px) {
@@ -197,4 +205,5 @@ h1 {
   .post-management-table input[type="checkbox"] {
     transform: scale(1); /* 작은 화면에서 체크박스 크기 원상복귀 */
   }
+
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { fetchPostsAdmin } from "../api/posts";
+import { fetchPostsAdmin, updatePost } from "../api/posts";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import './PostsEdit.css';
-import Pagenation from "./Pagenation";
+import Pagenation from "../components/Pagenation";
+import { useNavigate } from "react-router-dom";
 
 
 const PostsEdit = () => {
@@ -11,6 +12,9 @@ const PostsEdit = () => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [authors, setAuthors] = useState([]); // 작성자 목록
+  const [pageNum, setPageNum] = useState(1);
+  const [postCtn, setPostCtn] = useState(1);
+  const [totalPages, setTotalPages] = useState(5);
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
@@ -21,9 +25,8 @@ const PostsEdit = () => {
     page: 1,
     limit: 10,
   });
-  const [pageNum, setPageNum] = useState(1);
-  const [postCtn, setPostCtn] = useState(1);
-  const [totalPages, setTotalPages] = useState(5);
+
+  const navigate = useNavigate();
 
   const loadPosts = async () => { // async/await 패턴으로 변경 (Promise 체인과 혼용 방지)
     setLoading(true);
@@ -55,7 +58,7 @@ const PostsEdit = () => {
           fetchCategory(),
         ]);
 
-        const postData = postsRes.data ? postsRes.data : postsRes;
+        const postData = postsRes.posts;
         setPosts(postData);
         const uniqueAuthors = [...new Set(postData.map(post => post.author))];
         setAuthors(['all', ...uniqueAuthors]);
@@ -63,7 +66,7 @@ const PostsEdit = () => {
         const subcategoryData = subcategoryRes.data1 ? subcategoryRes.data1 : subcategoryRes;
         setSubcategories(subcategoryData); // fetchSubcategory 응답 구조에 맞게 조정
 
-        const categoryData = categoryRes.data1 ? categoryRes.data1 : categoryRes;
+        const categoryData = categoryRes;
         setCategories(categoryData); // fetchCategory 응답 구조에 맞게 조정
 
       } catch (error) {
@@ -80,6 +83,13 @@ const PostsEdit = () => {
   useEffect(() => {
     loadPosts(filters);
   }, [filters]);
+
+  useEffect(() => {
+    setFilters({
+      ...filters,
+      page: pageNum
+    });
+  }, [pageNum]);
 
   // 필터 입력 변경 핸들러
   const handleFilterChange = (e) => {
@@ -110,16 +120,20 @@ const PostsEdit = () => {
   };
 
   // 체크박스 핸들러 (is_pinned, is_published)
-  const handleCheckboxChange = (postId, field, isChecked) => {
-    // TODO: 여기에 실제 DB 업데이트 로직 (axios.put 등)을 추가해야 합니다.
-    // 현재는 프론트엔드 상태만 변경하는 예시입니다.
-    console.log(`게시글 ID ${postId}, ${field} 상태 변경: ${isChecked}`);
-    setPosts(prevPosts =>
-      prevPosts.map(post =>
-        post.id === postId ? { ...post, [field]: isChecked ? 1 : 0 } : post
-      )
-    );
-    // 실제 운영 환경에서는 DB 업데이트 후 loadPosts()를 다시 호출하여 최신 상태를 반영하는 것이 좋습니다.
+  const handleCheckboxChange = async (postId, field, isChecked) => {
+    // console.log(`게시글 ID ${postId}, ${field} 상태 변경: ${isChecked}`);
+    const updateData = {
+      [field]: isChecked ? 1 : 0
+    };
+    const res = await updatePost(postId, updateData);
+    alert(res.msg);
+    loadPosts(filters);
+  };
+
+  // 수정 버튼 클릭
+  const editHandler = (e) => {
+    const postId = e.target.value;
+    navigate(`/update/${postId}`);
   };
 
   if (loading) {
@@ -127,7 +141,11 @@ const PostsEdit = () => {
   }
   // posts 상태도 배열이어야 하므로 .length > 0으로 확인
   if (!posts || posts.length === 0) { // posts가 null이거나 빈 배열일 때
-    return <div className="no-posts-found">게시글이 없습니다.</div>;
+    return (
+      <div className="no-posts-found">
+        <span>게시글이 없습니다.</span>
+        <button className="action-button reload-btn" onClick={() => window.location.reload()}>새로고침</button>
+      </div>);
   }
 
   return (
@@ -240,8 +258,8 @@ const PostsEdit = () => {
                   <td>{post.author}</td>
                   <td>{post.created_at}</td> {/* 이미 포맷된 날짜라고 가정 */}
                   <td>
-                    <button className="action-button edit-button">수정</button>
-                    <button className="action-button delete-button">삭제</button>
+                    <button className="action-button edit-button" value={post.id} onClick={editHandler} >수정</button>
+                    <button className="action-button delete-button" value={post.id} >삭제</button>
                   </td>
                 </tr>
               ))

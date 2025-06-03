@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import './WriteSidebar.css';
 
-const WriteSidebarComp = ({ clickPostbtn }) => {
+const UpdateSidebarComp = ({ clickPostbtn }) => {
   const [categoryList, setCategoryList] = useState([]);
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -130,4 +130,4 @@ const WriteSidebarComp = ({ clickPostbtn }) => {
   );
 };
 
-export default WriteSidebarComp;
+export default UpdateSidebarComp;

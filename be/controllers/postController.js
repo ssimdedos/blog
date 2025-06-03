@@ -162,12 +162,12 @@ exports.getAllPostsAdmin = (req, res) => {
   if (filters.startDate) {
     baseQuery += ` AND created_at >= ?`;
     countQuery += ` AND created_at >= ?`;
-    queryParams.push(filters.startDate);
+    queryParams.push(new Date(`${filters.startDate}T00:00:00.000Z`).getTime());
   }
   if (filters.endDate) {
     baseQuery += ` AND created_at <= ?`;
     countQuery += ` AND created_at <= ?`;
-    queryParams.push(filters.endDate);
+    queryParams.push(new Date(`${filters.endDate}T23:59:59.999Z`).getTime());
   }
   if (filters.categoryId && filters.categoryId !== 'all') {
     baseQuery += ` AND category_id = ?`;
@@ -417,5 +417,31 @@ exports.getPost = async (req, res) => {
     console.error('게시글 못가져옴', err);
     res.status(500).json({ success: false, message: '게시글 불러오기 실패' })
   }
+  
+}
 
+exports.updatePost = (req, res) => {
+  const updateKeys = Object.keys(req.body);
+  const updateValues = Object.values(req.body);
+  const { id } = req.params;
+  
+  let query = `UPDATE posts SET `;
+  updateKeys.map((e, i) => {
+    if (e === 'category_id' || e === 'sub_category_id' || e === 'is_published' || e === 'is_pinned' || e === 'order_index') {
+      query = query + `${e} = ?`;
+    } else {
+      query = query + `${e} = '?'`;
+    }
+  });
+  query = query + `WHERE id = ?`;
+  updateValues.push(id);
+  db.run(query, updateValues, (err) => {
+    if (err) {
+      console.error('게시글 업데이트 실패', err);
+      res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
+    }
+    else res.status(200).json({ success: true, msg: '게시글 업데이트 완료' });
+  });
+
+  // res.json({msg: '업데이트 완료'});
 }

@@ -1,0 +1,8 @@
+.write-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+}

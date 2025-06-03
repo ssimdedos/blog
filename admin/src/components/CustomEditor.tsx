@@ -6,7 +6,7 @@ import 'react-quill-new/dist/quill.snow.css';
 
 Quill.register('modules/ImageResize', ImageResize);
 
-const CustomEditor = ({ setContent }) => {
+const CustomEditor = ({ setContent, content }) => {
 
   const handleEditorChange = (value) => {
     setContent(value);
@@ -40,7 +40,8 @@ const CustomEditor = ({ setContent }) => {
       <div>
         <ReactQuill theme="snow" modules={modules} formats={formats}
           style={{ height: "55vh", width: "100%" }}
-          onChange={handleEditorChange} />
+          onChange={handleEditorChange}
+          value={content} />
       </div>
     </div>
   );

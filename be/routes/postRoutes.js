@@ -8,5 +8,6 @@ router.get(`/${process.env.ADMIN}`, postController.getAllPostsAdmin);
 router.get('/:id', postController.getPost)
 router.post('/', postController.createPost);
 router.post('/uploadImgFolder', postController.uploadImages);
+router.put('/:id', postController.updatePost);
 
 module.exports = router;

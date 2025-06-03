@@ -26,10 +26,11 @@ export async function fetchPostsAdmin(filters) {
     if (filters.categoryId) params.append('categoryId', filters.categoryId);
     if (filters.author) params.append('author', filters.author);
     if (filters.isPublished !== 'all') params.append('isPublished', filters.isPublished); // 'all'이 아니면 전송
+    if (filters.page) params.append('page', filters.page);
+    if (filters.limit) params.append('limit', filters.limit);
 
     const res = await axios.get(`${API_BASE_URL}/${process.env.REACT_APP_ADMIN}?${params.toString()}`);
     if (res.data.success) {
-      console.log(res.data);
       return res.data;
     }
   } catch (error) {
