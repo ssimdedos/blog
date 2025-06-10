@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import './WriteSidebar.css';
 
-const UpdateSidebarComp = ({ clickPostbtn }) => {
+const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
   const [categoryList, setCategoryList] = useState([]);
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-
   const [isPublished, setIsPublished] = useState(true);
   const [isPinned, setIsPinned] = useState(false);
   const [tags, setTags] = useState('');
@@ -15,12 +14,10 @@ const UpdateSidebarComp = ({ clickPostbtn }) => {
   const CategoryHandler = (e) => {
     const newSelectedCategory = e.target.value;
     setSelectedCategory(parseInt(newSelectedCategory));
-
     fetchSubcategory(newSelectedCategory).then(data => {
       const subcategoriesData = data.data1 || data;
       setSubCategoryList(subcategoriesData);
       setSelectedSubcategory(0);
-
     });
   };
 
@@ -28,31 +25,32 @@ const UpdateSidebarComp = ({ clickPostbtn }) => {
     setSelectedSubcategory(parseInt(e.target.value));
   };
 
+  // 사이드바 로딩
   useEffect(() => {
-    const loadCategoriesAndSubcategories = async () => {
+    const loadData = async () => {
       try {
         const categoryRes = await fetchCategory();
         const categoriesData = categoryRes.data1 || categoryRes;
+        console.log(categoriesData);
         setCategoryList(categoriesData);
-
         if (categoriesData.length > 0) {
-          const initialCategoryId = categoriesData[0].id;
-          setSelectedCategory(initialCategoryId);
-
-          const subcategoryRes = await fetchSubcategory(initialCategoryId);
+          setSelectedCategory(sidebarInputs.categoryId);
+          const subcategoryRes = await fetchSubcategory(sidebarInputs.categoryId);
           const subcategoriesData = subcategoryRes.data1 || subcategoryRes;
           setSubCategoryList(subcategoriesData);
-          setSelectedSubcategory(0);
-
+          setSelectedSubcategory(sidebarInputs.subcategoryId);
         }
+        setIsPublished(sidebarInputs.isPublished);
+        setTags(sidebarInputs.tags);
+        setIsPinned(sidebarInputs.isPinned);
       } catch (error) {
         console.error("카테고리/서브카테고리 로딩 오류:", error);
-
       }
     };
-    loadCategoriesAndSubcategories();
+    loadData();
   }, []);
 
+  // 카테고리 선택시
   useEffect(() => {
     if (selectedCategory !== null && selectedCategory !== undefined) {
       fetchSubcategory(selectedCategory).then(data => {
@@ -63,6 +61,7 @@ const UpdateSidebarComp = ({ clickPostbtn }) => {
     }
   }, [selectedCategory]);
 
+  // 게시글 등록
   const createPostHandler = () => {
     clickPostbtn({
       category: selectedCategory,
@@ -123,7 +122,7 @@ const UpdateSidebarComp = ({ clickPostbtn }) => {
       </div>
       <label><h3>공지사항으로 등록 <input type="checkbox" value={isPinned} onChange={() => { setIsPinned(!isPinned) }} defaultChecked={isPinned} /></h3></label>
       <div className="post-btn" onClick={createPostHandler} >
-        <h4>등록</h4>
+        <h4>수정</h4>
       </div>
 
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createPost, imageSaveFromContents } from "../api/posts.js";
+import { createPost, fetchPost, fetchPostForUpdate, imageSaveFromContents, updatePost } from "../api/posts.js";
 import CustomEditor from "../components/CustomEditor.tsx"
 import './WritePost.css';
 import { useParams } from "react-router-dom";
@@ -19,12 +19,37 @@ const UpdatePost = () => {
     content: "",
   });
   const [sidebarInputs, setSidebarInputs] = useState({
-    categoryId: 1,
-    subcategoryId: 0,
+    categoryId: null,
+    subcategoryId: null,
     isPublished: true,
     isPinned: false,
     tags: ''
   });
+
+  const getPost = async () => {
+    const res = await fetchPostForUpdate(id);
+    const { title, sub_title, author, slug, content, category_id, sub_category_id, is_pinned, is_published, tags } = res;
+    setInputs({
+      title,
+      subtitle: sub_title,
+      author,
+      slug,
+      content
+    });
+    setSidebarInputs({
+      categoryId: category_id,
+      subcategoryId: sub_category_id,
+      isPublished: is_published,
+      isPinned: is_pinned,
+      tags
+    });
+    setContent(content);
+    // console.log(res);
+  };
+
+  useEffect(()=> {
+    getPost();
+  }, []);
 
 
   const { title, subtitle, author, slug } = inputs;
@@ -36,7 +61,7 @@ const UpdatePost = () => {
       [name]: value,
     });
   };
-  // 게시글 등록
+  // 게시글 수정
   const clickPostbtn = async (data) => {
 
     if (inputs['title'] === "") {
@@ -65,8 +90,8 @@ const UpdatePost = () => {
     }
 
     try {
-      const response = await createPost(postDataToSend);
-      console.log('게시글 등록 성공: ', response);
+      const response = await updatePost(id, postDataToSend);
+      console.log('게시글 업데이트 성공: ', response);
       alert(response.message);
       setInputs({
         title: "",
@@ -78,8 +103,8 @@ const UpdatePost = () => {
       setContent("");
 
     } catch (error) {
-      console.error('게시글 등록 실패: ', error);
-      alert('게시글 등록에 실패했습니다.');
+      console.error('게시글 업데이트 실패: ', error);
+      alert('게시글 업데이트에 실패했습니다.');
     }
   };
   // 게시글 수정 시 인풋 객체에 콘텐츠 담기기
@@ -114,7 +139,7 @@ const UpdatePost = () => {
         </div>
         <CustomEditor setContent={setContent} content = {content} />
       </div>
-      <UpdateSidebarComp clickPostbtn={clickPostbtn} />
+      <UpdateSidebarComp clickPostbtn={clickPostbtn} sidebarInputs={sidebarInputs} />
     </div>
   )
 }

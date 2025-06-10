@@ -417,14 +417,14 @@ exports.getPost = async (req, res) => {
     console.error('게시글 못가져옴', err);
     res.status(500).json({ success: false, message: '게시글 불러오기 실패' })
   }
-  
+
 }
 
 exports.updatePost = (req, res) => {
   const updateKeys = Object.keys(req.body);
   const updateValues = Object.values(req.body);
   const { id } = req.params;
-  
+
   let query = `UPDATE posts SET `;
   updateKeys.map((e, i) => {
     if (e === 'category_id' || e === 'sub_category_id' || e === 'is_published' || e === 'is_pinned' || e === 'order_index') {
@@ -444,4 +444,38 @@ exports.updatePost = (req, res) => {
   });
 
   // res.json({msg: '업데이트 완료'});
+}
+
+exports.getPostForUpdate = (req, res) => {
+  const { id } = req.params;
+  const query = `SELECT title, sub_title, author, slug, content, category_id, sub_category_id, is_published, is_pinned FROM posts Where id = ?`;
+  const query2 = `SELECT t.name FROM tags t JOIN post_tags pt ON t.id = pt.tag_id WHERE pt.post_id = ?`;
+  try {
+    db.get(query, [parseInt(id)], (err, row) => {
+      if (err) {
+        console.error('게시글 가져오기 실패', err);
+        res.status(500).json({ success: false, msg: '게시글 가져오기 실패' });
+      }
+      else {
+        db.all(query2, [id], (err, tags) => {
+          if (err) {
+            console.error('태그 가져오기 실패', err);
+            res.status(500).json({ success: false, msg: '태그 가져오기 실패' });
+          } else {
+            let tagArray = [];
+            tags.map((tag) => {
+              // console.log(tag.name);
+              tagArray.push(tag.name);
+            });
+            const data = {...row, 'tags': tagArray};
+            console.log(data);
+            res.json(data);
+          }
+        });
+      }
+    });
+  } catch {
+  } finally {
+    // res.json({msg: '게시글 가져오기'});
+  }
 }
