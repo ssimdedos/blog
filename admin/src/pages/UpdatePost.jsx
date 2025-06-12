@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import UpdateSidebarComp from "../components/UpdateSidebar..jsx";
 
 const UpdatePost = () => {
+  const [loading, setLoading] = useState(true);
   // url에 id값 존재 여부 확인
   const { id } = useParams();
 
@@ -27,27 +28,34 @@ const UpdatePost = () => {
   });
 
   const getPost = async () => {
-    const res = await fetchPostForUpdate(id);
-    const { title, sub_title, author, slug, content, category_id, sub_category_id, is_pinned, is_published, tags } = res;
-    setInputs({
-      title,
-      subtitle: sub_title,
-      author,
-      slug,
-      content
-    });
-    setSidebarInputs({
-      categoryId: category_id,
-      subcategoryId: sub_category_id,
-      isPublished: is_published,
-      isPinned: is_pinned,
-      tags
-    });
-    setContent(content);
-    // console.log(res);
-  };
-
-  useEffect(()=> {
+    setLoading(true);
+    try {
+      const res = await fetchPostForUpdate(id);
+      const { title, sub_title, author, slug, content, category_id, sub_category_id, is_pinned, is_published, tags } = res;
+      let tagString = tags.join(', ');
+      setInputs({
+        title,
+        subtitle: sub_title === null ? '' : sub_title,
+        author,
+        slug,
+        content
+      });
+      setSidebarInputs({
+        categoryId: category_id,
+        subcategoryId: sub_category_id,
+        isPublished: is_published,
+        isPinned: is_pinned,
+        tags:tagString
+      });
+      setContent(content);
+      // console.log(res);
+    } catch (err) {
+      console.error('데이터 로딩 오류', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
     getPost();
   }, []);
 
@@ -73,35 +81,35 @@ const UpdatePost = () => {
     }
 
     const { finalContent, thumbnailUrl, imgUrlArray, imgOldPathArray } = await imageSaveFromContents(inputs['content']);
-
+    // console.log(data);
     const postDataToSend = {
       'title': inputs.title,
-      'subtitle': inputs.subtitle.length > 0 ? inputs.subtitle : null,
+      'sub_title': inputs.subtitle.length > 0 ? inputs.subtitle : null,
       'author': inputs.author,
       'slug': inputs.slug,
       'content': finalContent,
-      'thumbnail': thumbnailUrl,
-      'category': data.category,
-      'subcategory': data.subcategory,
-      'isPublished': data.isPublished ? 1 : 0,
+      'thumbnail': thumbnailUrl ? thumbnailUrl : null,
+      'category_id': data.category,
+      'sub_category_id': data.subcategory,
+      'is_published': data.isPublished ? 1 : 0,
+      'is_pinned': data.isPinned ? 1 : 0,
       'tags': data.tags,
-      'isPinned': data.isPinned ? 1 : 0,
-      'tempImgPath': imgOldPathArray 
+      'tempImgPath': imgOldPathArray ? imgOldPathArray : null
     }
 
     try {
       const response = await updatePost(id, postDataToSend);
       console.log('게시글 업데이트 성공: ', response);
-      alert(response.message);
-      setInputs({
-        title: "",
-        subtitle: "",
-        author: "idea de mis dedos",
-        slug: "",
-        content: "",
-      });
-      setContent("");
-
+      alert(response.msg);
+      window.location.reload();
+      // setInputs({
+      //   title: "",
+      //   subtitle: "",
+      //   author: "idea de mis dedos",
+      //   slug: "",
+      //   content: "",
+      // });
+      // setContent("");
     } catch (error) {
       console.error('게시글 업데이트 실패: ', error);
       alert('게시글 업데이트에 실패했습니다.');
@@ -117,12 +125,18 @@ const UpdatePost = () => {
     // console.log(inputs);
   }, [content]);
 
+  if (loading) {
+    return <div className="loading-message">데이터 로딩 중...</div>;
+  }
 
+  if (!sidebarInputs) {
+    return <div className="no-data-message">해당 게시글 데이터를 불러을 수 없습니다.</div>;
+  }
 
   return (
     <div className="write-container">
       <div>
-        <h2>게시글 작성</h2>
+        <h2>게시글 수정</h2>
         <div>
           <label>
             제목<input type='text' name="title" value={title} placeholder='제목을 입력하세요' onChange={inputHandlerChange} /><br />
@@ -137,7 +151,7 @@ const UpdatePost = () => {
             슬러그<input type='text' name="slug" value={slug} placeholder='슬러그를 입력하세요' onChange={inputHandlerChange} /><br />
           </label>
         </div>
-        <CustomEditor setContent={setContent} content = {content} />
+        <CustomEditor setContent={setContent} content={content} />
       </div>
       <UpdateSidebarComp clickPostbtn={clickPostbtn} sidebarInputs={sidebarInputs} />
     </div>

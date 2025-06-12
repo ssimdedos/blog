@@ -79,14 +79,15 @@ exports.getAllPosts = (req, res) => {
     if (req.query.categoryId) {
       query = query + ` AND category_id=${id} ORDER BY CAST(created_at as INTEGER) DESC`;
       query2 = query2 + ` categories WHERE id=${id}`;
-      query3 = query3 + ` WHERE category_id=${id}`;
+      query3 = query3 + ` WHERE category_id=${id} AND is_published = 1 AND deleted_at = 0`;
     } else if (req.query.subcategoryId) {
       query = query + ` AND sub_category_id=${id} ORDER BY CAST(created_at as INTEGER) DESC`;
       query2 = query2 + ` subcategories WHERE id=${id}`;
-      query3 = query3 + ` WHERE sub_category_id=${id}`;
+      query3 = query3 + ` WHERE sub_category_id=${id} AND is_published = 1 AND deleted_at = 0`;
     }
   } else {
     query = query + ` ORDER BY CAST(created_at as INTEGER) DESC`;
+    query3 = query3 + ` WHERE is_published = 1 AND deleted_at = 0`;
     // console.log('all들어옴');
   }
   if (pageNum) {
@@ -141,7 +142,7 @@ exports.getAllPosts = (req, res) => {
 exports.getAllPostsAdmin = (req, res) => {
   // console.log(req.query);
   const filters = req.query;
-  console.log(filters);
+  // console.log(filters);
 
   const page = parseInt(filters.page) || 1; // 기본 1페이지
   const limit = parseInt(filters.limit) || 10; // 기본 10개씩 (문제에서 10개씩 끊어온다고 함)
@@ -285,12 +286,11 @@ exports.moveImagesToPostFolder = async (oldFilePaths, postId) => {
         console.log(`Moved ${oldPath} to ${newPath}`);
       } catch (renameErr) {
         console.error(`Error moving file ${oldPath}: ${renameErr}`);
-        // 클라이언트에게는 원래 임시 URL 또는 에러를 반환할 수 있으므로 상황에 맞게 처리
       }
       try {
         if (fs.existsSync(todayUploadDir)) {
           await fs.promises.rm(todayUploadDir, { recursive: true, force: true });
-          console.log(`Deleted image directory for post ID: ${postId}`);
+          console.log(`임시 이미지 폴더 삭제제: ${todayUploadDir}`);
         }
       } catch (err) {
         console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
@@ -420,30 +420,70 @@ exports.getPost = async (req, res) => {
 
 }
 
-exports.updatePost = (req, res) => {
+exports.updatePost = async (req, res) => {
   const updateKeys = Object.keys(req.body);
-  const updateValues = Object.values(req.body);
+  let updateData = [];
+  const { tags, tempImgPath, content } = req.body;
   const { id } = req.params;
-
+  // console.log(req.body);
   let query = `UPDATE posts SET `;
   updateKeys.map((e, i) => {
-    if (e === 'category_id' || e === 'sub_category_id' || e === 'is_published' || e === 'is_pinned' || e === 'order_index') {
-      query = query + `${e} = ?`;
-    } else {
-      query = query + `${e} = '?'`;
+    if (e !== 'tags' && e !== 'tempImgPath') {
+      query = query + `${e} = ?, `;
+      updateData.push(req.body[e]);
     }
   });
-  query = query + `WHERE id = ?`;
-  updateValues.push(id);
-  db.run(query, updateValues, (err) => {
+  query = query.slice(0, -2);
+  query = query + ` WHERE id = ?`;
+  updateData.push(id);
+  // console.log(updateData);
+  db.run(query, updateData, async (err) => {
     if (err) {
       console.error('게시글 업데이트 실패', err);
       res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
     }
-    else res.status(200).json({ success: true, msg: '게시글 업데이트 완료' });
+    else {
+      console.log(tempImgPath);
+      let newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
+      if (tempImgPath !== undefined && tempImgPath.length) {
+        const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, id);
+        // console.log(newImageUrls);
+        let finalContent = content;
+        if (newImageUrls[0] !== undefined) {
+          newThumbnailUrl = newImageUrls[0];
+        }
+        tempImgPath.forEach((oldPath, index) => {
+          const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
+          finalContent = finalContent.replace(oldPublicUrl, newImageUrls[index]);
+        });
+        // 바뀐 content로 업데이트
+        db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, id]);
+      } else {
+        // 썸네일이 있다가 사라진 경우도 있어서
+        db.run(`UPDATE posts SET thumbnail = ? WHERE id = ?`, [newThumbnailUrl, id]);
+      }
+      if (tags !== undefined && tags.length) {
+        // tag 등록 및 tag post 관계 설정
+        const tagArray = tags.replace(/\s+/g, '').split(',');
+        if (tagArray.length > 0) {
+          for (let i = 0; i < tagArray.length; i++) {
+            let tagId;
+            const newTag = await new Promise((resolve) => {
+              db.run(`INSERT OR IGNORE INTO tags(name) VALUES('${tagArray[i]}')`,
+                function (err) {
+                  if (err) console.log(err);
+                  else resolve(this.lastID)
+                });
+            });
+            tagId = newTag;
+            db.run(`INSERT OR IGNORE INTO post_tags(post_id, tag_id) VALUES(${id}, ${tagId})`);
+          }
+        }
+      }
+      res.status(200).json({ success: true, msg: '게시글 업데이트 완료' })
+    };
   });
 
-  // res.json({msg: '업데이트 완료'});
 }
 
 exports.getPostForUpdate = (req, res) => {
@@ -467,8 +507,8 @@ exports.getPostForUpdate = (req, res) => {
               // console.log(tag.name);
               tagArray.push(tag.name);
             });
-            const data = {...row, 'tags': tagArray};
-            console.log(data);
+            const data = { ...row, 'tags': tagArray };
+            // console.log(data);
             res.json(data);
           }
         });

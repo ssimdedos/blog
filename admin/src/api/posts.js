@@ -1,4 +1,4 @@
-// src/api/posts.js
+import React from 'react';
 import axios from 'axios';
 
 
@@ -75,14 +75,16 @@ export async function imageSaveFromContents(content) {
   const imgSrcArray = [];
   const imgUrlArray = [];
   const imgOldPathArray = [];
+  const preExitstImgs = [];
 
   const gainSource = /<img[^>]*src=["']([^"']*)["'][^>]*>/g;
   // 이미지 처리
   let match;
   while ((match = gainSource.exec(content)) !== null) {
-    console.log(match);
     // 추 후에 IP로 바꿔줘야함
-    if (match[1].includes('http://localhost:7303/images/')) {
+    console.log(process.env.REACT_APP_IMAGE_PATH);
+    if (match[1].includes(`${process.env.REACT_APP_IMAGE_PATH}`)) {
+      preExitstImgs.push(match[1]);
       continue
     } else {
       imgSrcArray.push(match[1]);
@@ -142,18 +144,18 @@ export async function imageSaveFromContents(content) {
         gainSource.lastIndex++;
       }
     }
-    // 이미지 저장 while 루프 종료 //
-    let finalContent = content;
-    imgSrcArray.forEach((base64Url, index) => {
-      // Base64 URL을 서버에서 반환받은 URL로 교체
-      finalContent = finalContent.replace(base64Url, imgUrlArray[index]);
-    });
-    const finalData = {
-      finalContent,
-      'thumbnailUrl': imgUrlArray.length > 0 ? imgUrlArray[0] : null,
-      imgUrlArray,
-      imgOldPathArray
-    }
-    return finalData
   }
+  // 이미지 저장 while 루프 종료 //
+  let finalContent = content;
+  imgSrcArray.forEach((base64Url, index) => {
+    // Base64 URL을 서버에서 반환받은 URL로 교체
+    finalContent = finalContent.replace(base64Url, imgUrlArray[index]);
+  });
+  const finalData = {
+    finalContent,
+    'thumbnailUrl': imgUrlArray.length > 0 ? imgUrlArray[0] : preExitstImgs[0],
+    imgUrlArray,
+    imgOldPathArray
+  }
+  return finalData
 }
