@@ -10,5 +10,6 @@ router.post('/', postController.createPost);
 router.post('/uploadImgFolder', postController.uploadImages);
 router.put('/:id', postController.updatePost);
 router.get('/update/:id', postController.getPostForUpdate);
+router.post('/:id/increaseView', postController.increaseView);
 
 module.exports = router;

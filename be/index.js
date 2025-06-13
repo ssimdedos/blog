@@ -8,6 +8,8 @@ const postRoutes = require('./routes/postRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const commentRoutes = require('./routes/commentRoutes');
+const userRoutes = require('./routes/userRoutes');
+const dashboradRoutes = require('./routes/dashboradRoutes');
 
 const app = express();
 
@@ -25,6 +27,8 @@ app.use('/api/posts', postRoutes);
 app.use('/api/category', categoryRoutes);
 app.use('/api/subcategory', subCategoryRoutes);
 app.use('/api/comment', commentRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/dashboard', dashboradRoutes);
 
 app.get('/', (req, res) => {
   // res.sendFile(path.join(__dirname, 'public/index.html'));

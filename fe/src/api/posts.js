@@ -18,7 +18,6 @@ export async function fetchPosts(id, pageNum) {
 }
 
 // 서브카테고리 게시글 목록 가져오기
-
 export async function fetchPostsSubcategory(id, pageNum) {
   const res = await axios.get(API_BASE_URL, {
     params: { subcategoryId: id, pageNum: pageNum }
@@ -53,4 +52,9 @@ export async function updatePost(id, postData) {
 export async function deletePost(id) {
   const res = await axios.delete(`${API_BASE_URL}/${id}`);
   return res.data;
+}
+
+// 조회수 증가
+export async function increaseView(id) {
+  await axios.post(`${API_BASE_URL}/${id}/increaseView`);
 }

@@ -433,6 +433,8 @@ exports.getPost = async (req, res) => {
 }
 
 exports.updatePost = async (req, res) => {
+  const date = new Date();
+  const now = date.getTime();
   const updateKeys = Object.keys(req.body);
   let updateData = [];
   const { tags, tempImgPath, content } = req.body;
@@ -445,8 +447,10 @@ exports.updatePost = async (req, res) => {
       updateData.push(req.body[e]);
     }
   });
-  query = query.slice(0, -2);
+  query = query + ` updated_at = ?`;
+  // query = query.slice(0, -2);
   query = query + ` WHERE id = ?`;
+  updateData.push(now);
   updateData.push(id);
   // console.log(updateData);
   db.run(query, updateData, async (err) => {
@@ -455,7 +459,7 @@ exports.updatePost = async (req, res) => {
       res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
     }
     else {
-      console.log(tempImgPath);
+      // console.log(tempImgPath);
       let newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
       if (tempImgPath !== undefined && tempImgPath.length) {
         const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, id);
@@ -495,7 +499,6 @@ exports.updatePost = async (req, res) => {
       res.status(200).json({ success: true, msg: '게시글 업데이트 완료' })
     };
   });
-
 }
 
 exports.getPostForUpdate = (req, res) => {
@@ -529,5 +532,31 @@ exports.getPostForUpdate = (req, res) => {
   } catch {
   } finally {
     // res.json({msg: '게시글 가져오기'});
+  }
+}
+
+exports.increaseView = async (req, res) => {
+  const { id } = req.params;
+  const kstDateString = timeUtil.kstDateString();
+  try {
+    db.run(`UPDATE posts SET view_count = view_count + 1 WHERE id = ?`, [id], (err) => {
+      if (err) console.error('게시글 조회수 증가 실패, ', err);
+      else {
+        db.run(`INSERT INTO visitors (visit_date, unique_visitors_count, today_total_page_view)
+          VALUES (?, 0, 1)
+          ON CONFLICT(visit_date) DO UPDATE SET
+          today_total_page_view = today_total_page_view + 1
+          `,
+          [kstDateString], (err) => {
+            if (err) console.error('게시글 조회수 증가 실패, ', err);
+            else res.status(200).json({ success: true, msg: '조회수 증가 완료' });
+          });
+
+      }
+    });
+
+  } catch (err) {
+    console.error('조회수 증가 처리 중 에러 발생:', err.message);
+    res.status(500).json({ success: false, msg: 'Server error: Failed to increase view count.', error: err.message });
   }
 }

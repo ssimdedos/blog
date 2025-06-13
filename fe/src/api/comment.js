@@ -1,4 +1,3 @@
-// src/api/posts.js
 import axios from 'axios';
 
 const API_BASE_URL = '/api/comment'; // 백엔드 API 주소

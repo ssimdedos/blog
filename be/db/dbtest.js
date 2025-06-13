@@ -12,6 +12,7 @@ const db = new sql.Database(db_path, (err) => {
 // db.run('DROP TABLE tags');
 // db.run('DROP TABLE subcategories');
 // db.run('DROP TABLE post_tags');
+// db.run('DROP TABLE visitors');
 
 db.run(`CREATE TABLE IF NOT EXISTS posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,6 +64,20 @@ db.run(`CREATE TABLE IF NOT EXISTS subcategories (
   if (err) console.log(err);
 });
 
+db.run(`CREATE TABLE IF NOT EXISTS visitors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    visit_date TEXT NOT NULL UNIQUE,
+    unique_visitors_count INTEGER DEFAULT 0 NOT NULL,
+    today_total_page_view INTEGER DEFAULT 0 NOT NULL,
+    created_at TEXT DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime')),
+    updated_at TEXT DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime'))
+)`, (err) => {
+  if (err) console.log(err);
+});
+
+db.run(`CREATE INDEX IF NOT EXISTS idx_visitors_visit_date ON visitors (visit_date)`, (err) => {
+  if (err) console.log(err);
+});
 
 // db.run(`DELETE FROM post_tags 
 //   WHERE rowid NOT IN ( SELECT MIN(rowid) 
@@ -77,12 +92,12 @@ db.run(`CREATE TABLE IF NOT EXISTS subcategories (
 //   }
 // );
 
-db.all(`SELECT * FROM tags`, (err, rows) => {
+db.all(`SELECT * FROM visitors`, (err, rows) => {
   if (err) console.log('post못가져옴', err);
   else console.log(rows);
 });
 
-db.all(`SELECT * FROM comments WHERE deleted_at != 0`, (err, rows) => {
+db.all(`SELECT * FROM posts`, (err, rows) => {
   if (err) console.log('post못가져옴', err);
   else console.log(rows);
 });

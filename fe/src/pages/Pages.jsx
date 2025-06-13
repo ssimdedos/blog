@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchPost } from "../api/posts";
+import { fetchPost, increaseView } from "../api/posts";
 import parse from "html-react-parser";
 import { addComment, deleteComment } from "../api/comment";
+import { useCookies } from 'react-cookie';
 import CommentItem from "../components/CommentItem";
 import './Pages.css';
 import './PagesPostDetails.css';
@@ -24,10 +25,11 @@ const buildCommentTree = (flatComments, parentId = null) => {
 
 
 const Pages = () => {
+  const { id } = useParams();
+  const [cookie, setCookie] = useCookies([`viewedPost_${id}`]);
   const [postData, setPostData] = useState({});
   const [tags, setTags] = useState({});
   const [loading, setLoading] = useState(true);
-  const { id } = useParams();
   const [formerPost, setFormerPost] = useState({});
   const [nextPost, setNextPost] = useState({});
 
@@ -40,6 +42,15 @@ const Pages = () => {
   const [replyingToCommentId, setReplyingToCommentId] = useState(null); // 답글 달 대상 댓글 ID
   const [replyForm, setReplyForm] = useState({ author: '', password: '', content: '' }); // 답글 폼 상태
 
+  useEffect(() => {
+    if (!cookie[`viewedPost_${id}`]) {
+      const expires = new Date();
+      expires.setHours(expires.getHours() + 3); // 24시간 유효
+      setCookie(`viewedPost_${id}`, 'true', { path: '/', expires });
+      // 백엔드에 해당 게시글의 조회수 증가 요청
+      increaseView(id);
+    }
+  }, [id, cookie, setCookie]);
 
   const getPost = async (id) => {
     try {
@@ -247,17 +258,17 @@ const Pages = () => {
           <div className="comment-list">
             {commentTree.length > 0 ? (
               commentTree.map(comment => (
-                  <CommentItem
-                    key={`comment-${comment.id}`}
-                    comment={comment}
-                    postId={id}
-                    onReplyClick={handleReplyClick}
-                    onCommentSubmit={handleReplySubmit}
-                    replyingToCommentId={replyingToCommentId}
-                    replyForm={replyForm}
-                    handleReplyFormChange={handleReplyFormChange}
-                    onCommentDelete={handleCommentDelete}
-                  />
+                <CommentItem
+                  key={`comment-${comment.id}`}
+                  comment={comment}
+                  postId={id}
+                  onReplyClick={handleReplyClick}
+                  onCommentSubmit={handleReplySubmit}
+                  replyingToCommentId={replyingToCommentId}
+                  replyForm={replyForm}
+                  handleReplyFormChange={handleReplyFormChange}
+                  onCommentDelete={handleCommentDelete}
+                />
               ))
             ) : (
               <p className="no-comments-message">아직 댓글이 없습니다. 첫 댓글을 남겨주세요!</p>

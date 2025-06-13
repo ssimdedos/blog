@@ -1,0 +1,145 @@
+/* src/pages/admin/Main.css */
+
+.admin-dashboard {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+.dashboard-title {
+  font-size: 2.5em;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.dashboard-subtitle {
+  font-size: 1.1em;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* 통계 카드 섹션 */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card h3 {
+  font-size: 1.2em;
+  color: #34495e;
+  margin-bottom: 10px;
+}
+
+.stat-card .stat-value {
+  font-size: 2.2em;
+  font-weight: bold;
+  color: #3498db;
+}
+
+/* 상세 통계 섹션 */
+.dashboard-sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-sections {
+    grid-template-columns: 1fr 1fr; /* 768px 이상에서는 2열로 */
+  }
+}
+
+.dashboard-section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+}
+
+.dashboard-section h2 {
+  font-size: 1.8em;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 10px;
+}
+
+/* 차트 플레이스홀더 */
+.placeholder-chart {
+  background-color: #f8f9fa;
+  border: 1px dashed #cccccc;
+  padding: 20px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.placeholder-chart ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.placeholder-chart ul li {
+  margin-bottom: 5px;
+}
+
+.chart-note {
+  font-size: 0.9em;
+  color: #95a5a6;
+  margin-top: 10px;
+}
+
+/* 인기 게시글 목록 */
+.top-posts-list {
+  list-style: none;
+  padding: 0;
+}
+
+.top-posts-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #ecf0f1;
+  font-size: 1.1em;
+}
+
+.top-posts-list li:last-child {
+  border-bottom: none;
+}
+
+.top-posts-list li span:first-child {
+  flex-grow: 1;
+  color: #34495e;
+}
+
+.top-posts-list li .post-views {
+  font-weight: bold;
+  color: #2980b9;
+  margin-left: 15px;
+  flex-shrink: 0;
+}

@@ -34,7 +34,7 @@ const CommentItem = ({ comment, postId, onReplyClick, onCommentSubmit, replyingT
       <div className="comment-meta">
         {comment.author === 'idea de mis dedos' ? (
           <div className="admin-comment-img" >
-            <img src={process.env.REACT_APP_LOGO_URL} />
+            <img src={process.env.REACT_APP_PROFILE_URL} />
           </div>) : <></>
         }
         {comment.author === 'idea de mis dedos' ?
