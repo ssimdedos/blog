@@ -1,0 +1,496 @@
+/* PostDetail.css (Updated Comment Section) */
+
+/* ------------------------------------------- */
+/* 댓글 섹션 컨테이너 및 헤더 */
+/* ------------------------------------------- */
+.comment-container {
+  margin-top: 50px;
+  padding: 25px;
+  background-color: #fff; /* 배경색 흰색 */
+  border: 1px solid #e0e0e0; /* 얇은 테두리 */
+  border-radius: 8px;
+  box-shadow: none; /* 이미지처럼 그림자 없음 */
+  overflow: hidden;
+}
+
+/* 댓글 헤더 (토글 버튼 포함) */
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding-bottom: 0; /* 이미지처럼 하단 패딩/선 없음 */
+  border-bottom: none; /* 이미지처럼 하단 선 없음 */
+  margin-bottom: 0; /* 이미지처럼 하단 마진 없음 */
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #333;
+}
+
+.comment-header h3 {
+  margin: 0; /* h3 기본 마진 제거 */
+  font-size: 1em; /* 헤더 폰트 크기 조정 */
+  color: #333;
+}
+
+.comment-count {
+  font-size: 0.9em;
+  color: #777;
+  margin-left: 5px;
+}
+
+/* 토글 버튼 아이콘 (이미지에는 직접 보이지 않지만 기능 유지를 위해 유지) */
+.comment-toggle-button {
+  font-size: 1.2em;
+  color: #555;
+  transition: transform 0.3s ease;
+}
+
+.comment-toggle-button.open {
+  transform: rotate(180deg);
+}
+
+/* 댓글 섹션 접힘/펼침 컨테이너 */
+.comment-section-collapsible {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  padding-top: 20px; /* 토글 후 콘텐츠가 나타날 때 상단 여백 */
+}
+
+.comment-section-collapsible.open {
+  max-height: 2000px; /* ★ 댓글 내용에 따라 충분히 큰 값으로 설정 */
+  transition: max-height 0.25s ease-in;
+}
+
+/* ------------------------------------------- */
+/* 댓글 작성 폼 */
+/* ------------------------------------------- */
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* 폼 그룹 간 간격 */
+  padding: 0; /* 전체 폼에 패딩 없음 */
+  border: none; /* 전체 폼 테두리 없음 */
+  background-color: transparent; /* 폼 배경 투명 */
+  margin-bottom: 25px; /* 댓글 목록과의 간격 */
+}
+
+/* 이름, 비밀번호 입력 필드 그룹 */
+.comment-form-top-inputs {
+  display: flex;
+  gap: 10px; /* 인풋 필드 간 간격 */
+  margin-bottom: 5px; /* 내용 인풋과의 간격 */
+}
+
+.comment-form-input {
+  flex: 1; /* 남은 공간을 균등하게 차지 */
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px; /* 이미지처럼 둥근 모서리 */
+  font-size: 0.95em;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+.comment-form-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* 내용 입력 필드 */
+.comment-form-textarea {
+  width: 100%;
+  min-height: 120px; /* 이미지처럼 좀 더 높게 */
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95em;
+  color: #333;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.comment-form-textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* 비밀글 체크박스와 등록 버튼 그룹 */
+.comment-form-actions-bottom {
+  display: flex;
+  justify-content: space-between; /* 양 끝 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  margin-top: 5px; /* textarea와의 간격 */
+}
+
+.private-comment-checkbox {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  color: #666;
+  cursor: pointer;
+}
+
+.private-comment-checkbox input[type="checkbox"] {
+  margin-right: 5px;
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.submit-comment-button {
+  background-color: #333; /* 이미지처럼 어두운 색 */
+  color: #fff;
+  padding: 10px 18px; /* 이미지처럼 좀 더 큰 버튼 */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.submit-comment-button:hover {
+  background-color: #555; /* 호버 시 밝게 */
+}
+
+#comment-content {
+  width: 370px;
+  height: 50px;
+}
+
+/* ------------------------------------------- */
+/* 댓글 목록 */
+/* ------------------------------------------- */
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* 댓글 항목 간 간격 */
+  padding-top: 15px; /* 폼과 목록 사이 간격 */
+  border-top: 1px solid #f0f0f0; /* 폼과 목록 구분선 */
+}
+
+.comment-item {
+  padding: 0; /* 이미지처럼 외부 패딩/테두리/그림자 없음 */
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  border-bottom: 1px solid #f0f0f0; /* 각 댓글 하단 구분선 */
+  padding-bottom: 15px; /* 구분선 위 여백 */
+}
+
+.comment-item:last-child {
+  border-bottom: none; /* 마지막 댓글은 구분선 없음 */
+  padding-bottom: 0;
+}
+
+.comment-meta {
+  display: flex;
+  /* justify-content: space-between; */ /* 이미지처럼 여러 요소를 왼쪽 정렬 */
+  align-items: center;
+  margin-bottom: 8px; /* 메타 정보와 내용 사이 간격 */
+  font-size: 0.9em;
+  color: #888;
+}
+
+.comment-author {
+  font-weight: bold;
+  color: #333; /* 작성자 이름 좀 더 진하게 */
+  margin-right: 8px; /* 작성자 이름과 다음 요소 사이 간격 */
+}
+
+.comment-profile-badge { /* 이미지의 PROFILE 뱃지 */
+  background-color: #007bff;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.75em;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.comment-report-link { /* 이미지의 '신고' 링크 */
+  color: #888;
+  font-size: 0.8em;
+  text-decoration: none;
+  margin-left: auto; /* 오른쪽 끝으로 보내기 */
+  white-space: nowrap;
+}
+.comment-report-link:hover {
+  text-decoration: underline;
+}
+
+
+.comment-date {
+  font-size: 0.85em;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.comment-text p {
+  margin: 0;
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #333;
+  word-wrap: break-word;
+}
+
+.comment-text .deleted-comment-message {
+  font-size: 0.79em;
+  color: #949494;
+  font-style: italic;
+
+}
+
+.no-comments-message {
+  text-align: center;
+  color: #aaa;
+  font-style: italic;
+  padding: 20px;
+}
+
+/* ------------------------------------------- */
+/* 답글 기능 관련 스타일 */
+/* ------------------------------------------- */
+
+/* 답글 달기 버튼 */
+.comment-item .reply-button, .delete-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.85em;
+  padding: 0; /* 이미지처럼 패딩 없음 */
+  margin-left: 10px; /* 날짜와의 간격 */
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.comment-item .reply-button:hover, .delete-button:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* 답글 폼 */
+.comment-reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid #929292;
+  background-color: #fff;
+  margin-top: 15px;
+  margin-left: 20px; /* 부모 댓글보다 들여쓰기 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.comment-reply-form .form-group label {
+  color: #0056b3;
+}
+
+.comment-reply-form .reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.comment-reply-form .cancel-reply-button {
+  background-color: #6c757d;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.comment-reply-form .cancel-reply-button:hover {
+  background-color: #545b62;
+}
+
+
+/* 자식 댓글 (답글) 컨테이너 */
+.comment-replies {
+  margin-top: 15px;
+  padding-left: 20px; /* 답글 목록 들여쓰기 */
+  border-left: 2px solid #f0f0f0; /* 답글 계층 시각화 (더 연하게) */
+}
+
+/* 개별 답글 항목 */
+.comment-item.is-reply {
+  margin-top: 15px;
+  margin-bottom: 0;
+  background-color: transparent; /* 답글 배경 투명 */
+  border: none;
+  box-shadow: none;
+  border-bottom: 1px solid #f0f0f0; /* 답글 항목 하단 구분선 */
+  padding-bottom: 15px;
+  padding-left: 0; /* 이전에 있던 패딩 제거 */
+}
+.comment-item.is-reply:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+
+.comment-item.is-reply .comment-meta {
+  font-size: 0.8em;
+}
+
+.comment-item.is-reply .comment-text p {
+  font-size: 0.9em;
+}
+
+.delete-password-form {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 입력 필드와 버튼 사이 간격 */
+  margin-top: 10px; /* 댓글 내용과의 간격 */
+  padding: 5px;
+  background-color: #f8f8f8;
+  border: 0.1px solid #ddd;
+  border-radius: 5px;
+}
+
+.delete-password-form input[type="password"] {
+  flex-grow: 1; /* 입력 필드가 남은 공간을 채우도록 */
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.admin-comment {
+  color:#cb4081;
+}
+
+.admin-comment-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 5px;
+  overflow: hidden;
+  position: relative;
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  box-shadow: inset 0px 0px 40px rgba(0, 0, 0, 0.7); 
+}
+
+.admin-comment-img img {
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  border-radius: 50%;
+  display: block;
+}
+
+
+
+/* ------------------------------------------- */
+/* 반응형 디자인 (댓글 섹션) */
+/* ------------------------------------------- */
+@media (max-width: 768px) {
+  .comment-container {
+    padding: 15px;
+  }
+
+  .comment-header h3 {
+    font-size: 1.2em;
+  }
+
+  .comment-form-top-inputs {
+    flex-direction: column; /* 모바일에서 이름/비밀번호 세로로 쌓기 */
+    gap: 5px;
+  }
+
+  .comment-form input,
+  .comment-form textarea,
+  .comment-reply-form input,
+  .comment-reply-form textarea {
+    padding: 8px 10px;
+    font-size: 0.9em;
+  }
+
+  .comment-form .submit-comment-button,
+  .comment-reply-form .submit-comment-button,
+  .comment-reply-form .cancel-reply-button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+
+  .comment-item {
+    padding: 12px 0; /* 좌우 패딩 제거, 상하 패딩 유지 */
+  }
+
+  .comment-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .comment-text p {
+    font-size: 0.9em;
+  }
+
+  /* 답글 들여쓰기 조정 */
+  .comment-reply-form {
+    margin-left: 10px;
+  }
+  .comment-replies {
+    padding-left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .comment-container {
+    padding: 10px;
+  }
+  .comment-form .form-group,
+  .comment-reply-form .form-group {
+    gap: 5px;
+  }
+
+  .comment-reply-form {
+    margin-left: 5px;
+  }
+  .comment-replies {
+    padding-left: 5px;
+  }
+  .comment-item.is-reply {
+    padding: 10px 0; /* 아주 작은 화면에서 답글 패딩 조정 */
+  }
+}
+
+/* --- 반응형 디자인 (삭제 비밀번호 폼) --- */
+@media (max-width: 768px) {
+  .delete-password-form {
+    flex-direction: column; /* 모바일에서 세로로 쌓기 */
+    gap: 8px;
+    padding: 10px;
+  }
+  .delete-password-form input[type="password"] {
+    width: 100%; /* 너비 꽉 채움 */
+  }
+  .delete-password-form .confirm-delete-button,
+  .delete-password-form .cancel-delete-button {
+    width: 100%; /* 버튼도 너비 꽉 채움 */
+    padding: 10px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .delete-password-form {
+    padding: 8px;
+  }
+  .delete-password-form input[type="password"],
+  .delete-password-form .confirm-delete-button,
+  .delete-password-form .cancel-delete-button {
+    font-size: 0.85em;
+  }
+}

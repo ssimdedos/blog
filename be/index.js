@@ -7,6 +7,7 @@ const dbPromise = require('./db/db');
 const postRoutes = require('./routes/postRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
+const commentRoutes = require('./routes/commentRoutes');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true })); // URL-encoded 형식의 요청
 app.use('/api/posts', postRoutes);
 app.use('/api/category', categoryRoutes);
 app.use('/api/subcategory', subCategoryRoutes);
+app.use('/api/comment', commentRoutes);
 
 app.get('/', (req, res) => {
   // res.sendFile(path.join(__dirname, 'public/index.html'));

@@ -4,7 +4,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const striptags = require('striptags');
-
+const { timeFormatting, timeFormattingDetail } = require('../utils/timeFormat');
+const timeUtil = require('../utils/timeFormat');
 
 const UPLOAD_PATH = path.join(__dirname, '../', process.env.UPLOAD_PATH);
 const BASE_URL = process.env.BASE_URL;
@@ -108,17 +109,10 @@ exports.getAllPosts = (req, res) => {
           totalPages = Math.ceil(postCtn / limit);
         } else postCtn = 0;
         const stripedPosts = rows1.map(row => {
-          const unixTime = parseInt(row.created_at);
-          const date = new Date(unixTime);
-          const formattedDateKR = date.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric'
-          });
           return ({
             ...row,
             summary: striptags(row.content).substring(0, 150),
-            created_at: formattedDateKR
+            created_at: timeUtil.timeFormatting(row.created_at)
           });
         });
         if (id != 'all') {
@@ -215,13 +209,9 @@ exports.getAllPostsAdmin = (req, res) => {
       // 4. 게시글 데이터 가공
       const processedPosts = posts.map(post => {
         // const formattedDate = post.created_at; // 이미 포맷된 경우
-        const unixTime = parseInt(post.created_at);
-        const formattedDate = new Date(unixTime).toLocaleDateString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric' }); // ISO 8601 -> YYYY. M. D.
-
-
         return {
           ...post,
-          created_at: formattedDate
+          created_at: timeUtil.timeFormatting(post.created_at)
         };
       });
 
@@ -290,7 +280,7 @@ exports.moveImagesToPostFolder = async (oldFilePaths, postId) => {
       try {
         if (fs.existsSync(todayUploadDir)) {
           await fs.promises.rm(todayUploadDir, { recursive: true, force: true });
-          console.log(`임시 이미지 폴더 삭제제: ${todayUploadDir}`);
+          console.log(`임시 이미지 폴더 삭제: ${todayUploadDir}`);
         }
       } catch (err) {
         console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
@@ -328,7 +318,7 @@ exports.createPost = async (req, res) => {
     if (newImageUrls[0] == undefined) {
       // newThumbnailUrl = path.join(`${BASE_URL}/images/${path.relative(UPLOAD_PATH,'logo','logo192.png').replace(/\\/g, '/')}`);
       newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
-      console.log(newThumbnailUrl);
+      // console.log(newThumbnailUrl);
     } else {
       newThumbnailUrl = newImageUrls[0];
     }
@@ -339,22 +329,29 @@ exports.createPost = async (req, res) => {
     });
 
     // 바뀐 content로 업데이트
-    await db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, postId]);
+    db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, postId]);
 
     // tag 등록 및 tag post 관계 설정
     const tagArray = tags.replace(/\s+/g, '').split(',');
     if (tagArray.length > 0) {
       for (let i = 0; i < tagArray.length; i++) {
-        let tagId;
-        const newTag = await new Promise((resolve) => {
-          db.run(`INSERT INTO tags(name) VALUES('${tagArray[i]}')`,
-            function (err) {
-              if (err) console.log(err);
-              else resolve(this.lastID)
-            });
-        });
-        tagId = newTag;
-        db.run(`INSERT INTO post_tags(post_id, tag_id) VALUES(${postId}, ${tagId})`);
+        db.run(`INSERT OR IGNORE INTO tags(name) VALUES('${tagArray[i]}')`,
+          (err) => {
+            if (err) console.log('태그 등록 실패, ', err);
+            else {
+              let tagId;
+              if (this.lastID) {
+                tagId = this.lastID;
+              } else {
+                db.get(`SELECT id FROM tags WHERE name = ?`, [tagArray[i]], (err, row) => {
+                  if (err) console.log('태그 id 가져오기 실패, ', err);
+                  else tagId = row.id;
+                });
+              }
+              db.run(`INSERT INTO post_tags(post_id, tag_id) VALUES(${postId}, ${tagId})`);
+            }
+          });
+
       }
     }
 
@@ -385,31 +382,46 @@ exports.deletePostImages = async (postId) => {
 // 게시글 하나 불러오기
 exports.getPost = async (req, res) => {
   const postId = req.params.id;
+  // 게시글 관련 쿼리
   const query = `SELECT * FROM posts WHERE id = ?`;
-  const query2 = `SELECT t.id, t.name FROM tags t JOIN post_tags pt ON t.id = pt.tag_id WHERE pt.post_id = ?`;
+  const query2 = `SELECT t.id id, t.name name FROM tags t JOIN post_tags pt ON t.id = pt.tag_id WHERE pt.post_id = ?`;
   const query3 = `SELECT id, title, slug, thumbnail FROM posts WHERE id < ? AND is_published = 1 AND deleted_at = 0 ORDER BY id DESC LIMIT 1`;
   const query4 = `SELECT id, title, slug, thumbnail FROM posts WHERE id > ? AND is_published = 1 AND deleted_at = 0 ORDER BY id LIMIT 1`;
 
+  // 댓글 관련 쿼리
+  const queryForComment = `SELECT id, post_id, author, content, parent_comment_id, created_at, deleted_at FROM comments WHERE post_id = ?`;
   try {
     db.get(query, postId, (err, row) => {
       if (err) console.error('DB에서 게시글 못 불러옴: ', err)
       else {
-        const unixTime = parseInt(row.created_at);
-        const date = new Date(unixTime);
-        const formattedDateKR = date.toLocaleDateString('ko-KR', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric'
-        });
-        row['created_at'] = formattedDateKR;
-        db.all(query2, [postId], (err, rows) => {
-          if (err) console.error(`게시글 Tag 불러오기 err, `, err);
-          // console.log(rows);
-          db.get(query3, [postId], (err, row2) => {
-            db.get(query4, [postId], (err, row3) => {
-              res.json({ post: row, tags: rows, formerPost: row2, nextPost: row3 });
+        row['created_at'] = timeUtil.timeFormatting(row.created_at);
+        db.all(query2, [postId], (err, tags) => {
+          if (err) {
+            console.error(`게시글 Tag 불러오기 err, `, err);
+          } else {
+            db.get(query3, [postId], (err, row2) => {
+              if (err) {
+                console.error('이전 게시글 불러오기 에러, ', err);
+              } else {
+                db.get(query4, [postId], (err, row3) => {
+                  if (err) {
+                    console.error('다음 게시글 불러오기 에러, ', err);
+                  } else {
+                    db.all(queryForComment, [postId], (err, cmts) => {
+                      if (err) {
+                        console.error('댓글 불러오기 에러, ', err);
+                      } else {
+                        cmts.map((cmt) => {
+                          cmt['created_at'] = timeFormattingDetail(cmt.created_at);
+                        });
+                        res.json({ post: row, tags: tags, formerPost: row2, nextPost: row3, comments: cmts });
+                      }
+                    });
+                  }
+                });
+              }
             });
-          });
+          }
         });
       }
     });

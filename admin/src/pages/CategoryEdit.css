@@ -1,38 +1,322 @@
-.category-table {
+/* CategoryEdit.css */
+
+/* 전체 카테고리 편집 컨테이너 */
+.category-edit-container { /* 컴포넌트 최상위 div에 새로운 클래스 추가 */
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 25px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: row;
-  border: solid 1px;
+  flex-direction: column;
+  gap: 30px; /* 섹션 간 간격 */
 }
 
+.category-edit-container > h3 { /* "카테고리 편집" 제목 */
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 25px;
+  text-align: center;
+  border-bottom: 2px solid #f0f0f0; /* 하단 구분선 */
+  padding-bottom: 15px;
+}
+
+/* 카테고리 테이블 (전체 컬럼 컨테이너) */
+.category-table {
+  display: flex;
+  flex-direction: row; /* 컬럼들을 가로로 나란히 */
+  border: 1px solid #ddd; /* 전체 테이블 테두리 */
+  border-radius: 8px;
+  overflow: hidden; /* 자식 요소의 둥근 모서리/테두리 처리 */
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+.category-table > div { /* 각 컬럼 (카테고리, 카테고리명/서브카테고리) */
+  flex: 1; /* 남은 공간을 균등하게 분배 */
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* 내부 요소들을 세로로 쌓음 */
+  gap: 15px; /* 내부 요소 간 간격 */
+}
+
+/* 각 컬럼의 구분선 */
+.category-table > div:first-child {
+  border-right: 1px solid #eee; /* 첫 번째 컬럼(카테고리 목록) 오른쪽에 구분선 */
+}
+
+/* 컬럼 제목 */
+.category-table h4 {
+  font-size: 1.3em;
+  color: #444;
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+/* 버튼 스타일 (카테고리 추가, 변경, 서브카테고리 추가) */
+.category-table button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.95em;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+}
+
+.category-table button:hover {
+  transform: translateY(-1px);
+}
+
+.category-table button:active {
+  transform: translateY(0);
+}
+
+/* 카테고리 추가 버튼 */
+.category-table > div:first-child > button { /* "카테고리 추가" 버튼 */
+  background-color: #28a745; /* 녹색 */
+  color: #fff;
+  margin-bottom: 20px; /* 아래 항목과의 간격 */
+  align-self: center; /* 가운데 정렬 */
+}
+
+.category-table > div:first-child > button:hover {
+  background-color: #218838;
+}
+
+/* 카테고리 변경 버튼 (modified-category-input-group 내부로 이동) */
+/* .category-table > div:last-child > button { ... } 이 셀렉터는 이제 사용하지 않음 */
+
+/* 서브카테고리 추가 버튼 */
+.subcate-add-btn {
+  background-color: #6c757d; /* 회색 */
+  color: #fff;
+  width: auto;
+  padding: 8px 15px;
+  margin-left: 10px; /* input과의 간격 */
+}
+
+.subcate-add-btn:hover {
+  background-color: #545b62;
+}
+
+
+/* 카테고리/서브카테고리 목록 항목 (ul) */
 .cate-ul {
   list-style: none;
-  border: dashed 1px #2e2e2e;
-  margin: auto;
-  padding-left: 0;
-  height: 24px;
-  width: 100%;
-  justify-items: left;
+  border: 1px dashed #c0c0c0; /* 점선 테두리 */
+  border-radius: 5px;
+  margin: 0;
+  padding: 5px 10px;
+  height: auto;
+  width: auto;
+  display: flex; /* 내부 요소 (span, ❌) 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: space-between; /* 양 끝 정렬 */
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .cate-ul:hover {
-  cursor: pointer;
+  background-color: #f8f8f8;
+  border-color: #a0a0a0;
 }
 
-
-
+/* 카테고리/서브카테고리 텍스트 입력 필드 (.cate-input) */
 .cate-input {
-  cursor: pointer;
-  width: 79.5%;
-  margin: 3px 0 0 1px;
-  border-style: none;
-  white-space: nowrap;
+  flex-grow: 1;
+  padding: 5px 0;
+  border: none;
+  background-color: transparent;
+  font-size: 1em;
+  color: #333;
+  outline: none;
+  width: auto;
+  margin: 0;
 }
 
+/* 카테고리 추가용 입력 필드 (마지막 cate-ul) */
+.category-table > div:first-child > .cate-ul:last-of-type {
+  border-style: solid;
+  border-color: #28a745;
+  background-color: #e0fce7;
+}
+
+.category-table > div:first-child > .cate-ul:last-of-type .cate-input {
+    font-weight: bold;
+    color: #0056b3;
+}
+
+
+/* X (삭제) 버튼 */
+.cate-ul > span[style*="float: right"] { /* float 대신 flex로 제어 */
+  margin-left: 10px;
+  font-size: 1.1em;
+  color: #dc3545;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.cate-ul > span[style*="float: right"]:hover {
+  transform: scale(1.2);
+}
+
+
+.modified-category-input-group {
+  display: flex; /* 내부 input과 button을 가로로 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 10px; /* input과 button 사이 간격 */
+  margin-bottom: 15px; /* 아래 "서브카테고리" 텍스트와의 간격 */
+}
+
+.modified-category-input-group input[type="text"] {
+  flex-grow: 1; /* input이 남은 공간을 채우도록 */
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+.modified-category-input-group input[type="text"]:focus {
+  border-color: #949494;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.modified-category-input-group button { /* "변경" 버튼 */
+  flex-shrink: 0; /* 버튼 크기 고정 */
+  background-color: #007bff; 
+  color: #fff;
+}
+
+.modified-category-input-group button:hover {
+  background-color: #0056b3;
+}
+
+
+/* "서브카테고리" 텍스트 */
+/* 기존 .category-table > div:last-child > span 에 해당 */
+.category-table > div:last-child > span {
+  display: block; /* 줄바꿈을 위해 블록 요소로 */
+  font-size: 1.1em;
+  color: #444;
+  margin-top: 0; /* modified-category-input-group에서 이미 마진 주었음 */
+  margin-bottom: 10px;
+}
+
+
+/* 서브카테고리 추가 입력 필드 컨테이너 */
 .cate-add-ul {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  border-style: solid;
+  border-color: #949494;
+  background-color: #ffffff;
 }
 
-.subcate-add-btn {
-  width: 40px;
+.cate-add-ul .cate-input {
+    font-weight: bold;
+    color: #000;
+}
+
+/* --- 반응형 디자인 --- */
+@media (max-width: 768px) {
+  .category-edit-container {
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .category-edit-container > h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  .category-table {
+    flex-direction: column;
+    gap: 20px;
+    border: none;
+    box-shadow: none;
+  }
+
+  .category-table > div {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+    padding: 15px;
+  }
+
+  .category-table > div:first-child {
+    border-right: none;
+    margin-bottom: 0;
+  }
+
+  .category-table h4 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+  }
+
+  .category-table input[type="text"],
+  .category-table button,
+  .category-table select { /* select도 반응형에 맞게 */
+    font-size: 0.9em;
+    padding: 8px 12px;
+  }
+
+  .category-table > div:last-child > input[type="text"] {
+    width: auto; /* flex-grow: 1; 이 담당 */
+  }
+
+  .subcate-add-btn {
+    padding: 8px 12px;
+  }
+
+  .cate-ul {
+    padding: 8px 10px;
+  }
+
+  .cate-input {
+    font-size: 0.95em;
+  }
+
+  .modified-category-input-group {
+    flex-direction: column; /* 모바일에서 인풋과 버튼을 세로로 쌓음 */
+    align-items: stretch; /* 인풋과 버튼 너비를 꽉 채우도록 */
+    gap: 10px;
+  }
+  .modified-category-input-group input[type="text"] {
+    width: 100%; /* 너비 꽉 채우기 */
+  }
+  .modified-category-input-group button {
+    width: 100%; /* 버튼 너비 꽉 채우기 */
+  }
+}
+
+@media (max-width: 480px) {
+  .category-edit-container {
+    padding: 10px;
+  }
+
+  .category-edit-container > h3 {
+    font-size: 1.3em;
+  }
+
+  .category-table {
+    gap: 15px;
+  }
+
+  .category-table > div {
+    padding: 10px;
+  }
+
+  .category-table h4 {
+    font-size: 1.1em;
+  }
 }

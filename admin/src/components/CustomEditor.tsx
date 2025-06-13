@@ -39,7 +39,7 @@ const CustomEditor = ({ setContent, content }) => {
     <div className='write-container'>
       <div>
         <ReactQuill theme="snow" modules={modules} formats={formats}
-          style={{ height: "55vh", width: "100%" }}
+          style={{ height: "55vh", width: "95%" }}
           onChange={handleEditorChange}
           value={content} />
       </div>

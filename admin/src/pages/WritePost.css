@@ -2,7 +2,129 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  background-color: #fff;
+  border-radius: 8px;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
+}
+
+.write-container > div:first-child { /* 첫 번째 div (입력 필드 그룹) */
+  flex: 1; /* 남은 공간을 모두 차지 (메인 콘텐츠 영역) */
+  display: flex;
+  flex-direction: column; /* 내부 요소들(입력 그룹, 에디터)을 세로로 쌓음 */
+  gap: 25px; /* 입력 그룹과 에디터 사이 간격 */
+}
+
+.write-container h2 {
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.write-container label {
+  display: flex; /* 라벨과 인풋을 가로로 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  margin-bottom: 15px; /* 라벨 그룹 간 간격 */
+  font-weight: bold;
+  color: #555;
+  font-size: 0.95em;
+  width: 75%;
+}
+
+.write-container label input[type="text"] {
+  flex-grow: 1; /* 인풋이 남은 공간을 채우도록 */
+  padding: 10px 12px;
+  margin-left: 15px; /* 라벨 텍스트와 인풋 사이 간격 */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+.write-container label input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none; /* 기본 아웃라인 제거 */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* 포커스 시 그림자 */
+}
+
+.editor-box {
+  width: 100%; /* 부모 너비에 맞게 */
+  padding: 0 5px; /* CustomEditor의 좌우 패딩 (필요시) */
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+}
+
+/* CustomEditor에 대한 컨테이너 (write-container의 두 번째 자식) */
+/* CustomEditor 자체의 CSS는 별도로 관리될 것으로 예상 */
+.write-container > div:nth-child(2) {
+    /* CustomEditor를 감싸는 div의 스타일 (필요시) */
+    /* background-color: #f8f8f8; */
+    /* padding: 10px; */
+    /* border-radius: 5px; */
+}
+
+/* --- 반응형 디자인 --- */
+@media (max-width: 1024px) { /* 태블릿/중간 화면 */
+  .write-container {
+    gap: 20px;
+    padding: 25px;
+  }
+}
+
+@media (max-width: 768px) { /* 모바일 - 레이아웃 변경 */
+  .write-container {
+    flex-direction: column; /* 메인 영역과 사이드바를 세로로 쌓음 */
+    gap: 30px; /* 세로 간격 */
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  .main-editor-column {
+    flex-direction: column; /* 내부 요소 세로 정렬 유지 */
+    gap: 20px;
+  }
+
+  .main-editor-column h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+  }
+
+  .input-fields-group label {
+    flex-direction: column; /* 라벨과 인풋을 세로로 쌓음 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    margin-bottom: 15px; /* 라벨 그룹 간 간격 */
+  }
+
+  .input-fields-group label input[type="text"] {
+    width: 100%; /* 전체 너비 차지 */
+    margin-left: 0; /* 마진 제거 */
+    margin-top: 8px; /* 라벨 텍스트와 인풋 사이 간격 */
+  }
+
+  .editor-wrapper {
+    padding: 0; /* 모바일에서 에디터 래퍼의 좌우 패딩 제거 */
+  }
+}
+
+@media (max-width: 480px) { /* 아주 작은 모바일 */
+  .write-container {
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .main-editor-column h2 {
+    font-size: 1.5em;
+  }
+
+  .input-fields-group label {
+    font-size: 0.9em;
+  }
+
+  .input-fields-group label input[type="text"] {
+    padding: 8px 10px;
+    font-size: 0.9em;
+  }
 }

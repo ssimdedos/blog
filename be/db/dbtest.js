@@ -11,7 +11,7 @@ const db = new sql.Database(db_path, (err) => {
 // db.run('DROP TABLE posts');
 // db.run('DROP TABLE tags');
 // db.run('DROP TABLE subcategories');
-// db.run('DROP TABLE pots_tags');
+// db.run('DROP TABLE post_tags');
 
 db.run(`CREATE TABLE IF NOT EXISTS posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,6 +47,7 @@ db.run(`CREATE TABLE IF NOT EXISTS tags (
 db.run(`CREATE TABLE IF NOT EXISTS post_tags (
   post_id INTEGER,
   tag_id INTEGER,
+  PRIMARY KEY (post_id, tag_id),
   FOREIGN KEY (post_id) REFERENCES posts(id),
   FOREIGN KEY (tag_id) REFERENCES tags(id)
 )`, (err) => {
@@ -63,13 +64,25 @@ db.run(`CREATE TABLE IF NOT EXISTS subcategories (
 });
 
 
+// db.run(`DELETE FROM post_tags 
+//   WHERE rowid NOT IN ( SELECT MIN(rowid) 
+//   FROM post_tags 
+//   GROUP BY post_id, tag_id )`, (err) => {
+//     if (err) console.log(err);
+//   });
 
-db.all(`SELECT * FROM posts`, (err, rows) => {
+// db.run(`INSERT INTO post_tags (post_id, tag_id) VALUES (1, 1), (1, 2), (1, 3)`,
+//   (err) => {
+//     if (err) console.log(err);
+//   }
+// );
+
+db.all(`SELECT * FROM tags`, (err, rows) => {
   if (err) console.log('post못가져옴', err);
   else console.log(rows);
 });
 
-db.all(`SELECT * FROM tags`, (err, rows) => {
+db.all(`SELECT * FROM comments WHERE deleted_at != 0`, (err, rows) => {
   if (err) console.log('post못가져옴', err);
   else console.log(rows);
 });

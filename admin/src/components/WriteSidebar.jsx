@@ -80,7 +80,7 @@ const WriteSidebarComp = ({ clickPostbtn }) => {
   };
 
   return (
-    <div>
+    <div className="sidebar-container" >
       <div className="category-list">
         <h3>카테고리 목록</h3>
         <select onChange={CategoryHandler} value={selectedCategory || ''} >

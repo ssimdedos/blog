@@ -3,7 +3,6 @@ import { createPost, imageSaveFromContents } from "../api/posts.js";
 import CustomEditor from "../components/CustomEditor.tsx"
 import WriteSidebarComp from "../components/WriteSidebar.jsx";
 import './WritePost.css';
-import { useParams } from "react-router-dom";
 
 const WritePost = () => {
   // 게시글 컴포넌트 데이터
@@ -15,8 +14,6 @@ const WritePost = () => {
     slug: "",
     content: "",
   });
-
-
   const { title, subtitle, author, slug } = inputs;
   // 게시글 데이터 수집 핸들러
   const inputHandlerChange = (e) => {
@@ -51,7 +48,7 @@ const WritePost = () => {
       'isPublished': data.isPublished ? 1 : 0,
       'tags': data.tags,
       'isPinned': data.isPinned ? 1 : 0,
-      'tempImgPath': imgOldPathArray 
+      'tempImgPath': imgOldPathArray
     }
 
     try {
@@ -102,7 +99,9 @@ const WritePost = () => {
             슬러그<input type='text' name="slug" value={slug} placeholder='슬러그를 입력하세요' onChange={inputHandlerChange} /><br />
           </label>
         </div>
-        <CustomEditor setContent={setContent} content = {content} />
+        <div className="editor-box" >
+          <CustomEditor setContent={setContent} content={content} />
+        </div>
       </div>
       <WriteSidebarComp clickPostbtn={clickPostbtn} />
     </div>

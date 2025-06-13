@@ -1,4 +1,4 @@
-.post-btn {
+/* .post-btn {
   cursor: pointer;
   justify-items: center;
   background-color: bisque;
@@ -6,9 +6,9 @@
   border-radius: 13%;
   width: 85px;
   justify-self: center;
-}
+} */
 
-.post-btn:hover {
+/* .post-btn:hover {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
 }
 
@@ -20,4 +20,186 @@
 select {
   width: 208px;
   height: 19px;
+} */
+ .sidebar-container {
+  width: 300px;
+ }
+
+.update-sidebar-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* 각 섹션(div) 간의 간격 */
+}
+
+/* 각 섹션 (카테고리 목록, 공개 설정 등)의 h3 제목 */
+.update-sidebar-container h3 {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* 1. 카테고리/부 카테고리 목록 섹션 */
+.category-list,
+.sub-category-list {
+  /* gap: 10px; */
+}
+
+.category-list select,
+.sub-category-list select {
+  width: 100%; /* 너비 꽉 채우기 */
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  font-size: 1em;
+  color: #333;
+  appearance: none; /* 브라우저 기본 셀렉트 스타일 제거 */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2C197.973L146.2%2C20.505L5.4%2C197.973H287z%22%2F%3E%3C%2Fsvg%3E'); /* 사용자 정의 화살표 */
+  background-repeat: no-repeat;
+  background-position: right 10px top 50%;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+.category-list select:focus,
+.sub-category-list select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* 2. 공개 설정 섹션 */
+.is-published li {
+  list-style: none; /* li 기본 스타일 제거 */
+  margin-bottom: 10px;
+}
+
+.is-published label {
+  display: flex;
+  align-items: center;
+  font-size: 0.95em;
+  color: #555;
+  cursor: pointer;
+}
+
+.is-published input[type="radio"] {
+  margin-right: 8px; /* 라디오 버튼과 텍스트 사이 간격 */
+  transform: scale(1.1); /* 라디오 버튼 크기 살짝 키움 */
+  cursor: pointer;
+}
+
+/* 3. 태그 편집 섹션 */
+.tags textarea.tag-box {
+  width: 82%;
+  min-height: 100px; /* 최소 높이 */
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.95em;
+  color: #333;
+  resize: vertical; /* 세로 방향으로만 크기 조절 허용 */
+  transition: border-color 0.3s ease;
+}
+
+.tags textarea.tag-box:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* 4. 공지사항으로 등록 체크박스 */
+.update-sidebar-container > label h3 { /* h3 태그와 input을 감싸는 label */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: none; /* h3에 있을 수 있는 border-bottom 제거 */
+  padding-bottom: 0; /* h3에 있을 수 있는 padding-bottom 제거 */
+  margin-bottom: 0; /* h3에 있을 수 있는 margin-bottom 제거 */
+}
+
+.update-sidebar-container > label h3 input[type="checkbox"] {
+  margin-left: 10px;
+  transform: scale(1.3); /* 체크박스 크기 키움 */
+  cursor: pointer;
+}
+
+
+/* 5. 등록 버튼 */
+.post-btn {
+  text-align: center;
+  margin-top: 30px;
+  cursor: pointer;
+}
+
+.post-btn h4 {
+  background-color: #007bff;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 5px;
+  display: inline-block; /* 버튼처럼 보이게 */
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+}
+
+.post-btn h4:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px); /* 호버 시 살짝 위로 */
+}
+
+.post-btn h4:active {
+  background-color: #004085;
+  transform: translateY(0); /* 클릭 시 원위치 */
+}
+
+
+/* --- 반응형 디자인 --- */
+@media (max-width: 768px) {
+  .update-sidebar-container {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .update-sidebar-container h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+  }
+
+  .category-list select,
+  .sub-category-list select,
+  .tags textarea.tag-box {
+    padding: 8px 10px;
+    font-size: 0.9em;
+  }
+
+  .is-published label {
+    font-size: 0.9em;
+  }
+
+  .post-btn h4 {
+    padding: 10px 18px;
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .update-sidebar-container {
+    padding: 10px;
+  }
+
+  .update-sidebar-container h3 {
+    font-size: 0.9em;
+  }
+
+  .post-btn h4 {
+    padding: 8px 15px;
+    font-size: 0.9em;
+  }
 }

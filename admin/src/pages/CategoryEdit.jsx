@@ -48,11 +48,11 @@ const CategoryEdit = () => {
 
   const subcategoryInputHandler = (e) => {
     // console.log(e.target.value);
-    setNewSubcategory(e.target.value.trim());
+    setNewSubcategory(e.target.value);
   };
 
   const addSubcategory = () => {
-    const data = { 'name': newSubcategory, 'category_id': clickedCategory.id }
+    const data = { 'name': newSubcategory.trim(), 'category_id': clickedCategory.id }
     // console.log(data);
     createSubcategory(data).then((res) => {
       fetchSubcategory(clickedCategory.id).then((data) => {
@@ -110,7 +110,7 @@ const CategoryEdit = () => {
         return
       }
     }
-    createCategory({name: newCategory}).then((res) => {
+    createCategory({ name: newCategory.trim() }).then((res) => {
       setCategory();
       alert(res.msg);
       setNewCategory('');
@@ -119,17 +119,20 @@ const CategoryEdit = () => {
 
   return (
     <div>
-      <h3>카테고리 편집</h3>
+      <h2>카테고리 관리</h2>
       <div className="category-table">
         <div>
           <h4>카테고리</h4>
           <button onClick={addCategoryHandler} >카테고리 추가</button>
           {categoryList.length != undefined ? categoryList.map((e, i) => (<ul className="cate-ul" value={e.name} key={'cate_id_' + e.id} onClick={categoryClick} id={e.id} ><span className="cate-input">{e.name}</span><span style={{ float: "right" }} onClick={categoryDeleteHandler} data-id={e.id} >❌</span></ul>)) : <ul>로딩 중</ul>}
-          <ul className="cate-ul"><input onChange={categoryInputHandler} value={newCategory} type="text" className="cate-input" /></ul>
+          <ul className="cate-ul"><input onChange={categoryInputHandler} value={newCategory} type="text" className="cate-input" placeholder="추가할 카테고리 명을 입력해주세요" /></ul>
         </div>
         <div>
           <h4>카테고리명</h4>
-          <input type="text" value={modifiedCategory.name} onChange={(e) => { setModifiedCategory({ ...modifiedCategory, name: e.target.value }) }} /> <button onClick={editCategoryHandler} >변경</button>
+          <div className="modified-category-input-group">
+            <input type="text" value={modifiedCategory.name} onChange={(e) => { setModifiedCategory({ ...modifiedCategory, name: e.target.value }) }} />
+            <button onClick={editCategoryHandler} >변경</button>
+          </div>
           <br /><span>서브카테고리</span>
           {subcategoryList.length != undefined ? subcategoryList.map((e, i) => (<ul className="cate-ul" value={e.name} key={'subcate_id_' + e.id}><span className="cate-input" id={e.id}>{e.name}</span><span style={{ float: "right" }} onClick={subcategoryDeleteHandler} data-id={e.id} >❌</span></ul>)) : <ul></ul>}
           {subcategoryList.length != undefined ? <ul className="cate-ul cate-add-ul"><input type="text" onChange={subcategoryInputHandler} value={newSubcategory} className="cate-input" /><button className="subcate-add-btn" onClick={addSubcategory} >추가</button></ul> : <ul></ul>}

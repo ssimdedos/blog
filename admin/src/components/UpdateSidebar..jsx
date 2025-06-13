@@ -69,13 +69,6 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
     } catch (err) {
       console.error('게시글 수정 에러: ',err);
     }
-    // finally {
-    //   setSelectedCategory(categoryList.length > 0 ? categoryList[0].id : null);
-    //   setSelectedSubcategory(0);
-    //   setIsPublished(true);
-    //   setTags('');
-    //   setIsPinned(false);
-    // }
   };
 
   if (loading) {
@@ -151,7 +144,6 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
       <div className="post-btn" onClick={createPostHandler} >
         <h4>수정</h4>
       </div>
-
     </div>
   );
 };

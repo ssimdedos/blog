@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createPost, fetchPost, fetchPostForUpdate, imageSaveFromContents, updatePost } from "../api/posts.js";
+import { fetchPostForUpdate, imageSaveFromContents, updatePost } from "../api/posts.js";
 import CustomEditor from "../components/CustomEditor.tsx"
 import './WritePost.css';
 import { useParams } from "react-router-dom";
@@ -45,7 +45,7 @@ const UpdatePost = () => {
         subcategoryId: sub_category_id,
         isPublished: is_published,
         isPinned: is_pinned,
-        tags:tagString
+        tags: tagString
       });
       setContent(content);
       // console.log(res);
@@ -102,14 +102,6 @@ const UpdatePost = () => {
       console.log('게시글 업데이트 성공: ', response);
       alert(response.msg);
       window.location.reload();
-      // setInputs({
-      //   title: "",
-      //   subtitle: "",
-      //   author: "idea de mis dedos",
-      //   slug: "",
-      //   content: "",
-      // });
-      // setContent("");
     } catch (error) {
       console.error('게시글 업데이트 실패: ', error);
       alert('게시글 업데이트에 실패했습니다.');
@@ -151,7 +143,9 @@ const UpdatePost = () => {
             슬러그<input type='text' name="slug" value={slug} placeholder='슬러그를 입력하세요' onChange={inputHandlerChange} /><br />
           </label>
         </div>
-        <CustomEditor setContent={setContent} content={content} />
+        <div className="editor-box" >
+          <CustomEditor setContent={setContent} content={content} />
+        </div>
       </div>
       <UpdateSidebarComp clickPostbtn={clickPostbtn} sidebarInputs={sidebarInputs} />
     </div>
