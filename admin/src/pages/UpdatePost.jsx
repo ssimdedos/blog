@@ -3,10 +3,11 @@ import { fetchPostForUpdate, imageSaveFromContents, updatePost } from "../api/po
 import CustomEditor from "../components/CustomEditor.tsx"
 import './WritePost.css';
 import { useParams } from "react-router-dom";
-import UpdateSidebarComp from "../components/UpdateSidebar..jsx";
+import UpdateSidebarComp from "../components/UpdateSidebar.jsx";
 
 const UpdatePost = () => {
   const [loading, setLoading] = useState(true);
+  const [deleteTag, setDeleteTag] = useState('');
   // url에 id값 존재 여부 확인
   const { id } = useParams();
 
@@ -43,8 +44,8 @@ const UpdatePost = () => {
       setSidebarInputs({
         categoryId: category_id,
         subcategoryId: sub_category_id,
-        isPublished: is_published,
-        isPinned: is_pinned,
+        isPublished: parseInt(is_published),
+        isPinned: parseInt(is_pinned),
         tags: tagString
       });
       setContent(content);
@@ -95,7 +96,8 @@ const UpdatePost = () => {
       'is_published': data.isPublished ? 1 : 0,
       'is_pinned': data.isPinned ? 1 : 0,
       'tags': data.tags,
-      'tempImgPath': imgOldPathArray ? imgOldPathArray : null
+      'deletedTags': data.deletedTags,
+      'tempImgPath': imgOldPathArray ? imgOldPathArray : null,
     }
 
     try {

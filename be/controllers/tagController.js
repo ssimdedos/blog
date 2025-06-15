@@ -68,3 +68,7 @@ exports.getAllTags = async (req, res) => {
 
   }
 }
+
+exports.deleteTags = (req, res) => {
+  
+} 

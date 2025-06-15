@@ -2,15 +2,26 @@ import { useEffect, useState } from "react";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import './WriteSidebar.css';
 
+function findUniqueSubstrings(str1, str2) {
+    const arr1 = str1 ? str1.split(',').map(s => s.trim()).filter(s => s) : [];
+    const arr2 = str2 ? str2.split(',').map(s => s.trim()).filter(s => s) : [];
+
+    const set2 = new Set(arr2);
+
+    const onlyInStr1 = arr1.filter(item => !set2.has(item));
+
+    return onlyInStr1
+};
+
 const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
-  const [loading, setLoding] = useState(true);
   const [categoryList, setCategoryList] = useState([]);
   const [subCategoryList, setSubCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [isPublished, setIsPublished] = useState(1);
-  const [isPinned, setIsPinned] = useState(0);
+  const [isPublished, setIsPublished] = useState(true);
+  const [isPinned, setIsPinned] = useState(false);
   const [tags, setTags] = useState('');
+  const [modifiedTags, setModifiedTags] = useState('');
 
   const CategoryHandler = (e) => {
     const newSelectedCategory = e.target.value;
@@ -30,7 +41,6 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoding(true);
         const categoryRes = await fetchCategory();
         const categoriesData = categoryRes.data1 || categoryRes;
         // console.log(categoriesData);
@@ -44,36 +54,45 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
         }
         setIsPublished(sidebarInputs.isPublished);
         setTags(sidebarInputs.tags);
+        setModifiedTags(sidebarInputs.tags);
         setIsPinned(sidebarInputs.isPinned);
       } catch (error) {
         console.error("카테고리/서브카테고리 로딩 오류:", error);
-      } finally {
-        setLoding(false);
       }
     };
-    if(sidebarInputs !== undefined) {
-      loadData();
-    }
+    loadData();
   }, []);
 
-  // 게시글 수정
-  const createPostHandler = () => {
-    try {
-      clickPostbtn({
-        category: selectedCategory,
-        subcategory: selectedSubcategory,
-        isPublished: isPublished,
-        tags: tags,
-        isPinned: isPinned,
+  // 카테고리 선택시
+  useEffect(() => {
+    if (selectedCategory !== null && selectedCategory !== undefined) {
+      fetchSubcategory(selectedCategory).then(data => {
+        const subcategoriesData = data.data1 || data;
+        setSubCategoryList(subcategoriesData);
+        setSelectedSubcategory(0);
       });
-    } catch (err) {
-      console.error('게시글 수정 에러: ',err);
     }
-  };
+  }, [selectedCategory]);
 
-  if (loading) {
-    return <div className="post-management-loading">게시글 정보 로딩 중...</div>;
-  }
+  // 게시글 등록
+  const createPostHandler = () => {
+    const deletedTagArray = findUniqueSubstrings(tags, modifiedTags);
+    // console.log(deletedTagArray);
+    clickPostbtn({
+      category: selectedCategory,
+      subcategory: selectedSubcategory,
+      isPublished: isPublished,
+      tags: tags,
+      isPinned: isPinned,
+      deletedTags: deletedTagArray,
+    });
+
+    // setSelectedCategory(categoryList.length > 0 ? categoryList[0].id : null);
+    // setSelectedSubcategory(0);
+    // setIsPublished(true);
+    // setTags('');
+    // setIsPinned(false);
+  };
 
   return (
     <div>
@@ -104,35 +123,12 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
       </div>
       <div className="is-published">
         <h3>공개 설정</h3>
-        <li>
-          <label>공개
-            <input
-              type="radio"
-              name="published"
-              checked={isPublished === 1}
-              value={1}
-              onChange={() => { setIsPublished(1) }}
-            />
-          </label>
-        </li>
-        <li>
-          <label>비공개
-            <input
-              type="radio"
-              name="published"
-              checked={isPublished === 0}
-              value={0}
-              onChange={() => { setIsPublished(0) }}
-            />
-          </label>
-        </li>
+        <li><label>공개<input type="radio" name="published" defaultChecked={isPublished === true} value={true} onChange={() => { setIsPublished(true) }} /></label></li>
+        <li><label>비공개<input type="radio" name="published" defaultChecked={isPublished === false} value={false} onChange={() => { setIsPublished(false) }} /></label></li>
       </div>
       <div className="tags">
         <h3>태그 편집</h3>
-        <textarea 
-          className="tag-box" 
-          placeholder="태그를 입력하세요 예시: 여행, 콘텐츠, 시" 
-          value={tags} onChange={(e) => { setTags(e.target.value) }} />
+        <textarea className="tag-box" placeholder="태그를 입력하세요 예시: 여행, 콘텐츠, 시" value={modifiedTags} onChange={(e) => { setModifiedTags(e.target.value) }}></textarea>
       </div>
       {/* 추후 개발 */}
       <div className="book-to-publish" style={{ display: "none" }}>
@@ -144,6 +140,7 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
       <div className="post-btn" onClick={createPostHandler} >
         <h4>수정</h4>
       </div>
+
     </div>
   );
 };

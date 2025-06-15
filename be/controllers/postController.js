@@ -427,13 +427,13 @@ exports.updatePost = async (req, res) => {
   const now = date.getTime();
   const updateKeys = Object.keys(req.body);
   let updateData = [];
-  const { tags, tempImgPath, content, thumbnail } = req.body;
+  const { tags, deletedTags, tempImgPath, content, thumbnail } = req.body;
   const { id } = req.params;
   // console.log(req.body);
   // console.log(thumbnail);
   let query = `UPDATE posts SET `;
   updateKeys.map((e, i) => {
-    if (e !== 'tags' && e !== 'tempImgPath') {
+    if (e !== 'tags' && e !== 'tempImgPath' && e !== 'deletedTags') {
       query = query + `${e} = ?, `;
       updateData.push(req.body[e]);
     }
@@ -487,6 +487,11 @@ exports.updatePost = async (req, res) => {
             db.run(`INSERT OR IGNORE INTO post_tags(post_id, tag_id) VALUES(${id}, ${tagId})`);
           }
         }
+      }
+      if(deletedTags) {
+        deletedTags.map((tag) => {
+          db.run(`DELETE FROM post_tags WHERE post_id = ? AND tag_id = (SELECT id FROM tags WHERE name = ? )`, [id, tag]);
+        });
       }
       res.status(200).json({ success: true, msg: '게시글 업데이트 완료' })
     };
