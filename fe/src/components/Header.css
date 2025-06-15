@@ -35,6 +35,19 @@
   font-family: '양진체';
 }
 
+.header-menu-container {
+  display: flex;
+  flex-direction: row nowrap;
+  justify-content: left;
+  margin-left: 1rem;
+  font-family: '양진체';
+  font-size: 1.12rem;
+}
+
+.header-menu {
+  margin: 20px;
+}
+
 
 @media (max-width: 768px) {
   .logo-box {

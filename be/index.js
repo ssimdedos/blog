@@ -10,6 +10,7 @@ const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const dashboradRoutes = require('./routes/dashboradRoutes');
+const tagRoutes = require('./routes/tagRoutes');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/subcategory', subCategoryRoutes);
 app.use('/api/comment', commentRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/dashboard', dashboradRoutes);
+app.use('/api/tag', tagRoutes);
 
 app.get('/', (req, res) => {
   // res.sendFile(path.join(__dirname, 'public/index.html'));

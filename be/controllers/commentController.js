@@ -29,7 +29,9 @@ exports.addComment = async (req, res) => {
           const newComment = {
             author: commentInfo.author,
             created_at: formattedDate,
+            deleted_at: '0',
             content: commentInfo.content,
+            parent_comment_id: commentInfo.parent_comment_id ? commentInfo.parent_comment_id : null,
             id: row.id,
             postId: postId
           };

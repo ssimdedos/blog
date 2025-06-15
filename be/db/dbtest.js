@@ -79,6 +79,23 @@ db.run(`CREATE INDEX IF NOT EXISTS idx_visitors_visit_date ON visitors (visit_da
   if (err) console.log(err);
 });
 
+db.run(`CREATE TABLE IF NOT EXISTS comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_id INTEGER NOT NULL,
+  parent_comment_id INTEGER,
+  author TEXT NOT NULL,
+  password TEXT NOT NULL,
+  content TEXT NOT NULL,
+  is_private INTEGER DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT,
+  deleted_at TEXT DEFAULT '0',
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE NO ACTION
+);`, (err) => {
+  if (err) console.log(err);
+});
+
 // db.run(`DELETE FROM post_tags 
 //   WHERE rowid NOT IN ( SELECT MIN(rowid) 
 //   FROM post_tags 
@@ -92,12 +109,18 @@ db.run(`CREATE INDEX IF NOT EXISTS idx_visitors_visit_date ON visitors (visit_da
 //   }
 // );
 
-db.all(`SELECT * FROM visitors`, (err, rows) => {
+// db.all(`SELECT * FROM visitors`, (err, rows) => {
+//   if (err) console.log('post못가져옴', err);
+//   else console.log(rows);
+// });
+
+db.all(`SELECT * FROM tags`, (err, rows) => {
   if (err) console.log('post못가져옴', err);
   else console.log(rows);
 });
 
-db.all(`SELECT * FROM posts`, (err, rows) => {
+db.all(`SELECT * FROM post_tags`, (err, rows) => {
   if (err) console.log('post못가져옴', err);
   else console.log(rows);
 });
+

@@ -4,7 +4,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const striptags = require('striptags');
-const { timeFormatting, timeFormattingDetail } = require('../utils/timeFormat');
 const timeUtil = require('../utils/timeFormat');
 
 const UPLOAD_PATH = path.join(__dirname, '../', process.env.UPLOAD_PATH);
@@ -101,13 +100,13 @@ exports.getAllPosts = (req, res) => {
       return res.status(500).send('DB err post.get');
     } else {
       // console.log(rows1);
-      let postCtn;
+      let postCnt;
       let totalPages;
       db.get(query3, (err, row2) => {
         if (row2 !== undefined) {
-          postCtn = row2['COUNT(*)'];
-          totalPages = Math.ceil(postCtn / limit);
-        } else postCtn = 0;
+          postCnt = row2['COUNT(*)'];
+          totalPages = Math.ceil(postCnt / limit);
+        } else postCnt = 0;
         const stripedPosts = rows1.map(row => {
           return ({
             ...row,
@@ -121,12 +120,12 @@ exports.getAllPosts = (req, res) => {
               console.log(err);
               return res.status(500).send('DB err categories.get name');
             } else {
-              res.json({ data1: stripedPosts, data2: rows3, postCtn: postCtn, totalPages: totalPages });
+              res.json({ data1: stripedPosts, data2: rows3, postCnt: postCnt, totalPages: totalPages });
             }
           });
         } else {
           // console.log(stripedPosts);
-          res.json({ stripedPosts, postCtn, totalPages });
+          res.json({ stripedPosts, postCnt, totalPages });
         }
       });
     }
@@ -293,6 +292,39 @@ exports.moveImagesToPostFolder = async (oldFilePaths, postId) => {
   }
 };
 
+async function getOrCreateTagId(tagName) {
+  try {
+    // 태그 삽입 시도 또는 무시 (IGNORE)
+    const insertSql = `INSERT OR IGNORE INTO tags(name) VALUES(?)`;
+    console.log(`[getOrCreateTagId] 쿼리 실행: '${insertSql}' 파라미터: '${tagName}'`);
+    const insertResult = await db.runAsync(insertSql, tagName);
+
+    if (insertResult.lastID && insertResult.changes === 1) {
+      console.log(`[getOrCreateTagId] 동작: 새 태그 삽입됨. 반환할 ID: ${insertResult.lastID}`);
+      return insertResult.lastID;
+    }
+    else if (insertResult.changes === 0) {
+      console.log(`[getOrCreateTagId] 동작: 태그가 이미 존재 (또는 삽입 무시). ID 조회 시도.`);
+      const selectSql = `SELECT id FROM tags WHERE name = ?`;
+      const existingTag = await db.getAsync(selectSql, [tagName]);
+      // 기존 태그를 찾음
+      if (existingTag && existingTag.id) {
+        console.log(`[getOrCreateTagId] 동작: 기존 ID 반환 for '${tagName}': ${existingTag.id}`);
+        return existingTag.id;
+      } else {
+        // 혼란의 카오스
+        console.error(`[getOrCreateTagId] 치명적 오류: 태그 '${tagName}'이(가) 무시되었는데 SELECT로 찾을 수 없습니다. DB 불일치 확인 필요!`);
+        throw new Error(`Tag '${tagName}' ignored but not found by SELECT, check DB state.`);
+      }
+    }
+  } catch (error) {
+    console.error(`[getOrCreateTagId] 태그 '${tagName}' 처리 중 오류 발생:`, error);
+    throw error; // 상위 try/catch 블록으로 오류 다시 던짐
+  } finally {
+    console.log(`--- [getOrCreateTagId] 끝: 태그 '${tagName}' 처리 완료 ---`);
+  }
+}
+
 // 게시글 등록
 exports.createPost = async (req, res) => {
   const { title, subtitle, author, slug, content, thumbnail, category, subcategory, isPublished, tags, isPinned, tempImgPath } = req.body;
@@ -304,7 +336,7 @@ exports.createPost = async (req, res) => {
     const newPost = await new Promise((resolve) => {
       db.run(
         `INSERT INTO posts (created_at, updated_at, category_id, sub_category_id, author, title, sub_title, content, slug, thumbnail, is_published, is_pinned) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [now, now, category, subcategory, author, title, subtitle, content, slug, thumbnail, isPublished, isPinned],
+        [now, now, category, subcategory ? subcategory : 0, author, title, subtitle, content, slug, thumbnail, isPublished, isPinned],
         function (err) {
           if (err) console.log(err);
           else resolve(this.lastID)
@@ -332,50 +364,27 @@ exports.createPost = async (req, res) => {
     db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, postId]);
 
     // tag 등록 및 tag post 관계 설정
-    const tagArray = tags.replace(/\s+/g, '').split(',');
+    // const tagArray = tags.replace(/\s+/g, '').split(',');
+    const tagArray = tags.split(/[,\s]+/).filter(tag => tag.length > 0).map(tag => tag.trim());
     if (tagArray.length > 0) {
-      for (let i = 0; i < tagArray.length; i++) {
-        db.run(`INSERT OR IGNORE INTO tags(name) VALUES('${tagArray[i]}')`,
-          (err) => {
-            if (err) console.log('태그 등록 실패, ', err);
-            else {
-              let tagId;
-              if (this.lastID) {
-                tagId = this.lastID;
-              } else {
-                db.get(`SELECT id FROM tags WHERE name = ?`, [tagArray[i]], (err, row) => {
-                  if (err) console.log('태그 id 가져오기 실패, ', err);
-                  else tagId = row.id;
-                });
-              }
-              db.run(`INSERT INTO post_tags(post_id, tag_id) VALUES(${postId}, ${tagId})`);
-            }
-          });
-
+      for (const tagName of tagArray) {
+        try {
+          // const tagInsertRes = await db.runAsync(`INSERT OR IGNORE INTO tags(name) VALUES(?)`, [tagName]);
+          // const tagId = tagInsertRes.lastID;
+          const tagId = await getOrCreateTagId(tagName);
+          console.log(`게시글 ${postId}와 태그 '${tagName}' 태그 등록 완료.`);
+          await db.runAsync(`INSERT OR IGNORE INTO post_tags(post_id, tag_id) VALUES(${postId}, ${tagId})`);
+          console.log(`게시글 ${postId}와 태그 '${tagName}' (ID: ${tagId}) 연결 성공.`);
+        } catch (err) {
+          console.log('태그 등록 중 에러', err);
+        }
       }
     }
-
-    res.status(201).json({ success: true, message: '게시글 완전 등록 완료', postId: postId, newImageUrls: newImageUrls });
+    console.log(`게시글 등록 완료 postID: ${postId}, tags: ${tagArray}`);
+    res.status(201).json({ success: true, message: '게시글 등록 완료', postId: postId, newImageUrls: newImageUrls });
   } catch (err) {
     console.error('Error creating post:', err);
     res.status(500).json({ success: false, message: '게시글 등록 실패' });
-  }
-
-
-
-};
-
-// 게시글 삭제시 이미지 삭제
-exports.deletePostImages = async (postId) => {
-  if (!postId) return;
-  const postImageDir = path.join(baseUploadDir, String(postId));
-  try {
-    if (fs.existsSync(postImageDir)) {
-      await fs.promises.rm(postImageDir, { recursive: true, force: true });
-      console.log(`Deleted image directory for post ID: ${postId}`);
-    }
-  } catch (err) {
-    console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
   }
 };
 
@@ -384,52 +393,33 @@ exports.getPost = async (req, res) => {
   const postId = req.params.id;
   // 게시글 관련 쿼리
   const query = `SELECT * FROM posts WHERE id = ?`;
-  const query2 = `SELECT t.id id, t.name name FROM tags t JOIN post_tags pt ON t.id = pt.tag_id WHERE pt.post_id = ?`;
+  const query2 = `
+  SELECT t.id id, t.name name, (SELECT COUNT(pt.post_id) FROM post_tags pt WHERE pt.tag_id = t.id) postCnt
+  FROM tags t 
+  JOIN post_tags pt ON t.id = pt.tag_id 
+  WHERE pt.post_id = ?`;
   const query3 = `SELECT id, title, slug, thumbnail FROM posts WHERE id < ? AND is_published = 1 AND deleted_at = 0 ORDER BY id DESC LIMIT 1`;
   const query4 = `SELECT id, title, slug, thumbnail FROM posts WHERE id > ? AND is_published = 1 AND deleted_at = 0 ORDER BY id LIMIT 1`;
 
   // 댓글 관련 쿼리
   const queryForComment = `SELECT id, post_id, author, content, parent_comment_id, created_at, deleted_at FROM comments WHERE post_id = ?`;
   try {
-    db.get(query, postId, (err, row) => {
-      if (err) console.error('DB에서 게시글 못 불러옴: ', err)
-      else {
-        row['created_at'] = timeUtil.timeFormatting(row.created_at);
-        db.all(query2, [postId], (err, tags) => {
-          if (err) {
-            console.error(`게시글 Tag 불러오기 err, `, err);
-          } else {
-            db.get(query3, [postId], (err, row2) => {
-              if (err) {
-                console.error('이전 게시글 불러오기 에러, ', err);
-              } else {
-                db.get(query4, [postId], (err, row3) => {
-                  if (err) {
-                    console.error('다음 게시글 불러오기 에러, ', err);
-                  } else {
-                    db.all(queryForComment, [postId], (err, cmts) => {
-                      if (err) {
-                        console.error('댓글 불러오기 에러, ', err);
-                      } else {
-                        cmts.map((cmt) => {
-                          cmt['created_at'] = timeFormattingDetail(cmt.created_at);
-                        });
-                        res.json({ post: row, tags: tags, formerPost: row2, nextPost: row3, comments: cmts });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    });
+    const postInfo = await db.getAsync(query, [postId]);
+    const tagArray = await db.allAsync(query2, [postId]);
+    const formerPost = await db.getAsync(query3, [postId]);
+    const nextPost = await db.getAsync(query4, [postId]);
+    const commentArray = await db.allAsync(queryForComment, [postId]);
+    const modifiedPosts = {...postInfo, created_at: timeUtil.timeFormatting(postInfo['created_at'])};
+    const modifiedComments = commentArray.map((cmt) => ({
+      ...cmt,
+      created_at: timeUtil.timeFormattingDetail(cmt.created_at)
+    }));
+    const data = { post: modifiedPosts, tags: tagArray, formerPost, nextPost, comments: modifiedComments }
+    res.json({ success: true, msg:'게시글 정보 및 관련 정보 가져오기 완료', data });
   } catch (err) {
     console.error('게시글 못가져옴', err);
     res.status(500).json({ success: false, message: '게시글 불러오기 실패' })
   }
-
 }
 
 exports.updatePost = async (req, res) => {
@@ -437,9 +427,10 @@ exports.updatePost = async (req, res) => {
   const now = date.getTime();
   const updateKeys = Object.keys(req.body);
   let updateData = [];
-  const { tags, tempImgPath, content } = req.body;
+  const { tags, tempImgPath, content, thumbnail } = req.body;
   const { id } = req.params;
   // console.log(req.body);
+  // console.log(thumbnail);
   let query = `UPDATE posts SET `;
   updateKeys.map((e, i) => {
     if (e !== 'tags' && e !== 'tempImgPath') {
@@ -459,8 +450,9 @@ exports.updatePost = async (req, res) => {
       res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
     }
     else {
-      // console.log(tempImgPath);
-      let newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
+      console.log(tempImgPath);
+      // let newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
+      let newThumbnailUrl = thumbnail ? thumbnail : `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
       if (tempImgPath !== undefined && tempImgPath.length) {
         const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, id);
         // console.log(newImageUrls);
@@ -535,6 +527,37 @@ exports.getPostForUpdate = (req, res) => {
   }
 }
 
+// 게시글 삭제시 이미지 삭제
+exports.deletePostImages = async (postId) => {
+  if (!postId) return;
+  const postImageDir = path.join(UPLOAD_PATH, String(postId));
+  try {
+    if (fs.existsSync(postImageDir)) {
+      await fs.promises.rm(postImageDir, { recursive: true, force: true });
+      console.log(`게시글이 삭제되어 등록된 이미지 폴더도 삭제합니다.: ${postId}`);
+    }
+  } catch (err) {
+    console.error(`삭제 에러 게시글 ID ${postId}: ${err}`);
+  }
+};
+
+
+exports.deletePost = async (req, res) => {
+  const date = new Date();
+  const now = date.getTime();
+  const { id } = req.params;
+  db.run(`UPDATE posts SET deleted_at = ? WHERE id = ?`, [now, id],
+    (err, result) => {
+      if (err) {
+        console.log('게시글 삭제처리 실패, ', err);
+        res.status(500).json({ success: false, msg: `게시글 삭제 실패: ${err}` });
+      }
+      else {
+        res.status(200).json({ success: true, msg: '게시글 삭제 완료' });
+      }
+    });
+}
+
 exports.increaseView = async (req, res) => {
   const { id } = req.params;
   const kstDateString = timeUtil.kstDateString();
@@ -558,5 +581,42 @@ exports.increaseView = async (req, res) => {
   } catch (err) {
     console.error('조회수 증가 처리 중 에러 발생:', err.message);
     res.status(500).json({ success: false, msg: 'Server error: Failed to increase view count.', error: err.message });
+  }
+}
+
+exports.getPostByTag = async (req, res) => {
+  try {
+    const { tagId, pageNum } = req.query;
+    // console.log(tagId, pageNum);
+    const limit = 9;
+    const query = `
+    SELECT p.id id, p.thumbnail thumbnail, p.title title, p.sub_title sub_title, p.content content, p.created_at created_at, p.category_id category_id, p.slug slug 
+    FROM posts p JOIN post_tags pt ON p.id = pt.post_id
+    WHERE p.is_published = 1 AND p.deleted_at = '0' AND pt.tag_id = ?
+    ORDER BY CAST(p.created_at as INTEGER) DESC
+    LIMIT ${limit} OFFSET ${pageNum > 1 ? (pageNum - 1) * limit - 1 : 0}
+    `;
+    const query2 = `
+    SELECT COUNT(p.id) postCnt FROM posts p 
+    JOIN post_tags pt ON p.id = pt.post_id
+    WHERE p.is_published = 1 AND p.deleted_at = '0' AND pt.tag_id = ?
+    `;
+    const postArray = await db.allAsync(query, [tagId]);
+    const modifiedPosts = postArray.map(row => {
+      return ({
+        ...row,
+        summary: striptags(row.content).substring(0, 150),
+        created_at: timeUtil.timeFormatting(row.created_at)
+      });
+    });
+    const postCntRes = await db.getAsync(query2, [tagId]);
+    const postCnt = postCntRes.postCnt;
+    const totalPages = Math.ceil(postCnt / limit);
+    const data = { modifiedPosts, postCnt, totalPages };
+    // console.log(postArray);
+    res.status(200).json({ success: true, msg: '태그별 게시글 목록 가져오기 성공', data });
+  } catch (err) {
+    console.error('조회수 증가 처리 중 에러 발생:', err.message);
+    res.status(500).json({ success: false, msg: '태그별 게시글 목록 가져오기 실패', error: err.message });
   }
 }

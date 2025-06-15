@@ -53,7 +53,7 @@ const WritePost = () => {
 
     try {
       const response = await createPost(postDataToSend);
-      console.log('게시글 등록 성공: ', response);
+      // console.log('게시글 등록 성공: ', response);
       alert(response.message);
       setInputs({
         title: "",

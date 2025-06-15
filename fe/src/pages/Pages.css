@@ -1,4 +1,4 @@
-/* Gemini */
+Gemini
 /* PostDetail.css 또는 해당 페이지의 CSS 파일 */
 
 /* 1. 전체 게시글 컨테이너 */
@@ -218,4 +218,9 @@
   background-color: rgba(132, 160, 188, 0.3);
   border-radius: 10%;
   color: rgba(0, 0, 0, 0.5);
+}
+
+.tag-items-column-for-page {
+  display: flex;
+  flex-flow: row wrap;
 }

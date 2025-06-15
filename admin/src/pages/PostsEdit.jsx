@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchPostsAdmin, updatePost } from "../api/posts";
+import { deletePost, fetchPostsAdmin, updatePost } from "../api/posts";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import './PostsEdit.css';
 import Pagenation from "../components/Pagenation";
@@ -13,7 +13,7 @@ const PostsEdit = () => {
   const [subcategories, setSubcategories] = useState([]);
   const [authors, setAuthors] = useState([]); // 작성자 목록
   const [pageNum, setPageNum] = useState(1);
-  const [postCtn, setPostCtn] = useState(1);
+  const [postCnt, setPostCnt] = useState(1);
   const [totalPages, setTotalPages] = useState(5);
   const [filters, setFilters] = useState({
     startDate: '',
@@ -28,20 +28,18 @@ const PostsEdit = () => {
 
   const navigate = useNavigate();
 
-  const loadPosts = async () => { // async/await 패턴으로 변경 (Promise 체인과 혼용 방지)
+  const loadPosts = async () => {
     setLoading(true);
     try {
-      const res = await fetchPostsAdmin(filters); // await 추가
-      // fetchPostsAdmin 응답이 { data: [...] } 형태라면 res.data 사용
+      const res = await fetchPostsAdmin(filters); 
       const postData = res.posts;
       setPosts(postData);
       setTotalPages(res.totalPages);
-      setPostCtn(res.totalPosts);
+      setPostCnt(res.totalPosts);
       const uniqueAuthors = [...new Set(postData.map(post => post.author))];
       setAuthors(['all', ...uniqueAuthors]);
     } catch (error) {
       console.error("Error loading posts:", error);
-      // 에러 처리: setPosts([]); 또는 setError('...');
     } finally {
       setLoading(false);
     }
@@ -64,19 +62,16 @@ const PostsEdit = () => {
         setAuthors(['all', ...uniqueAuthors]);
 
         const subcategoryData = subcategoryRes.data1 ? subcategoryRes.data1 : subcategoryRes;
-        setSubcategories(subcategoryData); // fetchSubcategory 응답 구조에 맞게 조정
+        setSubcategories(subcategoryData); 
 
         const categoryData = categoryRes;
-        setCategories(categoryData); // fetchCategory 응답 구조에 맞게 조정
-
+        setCategories(categoryData); 
       } catch (error) {
         console.error("Error loading initial data:", error);
-        // 오류 처리: setPosts([]); setCategories([]); 등
       } finally {
         setLoading(false);
       }
     };
-
     loadInitialData();
   }, []);
 
@@ -114,14 +109,12 @@ const PostsEdit = () => {
 
   // 서브카테고리 ID를 이름으로 변환하는 헬퍼 함수
   const getSubcategoryName = (id, categoryId) => {
-    // categoryId가 일치하는 서브카테고리 중 해당 id를 찾음
     const subcategory = subcategories.find(subcat => subcat.id === id && subcat.category_id === categoryId);
     return subcategory ? subcategory.name : (id === 0 ? '없음' : '알 수 없음');
   };
 
   // 체크박스 핸들러 (is_pinned, is_published)
   const handleCheckboxChange = async (postId, field, isChecked) => {
-    // console.log(`게시글 ID ${postId}, ${field} 상태 변경: ${isChecked}`);
     const updateData = {
       [field]: isChecked ? 1 : 0
     };
@@ -130,17 +123,28 @@ const PostsEdit = () => {
     loadPosts(filters);
   };
 
-  // 수정 버튼 클릭
   const editHandler = (e) => {
     const postId = e.target.value;
     navigate(`/update/${postId}`);
   };
 
+  const onDeletePostHandler = async (e) => {
+    const postId = e.target.value;
+    const res = await deletePost(postId);
+    if(res.success) {
+      const currentPosts = posts;
+      const filteredPosts = currentPosts.filter(post => parseInt(post.id) !== parseInt(postId));
+      setPosts(filteredPosts);
+      alert(res.msg);
+    } else{
+      alert(res.msg || '게시글 삭제 실패');
+    }
+  }
+
   if (loading) {
     return <div className="post-management-loading">게시글 목록 로딩 중...</div>;
   }
-  // posts 상태도 배열이어야 하므로 .length > 0으로 확인
-  if (!posts || posts.length === 0) { // posts가 null이거나 빈 배열일 때
+  if (!posts || posts.length === 0) { 
     return (
       <div className="no-posts-found">
         <span>게시글이 없습니다.</span>
@@ -259,7 +263,7 @@ const PostsEdit = () => {
                   <td>{post.created_at}</td> {/* 이미 포맷된 날짜라고 가정 */}
                   <td>
                     <button className="action-button edit-button" value={post.id} onClick={editHandler} >수정</button>
-                    <button className="action-button delete-button" value={post.id} >삭제</button>
+                    <button className="action-button delete-button" onClick={onDeletePostHandler} value={post.id} >삭제</button>
                   </td>
                 </tr>
               ))
@@ -272,7 +276,7 @@ const PostsEdit = () => {
             )}
           </tbody>
         </table>
-        <Pagenation setPageNum={setPageNum} postCtn={postCtn} totalPages={totalPages} pageNum={pageNum} />
+        <Pagenation setPageNum={setPageNum} postCnt={postCnt} totalPages={totalPages} pageNum={pageNum} />
       </div>
     </div>
   )

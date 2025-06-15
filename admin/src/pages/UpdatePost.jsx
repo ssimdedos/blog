@@ -82,6 +82,7 @@ const UpdatePost = () => {
 
     const { finalContent, thumbnailUrl, imgUrlArray, imgOldPathArray } = await imageSaveFromContents(inputs['content']);
     // console.log(data);
+    // console.log(thumbnailUrl);
     const postDataToSend = {
       'title': inputs.title,
       'sub_title': inputs.subtitle.length > 0 ? inputs.subtitle : null,

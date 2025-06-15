@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import './Pagenation.css';
 
-const Pagenation = ({ setPageNum, postCtn, totalPages, pageNum }) => {
+const Pagenation = ({ setPageNum, postCnt, totalPages, pageNum }) => {
   const postsPerPage = 6;
   const pageGroupSize = 5;
-  const validTotalPosts = typeof postCtn === 'number' && !isNaN(postCtn) ? postCtn : 0;
+  const validTotalPosts = typeof postCnt === 'number' && !isNaN(postCnt) ? postCnt : 0;
   const validPostsPerPage = typeof postsPerPage === 'number' && !isNaN(postsPerPage) && postsPerPage > 0 ? postsPerPage : 10;
   const currentGroup = Math.ceil(pageNum / pageGroupSize);
   const startPage = (currentGroup - 1) * pageGroupSize + 1;

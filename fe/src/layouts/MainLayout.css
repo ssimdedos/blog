@@ -29,7 +29,8 @@
 .sidebar {
   width: 220px;
   height: fit-content;
-  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+  /* box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1); */
+  margin-top:15px;
 }
 
 .content {

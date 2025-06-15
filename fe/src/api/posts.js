@@ -30,6 +30,14 @@ export async function fetchPostsSubcategory(id, pageNum) {
   }
 }
 
+// 태그별 게시글 목록 가져오기
+export async function fetchPostsByTag(id, pageNum) {
+  const res = await axios.get(`${API_BASE_URL}/tag`, {
+    params: { tagId: id, pageNum: pageNum }
+  });
+  return res.data;
+}
+
 // 게시글 하나 가져오기
 export async function fetchPost(id) {
   const res = await axios.get(`${API_BASE_URL}/${id}`);

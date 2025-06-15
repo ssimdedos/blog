@@ -1,0 +1,145 @@
+/* src/components/TagAppendix.css */
+
+/* 전체 컨테이너 */
+.tag-appendix-container {
+  padding: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #fcfcfc;
+  border-radius: 8px;
+  /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); */
+}
+
+/* 제목 및 부제목 */
+.tag-appendix-title {
+  font-size: 2.5em;
+  color: #343a40; /* 더 어두운 무채색 */
+  text-align: center;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.tag-appendix-subtitle {
+  font-size: 1em;
+  color: #6c757d; /* 중간 톤의 무채색 */
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.initial-group-columns {
+  column-count: 2; /* 2개의 열로 나눔 */
+  column-gap: 40px; /* 열 사이의 간격 */
+}
+
+/* 초성 그룹 목록 전체 컨테이너 - 2단 레이아웃 핵심 */
+.initial-group-list {
+  display: flex;
+  flex-wrap: wrap; /* 내용이 많아지면 다음 줄로 */
+  justify-content: space-between; /* 양 끝 정렬 */
+  gap: 20px; /* 각 단 사이의 간격 */
+}
+
+.tag-items-column {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+
+/* 각 초성 그룹 섹션 */
+.initial-group-section {
+  flex: 1 1 45%; /* 2단으로 나누되, 유연하게 너비 조절 */
+  min-width: 44%; /* 너무 좁아지지 않도록 최소 너비 */
+  padding: 0 5px; /* 좌우 패딩만 유지 */
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+  margin-bottom: 10px; /* 각 섹션 하단 여백 */
+}
+
+/* 초성 헤더 */
+.initial-consonant-header {
+  font-size: 1.5em;
+  color: #495057; /* 초성 강조색을 어두운 무채색으로 */
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #dee2e6; /* 얇은 밑줄 색상 변경 */
+  font-weight: 600;
+  text-align: left;
+  width: 43%;
+}
+
+/* 태그 아이템들을 인라인으로 표시하는 컨테이너 */
+.tag-items-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* 태그 아이템 간의 간격 */
+  /* justify-content: flex-start; */
+}
+
+/* 개별 태그 링크 아이템 */
+.tag-link-item {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f8f9fa; /* 연한 배경색 */
+  border: 1px solid #e9ecef; /* 연한 테두리 */
+  border-radius: 15px;
+  padding: 6px 12px;
+  font-size: 0.9em;
+  color: #495057; /* 기본 텍스트 색상 */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin: 5px;
+}
+
+.tag-link-item:hover {
+  background-color: #e2e6ea; /* 호버 시 배경색 변경 */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* 태그 이름 */
+.tag-name {
+  font-weight: 500;
+  color: #343a40; /* 태그 이름 색상 강조 */
+  margin-right: 6px;
+}
+
+/* 게시글 개수 */
+.tag-post-count {
+  background-color: #6c757d; /* 게시글 개수 배경색을 무채색으로 */
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 2px 7px;
+  font-size: 0.75em;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* 로딩, 에러, 태그 없음 메시지 */
+.tag-appendix-loading,
+.tag-appendix-error,
+.no-tags-message {
+  text-align: center;
+  font-size: 1em;
+  color: #7f8c8d;
+  padding: 40px;
+}
+
+.tag-appendix-error {
+  color: #dc3545; /* 에러 메시지 색상 */
+  font-weight: bold;
+}
+
+/* 반응형 디자인: 작은 화면에서는 1단으로 */
+@media (max-width: 768px) {
+  .initial-group-list {
+    flex-direction: column; /* 세로로 쌓이도록 */
+  }
+
+  .initial-group-section {
+    flex: none; /* 유연한 너비 적용하지 않음 */
+    width: 100%; /* 너비를 꽉 채움 */
+  }
+}

@@ -9,7 +9,6 @@ import './Pages.css';
 import './PagesPostDetails.css';
 import './PostComment.css';
 
-
 // 헬퍼 함수: 플랫한 댓글 목록을 트리 구조로 변환
 const buildCommentTree = (flatComments, parentId = null) => {
   const tree = [];
@@ -54,14 +53,13 @@ const Pages = () => {
 
   const getPost = async (id) => {
     try {
-      fetchPost(id).then((data) => {
-        // console.log(data);
-        setPostData(data.post);
-        setTags(data.tags);
-        setFormerPost(data.formerPost);
-        setNextPost(data.nextPost);
-        if (data.comments) {
-          const filterDeletedComments = data.comments.map(comment =>
+      fetchPost(id).then((res) => {
+        setPostData(res.data.post);
+        setTags(res.data.tags);
+        setFormerPost(res.data.formerPost);
+        setNextPost(res.data.nextPost);
+        if (res.data.comments) {
+          const filterDeletedComments = res.data.comments.map(comment =>
             comment.deleted_at !== '0' ? { ...comment, content: '삭제된 댓글입니다.' } : comment
           );
           setComments(filterDeletedComments); // 플랫 목록 저장
@@ -78,6 +76,11 @@ const Pages = () => {
   useEffect(() => {
     getPost(id);
   }, [id]);
+
+  useEffect(() => {
+    setCommentTree(buildCommentTree(comments));
+    // console.log('Comments updated, new comment tree:', buildCommentTree(comments)); // 디버깅용
+  }, [comments]);
 
   // 댓글 폼 입력 핸들러
   const handleCommentFormChange = (e) => {
@@ -106,10 +109,16 @@ const Pages = () => {
     }
     try {
       const res = await addComment(id, commentForm);
-      // console.log(res);
-      setComments(prev => [...prev, res.newComment]);
-      setCommentForm({ author: '', password: '', content: '' });
-      alert(res.msg);
+      if (res.success) {
+        const { newComment } = res;
+        const newFlatComments = [...comments, newComment];
+        setComments(newFlatComments);
+        setIsCommentSectionOpen(true);
+        alert(res.msg);
+        setCommentForm({ author: '', password: '', content: '' });
+      } else {
+        alert(res.msg || '댓글 등록에 실패했습니다.');
+      }
     } catch (error) {
       console.error('댓글 제출 오류:', error);
       alert('댓글 제출 중 오류가 발생했습니다.');
@@ -138,10 +147,9 @@ const Pages = () => {
       if (res.success) {
         const newFlatComments = [...comments, res.newComment];
         setComments(newFlatComments);
-        setCommentTree(buildCommentTree(newFlatComments));
         setReplyForm({ author: '', password: '', content: '' });
         setReplyingToCommentId(null);
-        alert('답글이 등록되었습니다.');
+        alert(res.msg);
       } else {
         alert('답글 등록에 실패했습니다.');
       }
@@ -171,12 +179,11 @@ const Pages = () => {
     } else {
       const res = await deleteComment(commentId, password);
       if (res.success) {
-        // const updatedFlatComments = comments.filter(comment => comment.id !== commentId);
+        // const updatedFlatComments = comments.filter(comment => comment.id !== commentId); //이건 완전 빼버리는거. 트리구조에 문제 생길 수 있음
         const updatedFlatComments = comments.map(comment =>
-          comment.id === commentId ? { ...comment, content: '삭제된 댓글입니다.' } : comment
+          comment.id === commentId ? { ...comment, content: '삭제된 댓글입니다.', deleted_at: 1 } : comment
         );
         setComments(updatedFlatComments);
-        setCommentTree(buildCommentTree(updatedFlatComments));
         alert(res.msg);
       }
       else alert(res.msg);
@@ -215,11 +222,19 @@ const Pages = () => {
       </div>
 
       {tags && tags.length > 0 && (
-        <div className="post-tags">
-          {tags.map(tag => (
-            <span key={`tag-${tag.id}`} className="post-tag">#{tag.name}</span>
+        <div className="tag-items-column-for-page">
+          {tags.map((tag) => (
+            <Link to={`/tag/${tag.id}/${tag.name}`} key={`tag-${tag.id}`} className="tag-link-item">
+              <span className="tag-name"># {tag.name}</span>
+              {tag.postCnt > 0 && <span className="tag-post-count">{tag.postCnt}</span>}
+            </Link>
           ))}
         </div>
+        // <div className="post-tags">
+        //   {tags.map(tag => (
+        //     <span key={`tag-${tag.id}`} className="post-tag">#{tag.name} {tag.postCnt}</span>
+        //   ))}
+        // </div>
       )}
 
       <div className="comment-container">

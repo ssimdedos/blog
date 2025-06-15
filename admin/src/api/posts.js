@@ -82,7 +82,7 @@ export async function imageSaveFromContents(content) {
   let match;
   while ((match = gainSource.exec(content)) !== null) {
     // 추 후에 IP로 바꿔줘야함
-    console.log(process.env.REACT_APP_IMAGE_PATH);
+    // console.log(process.env.REACT_APP_IMAGE_PATH);
     if (match[1].includes(`${process.env.REACT_APP_IMAGE_PATH}`)) {
       preExitstImgs.push(match[1]);
       continue
@@ -151,9 +151,11 @@ export async function imageSaveFromContents(content) {
     // Base64 URL을 서버에서 반환받은 URL로 교체
     finalContent = finalContent.replace(base64Url, imgUrlArray[index]);
   });
+  // console.log(preExitstImgs);
+  // console.log('이미지 서버 저장 중 저장해야될 이미지',imgUrlArray[0]);
   const finalData = {
     finalContent,
-    'thumbnailUrl': imgUrlArray.length > 0 ? imgUrlArray[0] : preExitstImgs[0],
+    thumbnailUrl: imgUrlArray[0] === undefined ? preExitstImgs[0] : imgUrlArray[0],
     imgUrlArray,
     imgOldPathArray
   }

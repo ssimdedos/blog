@@ -12,7 +12,7 @@ const Board = ({children, category, subcategory}) => {
   const [categoryName, setCategoryName] = useState(' ');
   let { id, sub_id } = useParams();
   const [pageNum, setPageNum] = useState(1);
-  const [postCtn, setPostCtn] = useState(1);
+  const [postCnt, setPostCnt] = useState(1);
   const [totalPages, setTotalPages] = useState(5);
 
   useEffect(()=> {
@@ -28,7 +28,7 @@ const Board = ({children, category, subcategory}) => {
           setContentList(data.data1);
           setCategoryName(data.data2[0].name);
         }
-        setPostCtn(data.postCtn);
+        setPostCnt(data.postCnt);
         setTotalPages(data.totalPages);
       });
     } else {
@@ -40,12 +40,11 @@ const Board = ({children, category, subcategory}) => {
           setContentList(data.data1);
           setCategoryName(data.data2[0].name);
         }
-        // console.log(data.postCtn);
-        setPostCtn(data.postCtn);
+        // console.log(data.postCnt);
+        setPostCnt(data.postCnt);
         setTotalPages(data.totalPages);
       });
     }
-    
   }, [category, id, sub_id, pageNum]);
 
 
@@ -56,7 +55,7 @@ const Board = ({children, category, subcategory}) => {
   return (
         <div className="main-container">
           <div className="main-header">
-            <h3>{category=='all'?'전체 ':categoryName} 글 {postCtn}개</h3>
+            <h3>{category=='all'?'전체 ':categoryName} 글 {postCnt}개</h3>
             <div className='toggle-container'>
               <ToggleBtn onClick={radioChange} isOn={toggleIsOn} index={['앨범형', '목록형']} />
             </div>
@@ -80,7 +79,7 @@ const Board = ({children, category, subcategory}) => {
               : <h3>게시글 없음</h3>
             }
           </div>
-          <Pagenation setPageNum={setPageNum} postCtn={postCtn} totalPages={totalPages} pageNum={pageNum} />
+          <Pagenation setPageNum={setPageNum} postCnt={postCnt} totalPages={totalPages} pageNum={pageNum} />
         </div>
   )
 };
