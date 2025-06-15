@@ -211,15 +211,6 @@ Gemini
   font-style: italic;
 }
 
-.post-tag {
-  font-size: 13px;
-  margin: 2px 5.5px;
-  padding: 2px 5.5px;
-  background-color: rgba(132, 160, 188, 0.3);
-  border-radius: 10%;
-  color: rgba(0, 0, 0, 0.5);
-}
-
 .tag-items-column-for-page {
   display: flex;
   flex-flow: row wrap;

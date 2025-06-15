@@ -1,0 +1,51 @@
+/* src/components/ScrollToTopButton.css */
+
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #495057; /* 무채색 계열 */
+  color: #ffffff;
+  border: none;
+  border-radius: 50%; /* 동그란 버튼 */
+  width: 50px; /* 너비 */
+  height: 50px; /* 높이 */
+  display: flex; /* 내부 텍스트 중앙 정렬용 */
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em; /* 화살표 크기 */
+  line-height: 1; /* 텍스트 라인 높이 */
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 그림자 */
+
+  /* 트랜지션 효과 적용 */
+  opacity: 0; /* 초기 상태: 투명 */
+  visibility: hidden; /* 초기 상태: 보이지 않음 (클릭 불가) */
+  transform: translateY(20px); /* 초기 상태: 아래에서 살짝 내려가 있음 */
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out; /* 3가지 속성에 트랜지션 */
+}
+
+/* 'show' 클래스가 추가될 때 나타나는 효과 */
+.scroll-to-top-button.show {
+  opacity: 1; /* 불투명하게 */
+  visibility: visible; /* 보이게 */
+  transform: translateY(0); /* 원래 위치로 */
+}
+
+/* 호버 효과 (선택 사항) */
+.scroll-to-top-button:hover {
+  background-color: #343a40; /* 호버 시 약간 더 어두운 색상 */
+  transform: translateY(-2px); /* 약간 위로 올라오는 효과 */
+}
+
+/* 작은 화면을 위한 미디어 쿼리 (선택 사항) */
+@media (max-width: 768px) {
+  .scroll-to-top-button {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3em;
+    bottom: 15px;
+    right: 15px;
+  }
+}

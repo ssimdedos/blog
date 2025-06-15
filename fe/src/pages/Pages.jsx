@@ -8,6 +8,7 @@ import CommentItem from "../components/CommentItem";
 import './Pages.css';
 import './PagesPostDetails.css';
 import './PostComment.css';
+import ScrollToTopBtn from "../components/ScrollToTopBtn";
 
 // 헬퍼 함수: 플랫한 댓글 목록을 트리 구조로 변환
 const buildCommentTree = (flatComments, parentId = null) => {
@@ -70,6 +71,7 @@ const Pages = () => {
       console.err('Error', err);
     } finally {
       setLoading(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -230,11 +232,6 @@ const Pages = () => {
             </Link>
           ))}
         </div>
-        // <div className="post-tags">
-        //   {tags.map(tag => (
-        //     <span key={`tag-${tag.id}`} className="post-tag">#{tag.name} {tag.postCnt}</span>
-        //   ))}
-        // </div>
       )}
 
       <div className="comment-container">
@@ -292,27 +289,37 @@ const Pages = () => {
         </div>
       </div>
 
-      {/* 하단 다음 / 이전 게시글 네비게이션 */}
+      {/* 게시글 네비게이션 섹션 */}
       <div className="post-navigation">
-        {nextPost ?
-          <div className="post-next">
-            <Link to={`/pages/${nextPost.id}/${nextPost.slug}`} >
-              <img src={nextPost.thumbnail} />
-              <span>다음 포스트</span>
-              <span>{nextPost.title}</span>
-            </Link>
-          </div>
-          : <></>}
-        {formerPost ?
+        {formerPost ? (
           <div className="post-former">
             <Link to={`/pages/${formerPost.id}/${formerPost.slug}`} >
-              <img src={formerPost.thumbnail} />
-              <span>이전 포스트</span>
-              <span>{formerPost.title}</span>
+              <img src={formerPost.thumbnail} alt={`이전 포스트 썸네일: ${formerPost.title}`} />
+              <div className="post-text-content"> 
+                <span>이전 포스트</span>
+                <span>{formerPost.title}</span>
+              </div>
             </Link>
           </div>
-          : <></>}
+        ) : (
+          <div className="post-placeholder former-placeholder"></div>
+        )}
+
+        {nextPost ? (
+          <div className="post-next">
+            <Link to={`/pages/${nextPost.id}/${nextPost.slug}`} >
+              <div className="post-text-content"> 
+                <span>다음 포스트</span>
+                <span>{nextPost.title}</span>
+              </div>
+              <img src={nextPost.thumbnail} alt={`다음 포스트 썸네일: ${nextPost.title}`} />
+            </Link>
+          </div>
+        ) : (
+          <div className="post-placeholder next-placeholder"></div>
+        )}
       </div>
+      <ScrollToTopBtn />
     </div>
   )
 };
