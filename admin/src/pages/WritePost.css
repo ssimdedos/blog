@@ -52,7 +52,8 @@
 }
 
 .editor-box {
-  width: 100%; /* 부모 너비에 맞게 */
+  width: 91%; /* 부모 너비에 맞게 */
+  height: 49vh;
   padding: 0 5px; /* CustomEditor의 좌우 패딩 (필요시) */
   box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
 }
