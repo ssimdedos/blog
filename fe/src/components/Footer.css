@@ -1,0 +1,67 @@
+/* Footer.css */
+
+.footer-container {
+    background-color: white; /* 배경을 하얗게 설정 */
+    color: black; /* 글자 색상 검정으로 설정 (배경이 흰색이므로) */
+    padding: 40px 0; /* 상하 패딩으로 여백 추가 */
+    font-family: 'MaruBuri';    
+    font-size: 0.9rem;
+    line-height: 1.1;
+    position: relative; /* 스크롤 업 버튼 위치 지정을 위해 */
+}
+
+.footer-content-wrapper {
+    max-width: 1200px; /* 콘텐츠 최대 너비 설정 (중앙 정렬을 위해) */
+    margin: 0 auto; /* 중앙 정렬 */
+    padding: 0 20px; /* 좌우 패딩 */
+}
+
+.footer-menu {
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    margin-bottom: 30px; /* 메뉴 아래 여백 */
+    padding-bottom: 20px; /* 하단 경계선과 메뉴 사이 여백 */
+    border-bottom: 1px solid #e0e0e0; /* 하단 경계선 (약간 연한 회색) */
+}
+
+.footer-menu span {
+    margin-right: 20px; /* 메뉴 항목 간 간격 */
+    font-weight: bold; /* 메뉴 항목 굵게 */
+    cursor: pointer; /* 클릭 가능한 것처럼 보이게 */
+    transition: color 0.3s ease; /* 호버 효과 */
+}
+
+.footer-menu span:hover {
+    color: #666; /* 호버 시 색상 변경 */
+}
+
+.footer-menu span:not(:last-child)::after {
+    content: '|';
+    margin-left: 20px; /* 구분선과 메뉴 항목 간 간격 */
+    color: #bbb; /* 구분선 색상 */
+}
+
+.footer-logo {
+    font-family: '양진체';
+    font-style: italic; 
+    font-size: 1.75rem;
+    font-weight: normal; 
+    letter-spacing: -2px; 
+    margin-bottom: 25px;
+}
+
+.footer-contact-info p {
+    font-size: 0.87rem; /* 연락처 정보 글자 크기 */
+    margin-bottom: 5px; /* 줄 간격 */
+}
+
+.footer-contact-info span {
+    font-weight: bold; /* '광고 제휴 문의' 등 굵게 */
+    margin-right: 10px; /* 콜론 앞 간격 */
+}
+
+.footer-address {
+    margin-top: 20px; /* 주소 위 여백 */
+    font-size: 0.8em; /* 주소 글자 크기 */
+    color: #555; /* 주소 색상 약간 어둡게 */
+}

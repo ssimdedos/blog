@@ -2,21 +2,28 @@ import './Sidebar.css';
 import { useEffect, useState } from "react";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import { Link } from "react-router-dom";
-import parse from 'html-react-parser';
 
 const SidebarComp = () => {
-  const [categoryList, setCategoryList] = useState({});
-  const [subcategoryList, setSubcategoryList] = useState({});
+  const [categoryList, setCategoryList] = useState([]);
+  const [subcategoryList, setSubcategoryList] = useState([]);
   const [openCategories, setOpenCategories] = useState({});
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // console.log('useEffect');
     fetchCategory().then(data => {
-      setCategoryList(data);
+      // 카테고리도 마찬가지로 방어 코드 추가
+      setCategoryList(Array.isArray(data) ? data : []);
+    }).catch(error => {
+      console.error("카테고리 불러오기 실패:", error);
+      setCategoryList([]); // 에러 발생 시 빈 배열로 설정
     });
     fetchSubcategory('all').then(data => {
-      setSubcategoryList(data);
+      // 데이터가 배열이 아니거나 null/undefined인 경우를 대비하여 빈 배열로 대체
+      setSubcategoryList(Array.isArray(data) ? data : []);
+    }).catch(error => {
+      console.error("서브카테고리 불러오기 실패:", error);
+      setSubcategoryList([]); // 에러 발생 시 빈 배열로 설정
     });
   }, []);
 
@@ -50,33 +57,26 @@ const SidebarComp = () => {
 
   return (
     <div>
-      {categoryList.length > 0 && subcategoryList.length > 0
+      {categoryList.length > 0 && Array.isArray(subcategoryList) && subcategoryList.length > 0 // subcategoryList가 배열인지 추가 확인
         ? categoryList.map((c, i) => {
           return (
             <div className='category-box' key={`category-box-${i}`} onClick={() => toggleCategory(c.id)} >
-              <li className="category-li" key={`category-id-${c.id}`}  >
-                <Link to={`/category/${c.id}`} >{c.name}
-                </Link>
-                {isMobile && (
-                  <span className={`toggle-icon ${openCategories[c.id] ? 'rotated' : ''}`} >
-                    {openCategories[c.id] ? ' ▲' : ' ▼'}
-                  </span>
-                )}
-              </ li>
+              {/* ... 카테고리 렌더링 ... */}
               {(
-                !isMobile || // 모바일이 아니면 항상 보임
-                openCategories[c.id] // 모바일이고 현재 카테고리가 열려 있으면 보임
+                !isMobile ||
+                openCategories[c.id]
               ) && (
                   <ul className={`subcategory-list ${isMobile ? 'collapsible' : ''} ${openCategories[c.id] ? 'open' : 'closed'}`}>
-                    {subcategoryList
-                      .filter((e) => e.category_id === c.id)
-                      .map((e) => (
-                        <li className="subcategory-li" key={`subcategory-id-${e.id}`}>
-                          <Link to={`/category/${c.id}/sub/${e.id}`} className="subcategory-link">
-                            └ {e.name}
-                          </Link>
-                        </li>
-                      ))}
+                    {Array.isArray(subcategoryList) && // 이곳에서도 다시 확인 (더 안전하게)
+                      subcategoryList
+                        .filter((e) => e.category_id === c.id)
+                        .map((e) => (
+                          <li className="subcategory-li" key={`subcategory-id-${e.id}`}>
+                            <Link to={`/category/<span class="math-inline">\{c\.id\}/sub/</span>{e.id}`} className="subcategory-link">
+                              └ {e.name}
+                            </Link>
+                          </li>
+                        ))}
                   </ul>
                 )}
             </div>

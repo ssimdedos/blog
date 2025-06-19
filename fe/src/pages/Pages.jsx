@@ -8,7 +8,6 @@ import CommentItem from "../components/CommentItem";
 import './Pages.css';
 import './PagesPostDetails.css';
 import './PostComment.css';
-import ScrollToTopBtn from "../components/ScrollToTopBtn";
 
 // 헬퍼 함수: 플랫한 댓글 목록을 트리 구조로 변환
 const buildCommentTree = (flatComments, parentId = null) => {
@@ -319,7 +318,6 @@ const Pages = () => {
           <div className="post-placeholder next-placeholder"></div>
         )}
       </div>
-      <ScrollToTopBtn />
     </div>
   )
 };

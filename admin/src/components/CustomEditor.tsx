@@ -25,7 +25,7 @@ const CustomEditor = ({setContent, content}) => {
           ["bold", "italic", "underline", "strike"],
           [{ 'color': [] }, { 'background': [] }],
           ["link", "image"],
-          ["table-better"], // Add table tool
+          ["table-better"],
         ],
       },
       table: false,
@@ -53,9 +53,21 @@ const CustomEditor = ({setContent, content}) => {
     []
   );
 
+    const formats = [
+    'header', 'font', 'size', 'align',
+    'list',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'link', 'image', 'color', 'background',
+    'table', 'td', 'tr', 'th',
+    'ql-table-better', 'ql-table-block', // QuillTableBetter의 커스텀 클래스
+    'data-row', 'data-cell', // 데이터 속성 (attributes)
+    'width', 'style'
+  ];
+
   return (
     <div className='write-container'>
         <ReactQuill theme="snow" modules={modules}
+          formats={formats}
           onChange={handleEditorChange}
           value={content} />
     </div>

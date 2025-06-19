@@ -48,6 +48,7 @@ const UpdatePost = () => {
         isPinned: parseInt(is_pinned),
         tags: tagString
       });
+      // console.log(content);
       setContent(content);
       // console.log(res);
     } catch (err) {

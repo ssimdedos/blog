@@ -2,6 +2,7 @@ import './MainLayout.css'
 import HeaderComp from "../components/Header";
 import FooterComp from "../components/Footer";
 import SidebarComp from "../components/Sidebar";
+import ScrollToTopBtn from '../components/ScrollToTopBtn';
 
 const MainLayout = ({ children }) => {
   return (
@@ -13,6 +14,7 @@ const MainLayout = ({ children }) => {
         <div className="sidebar"><SidebarComp /></div>
       </div>
       <div className="footer"><FooterComp /></div>
+      <ScrollToTopBtn />
     </div>
   );
 }
