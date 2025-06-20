@@ -103,7 +103,7 @@ db.run(`CREATE TABLE IF NOT EXISTS comments (
 //     if (err) console.log(err);
 //   });
 
-// db.run(`INSERT INTO post_tags (post_id, tag_id) VALUES (1, 1), (1, 2), (1, 3)`,
+// db.run(``,
 //   (err) => {
 //     if (err) console.log(err);
 //   }

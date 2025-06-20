@@ -464,6 +464,7 @@ exports.updatePost = async (req, res) => {
           const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
           finalContent = finalContent.replace(oldPublicUrl, newImageUrls[index]);
         });
+        console.log(`[POST UPDATE]: ${id}, thumbnail: ${newThumbnailUrl}`);
         // 바뀐 content로 업데이트
         db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, id]);
       } else {
@@ -520,7 +521,7 @@ exports.getPostForUpdate = (req, res) => {
               tagArray.push(tag.name);
             });
             const data = { ...row, 'tags': tagArray };
-            // console.log(data);
+            console.log(data);
             res.json(data);
           }
         });
