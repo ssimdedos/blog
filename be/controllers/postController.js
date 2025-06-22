@@ -553,12 +553,13 @@ exports.deletePost = async (req, res) => {
   const now = date.getTime();
   const { id } = req.params;
   db.run(`UPDATE posts SET deleted_at = ? WHERE id = ?`, [now, id],
-    (err, result) => {
+    async (err, result) => {
       if (err) {
         console.log('게시글 삭제처리 실패, ', err);
         res.status(500).json({ success: false, msg: `게시글 삭제 실패: ${err}` });
       }
       else {
+        // await db.runAsync(`DELETE FROM post_tags WHERE post_id = ?`, id);
         res.status(200).json({ success: true, msg: '게시글 삭제 완료' });
       }
     });
