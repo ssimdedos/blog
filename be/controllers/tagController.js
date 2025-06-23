@@ -27,7 +27,9 @@ exports.getAllTags = async (req, res) => {
     const tags = await db.allAsync(`
       SELECT t.id id, t.name name, COUNT(pt.post_id) postCnt 
       FROM tags t 
-      JOIN post_tags pt ON t.id = pt.tag_id 
+      JOIN post_tags pt ON t.id = pt.tag_id
+      LEFT JOIN posts p ON p.id = pt.post_id
+      WHERE p.deleted_at = '0'
       GROUP BY t.id, t.name
       ORDER BY t.name ASC`);
 

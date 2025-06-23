@@ -12,14 +12,12 @@ const SidebarComp = () => {
   useEffect(() => {
     // console.log('useEffect');
     fetchCategory().then(data => {
-      // 카테고리도 마찬가지로 방어 코드 추가
       setCategoryList(Array.isArray(data) ? data : []);
     }).catch(error => {
       console.error("카테고리 불러오기 실패:", error);
       setCategoryList([]); // 에러 발생 시 빈 배열로 설정
     });
     fetchSubcategory('all').then(data => {
-      // 데이터가 배열이 아니거나 null/undefined인 경우를 대비하여 빈 배열로 대체
       setSubcategoryList(Array.isArray(data) ? data : []);
     }).catch(error => {
       console.error("서브카테고리 불러오기 실패:", error);
@@ -57,7 +55,7 @@ const SidebarComp = () => {
 
   return (
     <div>
-      {categoryList.length > 0 && Array.isArray(subcategoryList) && subcategoryList.length > 0 // subcategoryList가 배열인지 추가 확인
+      {categoryList.length > 0 && Array.isArray(subcategoryList) && subcategoryList.length > 0 
         ? categoryList.map((c, i) => {
           return (
             <div className='category-box' key={`category-box-${i}`} onClick={() => toggleCategory(c.id)} >

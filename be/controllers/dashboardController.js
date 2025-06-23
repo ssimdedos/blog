@@ -7,7 +7,7 @@ exports.getDashboardInfo = async (req, res) => {
     
     let query = `SELECT SUM(unique_visitors_count) total_unique_visitors, SUM(today_total_page_view) total_page_view FROM visitors`;
     let query2 = `SELECT unique_visitors_count, today_total_page_view FROM visitors WHERE visit_date = ?`;
-    let query3 = `SELECT COUNT(id) cnt FROM posts`;
+    let query3 = `SELECT COUNT(id) cnt FROM posts WHERE deleted_at = 0`;
     let query4 = `SELECT visit_date, unique_visitors_count FROM visitors 
                   WHERE visit_date >= STRFTIME('%Y-%m-%d', DATE('now', '-7 days', 'localtime'))
                   AND visit_date <= STRFTIME('%Y-%m-%d', 'now', 'localtime')

@@ -463,6 +463,7 @@ exports.updatePost = async (req, res) => {
           const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
           finalContent = finalContent.replace(oldPublicUrl, newImageUrls[index]);
         });
+        console.log(`[POST UPDATE]: ${id}, thumbnail: ${newThumbnailUrl}`);
         // 바뀐 content로 업데이트
         db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, id]);
       } else {
@@ -475,16 +476,6 @@ exports.updatePost = async (req, res) => {
         console.log(tagArray);
         if (tagArray.length > 0) {
           for (let i = 0; i < tagArray.length; i++) {
-            // let tagId;
-            // const newTag = await new Promise((resolve) => {
-            //   db.run(`INSERT OR IGNORE INTO tags(name) VALUES('${tagArray[i]}')`,
-            //     function (err) {
-            //       if (err) console.log(err);
-            //       else resolve(this.lastID)
-            //     });
-            //   });
-            
-            // tagId = newTag;
             const tagId = await getOrCreateTagId(tagArray[i]);
             db.run(`INSERT OR IGNORE INTO post_tags(post_id, tag_id) VALUES(${id}, ${tagId})`);
           }
@@ -522,7 +513,7 @@ exports.getPostForUpdate = (req, res) => {
               tagArray.push(tag.name);
             });
             const data = { ...row, 'tags': tagArray };
-            // console.log(data);
+            console.log(data);
             res.json(data);
           }
         });
@@ -554,12 +545,13 @@ exports.deletePost = async (req, res) => {
   const now = date.getTime();
   const { id } = req.params;
   db.run(`UPDATE posts SET deleted_at = ? WHERE id = ?`, [now, id],
-    (err, result) => {
+    async (err, result) => {
       if (err) {
         console.log('게시글 삭제처리 실패, ', err);
         res.status(500).json({ success: false, msg: `게시글 삭제 실패: ${err}` });
       }
       else {
+        // await db.runAsync(`DELETE FROM post_tags WHERE post_id = ?`, id);
         res.status(200).json({ success: true, msg: '게시글 삭제 완료' });
       }
     });
