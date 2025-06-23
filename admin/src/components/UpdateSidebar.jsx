@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import './WriteSidebar.css';
 
-function findUniqueSubstrings(str1, str2) {
-    const arr1 = str1 ? str1.split(',').map(s => s.trim()).filter(s => s) : [];
-    const arr2 = str2 ? str2.split(',').map(s => s.trim()).filter(s => s) : [];
+function findUniqueSubstrings(tags, modifiedTags) {
+    const tagArr = tags ? tags.split(',').map(s => s.trim()).filter(s => s) : [];
+    const modiTagArr = modifiedTags ? modifiedTags.split(',').map(s => s.trim()).filter(s => s) : [];
 
-    const set2 = new Set(arr2);
+    const modiTagSet = new Set(modiTagArr);
 
-    const onlyInStr1 = arr1.filter(item => !set2.has(item));
+    const onlyIntags = tagArr.filter(item => !modiTagSet.has(item));
 
-    return onlyInStr1
+    return onlyIntags
 };
 
 const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
@@ -29,7 +29,7 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
     fetchSubcategory(newSelectedCategory).then(data => {
       const subcategoriesData = data.data1 || data;
       setSubCategoryList(subcategoriesData);
-      setSelectedSubcategory(0);
+      setSelectedSubcategory(selectedSubcategory ? selectedCategory : 0);
     });
   };
 
@@ -69,7 +69,7 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
       fetchSubcategory(selectedCategory).then(data => {
         const subcategoriesData = data.data1 || data;
         setSubCategoryList(subcategoriesData);
-        setSelectedSubcategory(0);
+        setSelectedSubcategory(selectedSubcategory ? selectedSubcategory : 0);
       });
     }
   }, [selectedCategory]);
@@ -77,12 +77,14 @@ const UpdateSidebarComp = ({ clickPostbtn, sidebarInputs }) => {
   // 게시글 등록
   const createPostHandler = () => {
     const deletedTagArray = findUniqueSubstrings(tags, modifiedTags);
-    // console.log(deletedTagArray);
+    console.log(tags);
+    console.log(modifiedTags);
+    console.log(deletedTagArray);
     clickPostbtn({
       category: selectedCategory,
       subcategory: selectedSubcategory,
       isPublished: isPublished,
-      tags: tags,
+      tags: modifiedTags,
       isPinned: isPinned,
       deletedTags: deletedTagArray,
     });

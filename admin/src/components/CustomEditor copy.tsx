@@ -1,35 +1,35 @@
-import React, { useMemo } from 'react';
-import ReactQuill, { Quill } from 'react-quill-new';
+import { useMemo } from "react";
+import ReactQuill, { Quill } from "react-quill-new";
+import QuillTableBetter from "quill-table-better";
 import { ImageResize } from 'quill-image-resize-module-ts';
-import QuillTableBetter from 'quill-table-better';
-import 'react-quill-new/dist/quill.snow.css';
+import "react-quill-new/dist/quill.snow.css";
 import "quill-table-better/dist/quill-table-better.css";
+import "./CustomEditor.css";
 
-// Quill.register('modules/ImageResize', ImageResize);
 Quill.register({ 'modules/table-better': QuillTableBetter, 'modules/ImageResize': ImageResize }, true);
 
-const CustomEditor = ({ setContent, content }) => {
+const CustomEditor = ({setContent, content}) => {
 
   const handleEditorChange = (value) => {
     setContent(value);
   }
 
-  const modules = useMemo(() => {
-    return {
-      table: false,
-      toolbar: [
-        [{ 'header': [1, 2, 3, 4, false] }, { 'font': [] }, { 'size': [] }],
-        [{ align: '' }, { align: 'center' }, { align: 'right' }],
-        [{ indent: "-1" }, { indent: "+1" }],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'color': [] }, { 'background': [] }],
-        ['table-better'], ['link', 'image'], ['clean']
-      ],
-      ImageResize: {
-        modules: ['Resize', 'DisplaySize']
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ 'header': [1, 2, 3, 4, false] }, { 'font': [] }, { 'size': [] }],
+          [{ align: '' }, { align: 'center' }, { align: 'right' }],
+          [{ indent: "-1" }, { indent: "+1" }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+          ["bold", "italic", "underline", "strike"],
+          [{ 'color': [] }, { 'background': [] }],
+          ["link", "image"],
+          ["table-better"],
+        ],
       },
-      'table-better': {
+      table: false,
+      "table-better": {
         language: "en_US",
         menus: [
           "column",
@@ -41,35 +41,34 @@ const CustomEditor = ({ setContent, content }) => {
           "copy",
           "delete",
         ],
-        toolbarButtons: {
-          whiteList: ['link', 'image'],
-          singleWhiteList: ['link', 'image']
-        },
         toolbarTable: true,
       },
       keyboard: {
         bindings: QuillTableBetter.keyboardBindings,
       },
-    }
-  }, []);
+      ImageResize: {
+        modules: ['Resize', 'DisplaySize']
+      },
+    }),
+    []
+  );
 
-  const formats = [
+    const formats = [
     'header', 'font', 'size', 'align',
     'list',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'link', 'image', 'color', 'background'
+    'link', 'image', 'color', 'background',
+    'table'
   ];
 
   return (
     <div className='write-container'>
-      <div>
-        <ReactQuill theme="snow" modules={modules} formats={formats}
-          style={{ height: "49vh", width: "95%" }}
+        <ReactQuill theme="snow" modules={modules}
+          formats={formats}
           onChange={handleEditorChange}
           value={content} />
-      </div>
     </div>
   );
-}
+};
 
 export default CustomEditor;

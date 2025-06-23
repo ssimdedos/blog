@@ -58,10 +58,7 @@ const CustomEditor = ({setContent, content}) => {
     'list',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'link', 'image', 'color', 'background',
-    'table', 'td', 'tr', 'th',
-    'ql-table-better', 'ql-table-block', // QuillTableBetter의 커스텀 클래스
-    'data-row', 'data-cell', // 데이터 속성 (attributes)
-    'width', 'style'
+    'table'
   ];
 
   return (

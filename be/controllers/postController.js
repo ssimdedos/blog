@@ -41,7 +41,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 5MB로 파일 크기 제한 (선택 사항, 필요에 따라 조정)
+    fileSize: 10000000 // 10MB로 파일 크기 제한 (선택 사항, 필요에 따라 조정)
   },
   fileFilter: function (req, file, cb) {
     // 허용할 파일 타입 (이미지만 허용)
@@ -429,7 +429,6 @@ exports.updatePost = async (req, res) => {
   let updateData = [];
   const { tags, deletedTags, tempImgPath, content, thumbnail } = req.body;
   const { id } = req.params;
-  // console.log(req.body);
   // console.log(thumbnail);
   let query = `UPDATE posts SET `;
   updateKeys.map((e, i) => {
@@ -450,7 +449,7 @@ exports.updatePost = async (req, res) => {
       res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
     }
     else {
-      console.log(tempImgPath);
+      // console.log(tempImgPath);
       // let newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
       let newThumbnailUrl = thumbnail ? thumbnail : `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
       if (tempImgPath !== undefined && tempImgPath.length) {
@@ -473,17 +472,20 @@ exports.updatePost = async (req, res) => {
       if (tags !== undefined && tags.length) {
         // tag 등록 및 tag post 관계 설정
         const tagArray = tags.replace(/\s+/g, '').split(',');
+        console.log(tagArray);
         if (tagArray.length > 0) {
           for (let i = 0; i < tagArray.length; i++) {
-            let tagId;
-            const newTag = await new Promise((resolve) => {
-              db.run(`INSERT OR IGNORE INTO tags(name) VALUES('${tagArray[i]}')`,
-                function (err) {
-                  if (err) console.log(err);
-                  else resolve(this.lastID)
-                });
-            });
-            tagId = newTag;
+            // let tagId;
+            // const newTag = await new Promise((resolve) => {
+            //   db.run(`INSERT OR IGNORE INTO tags(name) VALUES('${tagArray[i]}')`,
+            //     function (err) {
+            //       if (err) console.log(err);
+            //       else resolve(this.lastID)
+            //     });
+            //   });
+            
+            // tagId = newTag;
+            const tagId = await getOrCreateTagId(tagArray[i]);
             db.run(`INSERT OR IGNORE INTO post_tags(post_id, tag_id) VALUES(${id}, ${tagId})`);
           }
         }

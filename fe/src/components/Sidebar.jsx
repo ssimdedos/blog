@@ -1,7 +1,7 @@
-import './Sidebar.css';
 import { useEffect, useState } from "react";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import { Link } from "react-router-dom";
+import './Sidebar.css';
 
 const SidebarComp = () => {
   const [categoryList, setCategoryList] = useState([]);
@@ -61,22 +61,29 @@ const SidebarComp = () => {
         ? categoryList.map((c, i) => {
           return (
             <div className='category-box' key={`category-box-${i}`} onClick={() => toggleCategory(c.id)} >
-              {/* ... 카테고리 렌더링 ... */}
+              <li className="category-li" key={`category-id-${c.id}`}  >
+                <Link to={`/category/${c.id}`} >{c.name}
+                </Link>
+                {isMobile && (
+                  <span className={`toggle-icon ${openCategories[c.id] ? 'rotated' : ''}`} >
+                    {openCategories[c.id] ? ' ▲' : ' ▼'}
+                  </span>
+                )}
+              </ li>
               {(
-                !isMobile ||
-                openCategories[c.id]
+                !isMobile || // 모바일이 아니면 항상 보임
+                openCategories[c.id] // 모바일이고 현재 카테고리가 열려 있으면 보임
               ) && (
                   <ul className={`subcategory-list ${isMobile ? 'collapsible' : ''} ${openCategories[c.id] ? 'open' : 'closed'}`}>
-                    {Array.isArray(subcategoryList) && // 이곳에서도 다시 확인 (더 안전하게)
-                      subcategoryList
-                        .filter((e) => e.category_id === c.id)
-                        .map((e) => (
-                          <li className="subcategory-li" key={`subcategory-id-${e.id}`}>
-                            <Link to={`/category/<span class="math-inline">\{c\.id\}/sub/</span>{e.id}`} className="subcategory-link">
-                              └ {e.name}
-                            </Link>
-                          </li>
-                        ))}
+                    {subcategoryList
+                      .filter((e) => e.category_id === c.id)
+                      .map((e) => (
+                        <li className="subcategory-li" key={`subcategory-id-${e.id}`}>
+                          <Link to={`/category/${c.id}/sub/${e.id}`} className="subcategory-link">
+                            └ {e.name}
+                          </Link>
+                        </li>
+                      ))}
                   </ul>
                 )}
             </div>

@@ -31,7 +31,7 @@ const PostsEdit = () => {
   const loadPosts = async () => {
     setLoading(true);
     try {
-      const res = await fetchPostsAdmin(filters); 
+      const res = await fetchPostsAdmin(filters);
       const postData = res.posts;
       setPosts(postData);
       setTotalPages(res.totalPages);
@@ -62,10 +62,10 @@ const PostsEdit = () => {
         setAuthors(['all', ...uniqueAuthors]);
 
         const subcategoryData = subcategoryRes.data1 ? subcategoryRes.data1 : subcategoryRes;
-        setSubcategories(subcategoryData); 
+        setSubcategories(subcategoryData);
 
         const categoryData = categoryRes;
-        setCategories(categoryData); 
+        setCategories(categoryData);
       } catch (error) {
         console.error("Error loading initial data:", error);
       } finally {
@@ -131,12 +131,12 @@ const PostsEdit = () => {
   const onDeletePostHandler = async (e) => {
     const postId = e.target.value;
     const res = await deletePost(postId);
-    if(res.success) {
+    if (res.success) {
       const currentPosts = posts;
       const filteredPosts = currentPosts.filter(post => parseInt(post.id) !== parseInt(postId));
       setPosts(filteredPosts);
       alert(res.msg);
-    } else{
+    } else {
       alert(res.msg || '게시글 삭제 실패');
     }
   }
@@ -144,7 +144,7 @@ const PostsEdit = () => {
   if (loading) {
     return <div className="post-management-loading">게시글 목록 로딩 중...</div>;
   }
-  if (!posts || posts.length === 0) { 
+  if (!posts || posts.length === 0) {
     return (
       <div className="no-posts-found">
         <span>게시글이 없습니다.</span>
@@ -234,7 +234,7 @@ const PostsEdit = () => {
               <th>제목</th>
               <th>작성자</th>
               <th>등록일</th>
-              <th>작업</th> {/* 수정/삭제 버튼 등을 위한 열 */}
+              <th>작업</th>
             </tr>
           </thead>
           <tbody>
@@ -260,7 +260,7 @@ const PostsEdit = () => {
                   </td>
                   <td className="post-title-cell">{truncateTitle(post.title, 35)}</td>
                   <td>{post.author}</td>
-                  <td>{post.created_at}</td> {/* 이미 포맷된 날짜라고 가정 */}
+                  <td>{post.created_at}</td>
                   <td>
                     <button className="action-button edit-button" value={post.id} onClick={editHandler} >수정</button>
                     <button className="action-button delete-button" onClick={onDeletePostHandler} value={post.id} >삭제</button>

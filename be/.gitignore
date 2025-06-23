@@ -148,5 +148,6 @@ de
 .sqlite
 .sqlite3
 
-upload/
-upload/images
+./upload/
+./upload/images
+./db

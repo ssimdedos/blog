@@ -119,7 +119,7 @@ db.all(`SELECT * FROM tags`, (err, rows) => {
   else console.log(rows);
 });
 
-db.all(`SELECT * FROM posts WHERE id=8`, (err, rows) => {
+db.all(`SELECT * FROM post_tags WHERE post_id = 11`, (err, rows) => {
   if (err) console.log('post못가져옴', err);
   else console.log(rows);
 });
