@@ -81,10 +81,10 @@ export async function imageSaveFromContents(content) {
   // 이미지 처리
   let match;
   while ((match = gainSource.exec(content)) !== null) {
-    // 추 후에 IP로 바꿔줘야함
     // console.log(process.env.REACT_APP_IMAGE_PATH);
     if (match[1].includes(`${process.env.REACT_APP_IMAGE_PATH}`)) {
       preExitstImgs.push(match[1]);
+      console.log(`이미 저장된 이미지, ${match[1]}`);
       continue
     } else {
       imgSrcArray.push(match[1]);
@@ -134,8 +134,8 @@ export async function imageSaveFromContents(content) {
           console.log('이미지 서버 업로드 실패 응답:', response);
           alert('이미지를 서버에 업로드하는데에 실패했습니다.');
         }
-      } catch (error) {
-        console.error('이미지 서버 업로드 중 에러 발생:', error);
+      } catch (err) {
+        console.log('이미지 서버 업로드 중 에러 발생:', err);
         alert('이미지 서버 업로드 중 에러가 발생했습니다.');
       }
 
@@ -155,7 +155,7 @@ export async function imageSaveFromContents(content) {
   // console.log('이미지 서버 저장 중 저장해야될 이미지',imgUrlArray[0]);
   const finalData = {
     finalContent,
-    thumbnailUrl: imgUrlArray[0] === undefined ? preExitstImgs[0] : imgUrlArray[0],
+    thumbnailUrl: preExitstImgs[0] ? preExitstImgs[0] : imgUrlArray[0],
     imgUrlArray,
     imgOldPathArray
   }

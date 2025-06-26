@@ -7,7 +7,6 @@ import UpdateSidebarComp from "../components/UpdateSidebar.jsx";
 
 const UpdatePost = () => {
   const [loading, setLoading] = useState(true);
-  const [deleteTag, setDeleteTag] = useState('');
   // url에 id값 존재 여부 확인
   const { id } = useParams();
 
@@ -44,8 +43,8 @@ const UpdatePost = () => {
       setSidebarInputs({
         categoryId: category_id,
         subcategoryId: sub_category_id,
-        isPublished: parseInt(is_published),
-        isPinned: parseInt(is_pinned),
+        isPublished: parseInt(is_published) === 1 ? true : false,
+        isPinned: parseInt(is_pinned) === 1 ? true : false,
         tags: tagString
       });
       // console.log(content);
@@ -82,26 +81,26 @@ const UpdatePost = () => {
       return
     }
 
-    const { finalContent, thumbnailUrl, imgUrlArray, imgOldPathArray } = await imageSaveFromContents(inputs['content']);
-    // console.log(data);
-    // console.log(thumbnailUrl);
-    const postDataToSend = {
-      'title': inputs.title,
-      'sub_title': inputs.subtitle.length > 0 ? inputs.subtitle : null,
-      'author': inputs.author,
-      'slug': inputs.slug,
-      'content': finalContent,
-      'thumbnail': thumbnailUrl ? thumbnailUrl : null,
-      'category_id': data.category,
-      'sub_category_id': data.subcategory,
-      'is_published': data.isPublished ? 1 : 0,
-      'is_pinned': data.isPinned ? 1 : 0,
-      'tags': data.tags,
-      'deletedTags': data.deletedTags,
-      'tempImgPath': imgOldPathArray ? imgOldPathArray : null,
-    }
-
+    
     try {
+      const { finalContent, thumbnailUrl, imgUrlArray, imgOldPathArray } = await imageSaveFromContents(inputs['content']);
+      // console.log(data);
+      // console.log(thumbnailUrl);
+      const postDataToSend = {
+        'title': inputs.title,
+        'sub_title': inputs.subtitle.length > 0 ? inputs.subtitle : null,
+        'author': inputs.author,
+        'slug': inputs.slug,
+        'content': finalContent,
+        'thumbnail': thumbnailUrl ? thumbnailUrl : null,
+        'category_id': data.category,
+        'sub_category_id': data.subcategory,
+        'is_published': data.isPublished ? 1 : 0,
+        'is_pinned': data.isPinned ? 1 : 0,
+        'tags': data.tags,
+        'deletedTags': data.deletedTags,
+        'tempImgPath': imgOldPathArray ? imgOldPathArray : null,
+      }
       const response = await updatePost(id, postDataToSend);
       console.log('게시글 업데이트 성공: ', response);
       alert(response.msg);

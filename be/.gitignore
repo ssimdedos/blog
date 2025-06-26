@@ -151,3 +151,4 @@ de
 ./upload/
 ./upload/images
 ./db
+be/db/*

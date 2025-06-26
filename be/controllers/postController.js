@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
     // 예: myimage.jpg -> myimage_16789012345.jpg
     const ext = path.extname(file.originalname); // 원본 파일의 확장자 (.jpg, .png 등)
     const fileName = path.basename(file.originalname, ext); // 확장자를 제외한 파일명
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // 고유한 접미사
+    const uniqueSuffix = Math.round(Math.random() * 1E9); // 고유한 접미사
     cb(null, fileName + '_' + uniqueSuffix + ext); // 최종 파일명
   }
 });
@@ -276,14 +276,14 @@ exports.moveImagesToPostFolder = async (oldFilePaths, postId) => {
       } catch (renameErr) {
         console.error(`Error moving file ${oldPath}: ${renameErr}`);
       }
-      try {
-        if (fs.existsSync(todayUploadDir)) {
-          await fs.promises.rm(todayUploadDir, { recursive: true, force: true });
-          console.log(`임시 이미지 폴더 삭제: ${todayUploadDir}`);
-        }
-      } catch (err) {
-        console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
+    }
+    try {
+      if (fs.existsSync(todayUploadDir)) {
+        await fs.promises.rm(todayUploadDir, { recursive: true, force: true });
+        console.log(`임시 이미지 폴더 삭제: ${todayUploadDir}`);
       }
+    } catch (err) {
+      console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
     }
     return newFileUrls; // 이동된 파일들의 새로운 URL 목록 반환
   } catch (mkdirErr) {
