@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const db = require('../db/db');
 const timeUtil = require('../utils/timeFormat');
 
@@ -32,4 +33,17 @@ exports.userIncrement = (req, res) => {
     }
   );
   return
+}
+
+exports.authAdmin = async(req, res) => {
+  // console.log(req.body);
+  const { password } = req.body;
+  const row = await db.getAsync(`SELECT password FROM admin`);
+  const isMatch = await bcrypt.compare(password, row.password);
+  // console.log(isMatch);
+  if (isMatch) {
+    res.status(200).json({ success: true, msg: '비밀번호 확인 완료.' });
+  } else {
+    res.status(200).json({ success: false, msg: '비밀번호가 틀렸습니다.' });
+  }
 }

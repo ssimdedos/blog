@@ -8,6 +8,7 @@ import CommentItem from "../components/CommentItem";
 import './Pages.css';
 import './PagesPostDetails.css';
 import './PostComment.css';
+import { authAdmin } from "../api/users";
 
 // 헬퍼 함수: 플랫한 댓글 목록을 트리 구조로 변환
 const buildCommentTree = (flatComments, parentId = null) => {
@@ -103,7 +104,8 @@ const Pages = () => {
       return;
     }
     if (commentForm.author === 'idea de mis dedos') {
-      if (commentForm.password !== process.env.REACT_APP_ADMIN_PASSWORD_FOR_COMMENT) {
+      const authAdminRes = await authAdmin(commentForm.password);
+      if(!authAdminRes.success) {
         alert('비밀번호가 틀렸습니다.');
         return
       }
@@ -125,7 +127,7 @@ const Pages = () => {
       alert('댓글 제출 중 오류가 발생했습니다.');
     }
   };
-
+  
   // 대댓글 등록 핸들러
   const handleReplySubmit = async (e) => {
     e.preventDefault();
@@ -136,6 +138,13 @@ const Pages = () => {
     if (replyingToCommentId === null) {
       alert('답글을 달 대상 댓글이 지정되지 않았습니다.');
       return;
+    }
+    if (replyForm.author === 'idea de mis dedos') {
+      const authAdminRes = await authAdmin(replyForm.password);
+      if(!authAdminRes.success) {
+        alert('비밀번호가 틀렸습니다.');
+        return
+      }
     }
     try {
       const replyData = {
