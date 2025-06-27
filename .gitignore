@@ -1,4 +1,6 @@
 # 업로드된 이미지 디렉토리 무시
 be/uploads/images/
 
+# db
+be/db/blog.db
 .env
