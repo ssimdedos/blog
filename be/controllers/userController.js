@@ -2,10 +2,24 @@ const bcrypt = require('bcryptjs');
 const db = require('../db/db');
 const timeUtil = require('../utils/timeFormat');
 
-exports.userIncrement = (req, res) => {
-  // 배포 후 개발
-  console.log(req.headers.referer); // 직전 유입 경로
-  console.log(req.ip); // ip주소대역을 통한 지역 정보 수집 가능
+exports.userIncrement = async(req, res) => {
+  // console.log(req.headers.referer); // 직전 유입 경로
+  // console.log(req.ip); // ip주소대역을 통한 지역 정보 수집 가능
+  const ipAddr = req.ip;
+  const funnels = req.headers.referer;
+  try {
+    await db.runAsync(`CREATE TABLE IF NOT EXISTS clients_info (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      ip_address TEXT NOT NULL,
+      funnels TEXT NOT NULL,
+      created_at TEXT DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime'))
+      )`);
+    if(funnels !== '127.0.0.1') {
+      await db.runAsync(`INSERT INTO clients_info (ip_address, funnels) VALUES (?, ?)`, [ipAddr, funnels]);
+    }
+  } catch (err) {
+    if (err) console.log('유입경로 획득 실패, ',err);
+  }
 
   // 'YYYY-MM-DD' 형식
   const kstDateString = timeUtil.kstDateString();
