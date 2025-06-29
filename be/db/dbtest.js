@@ -129,12 +129,17 @@ db.run(`CREATE TABLE IF NOT EXISTS admin (
 // });
 
 db.all(`SELECT * FROM categories`, (err, rows) => {
-  if (err) console.log('post못가져옴', err);
+  if (err) console.log('categories못가져옴', err);
   else console.log(rows);
 });
 
 db.all(`SELECT * FROM admin`, (err, rows) => {
-  if (err) console.log('post못가져옴', err);
+  if (err) console.log('admin못가져옴', err);
+  else console.log(rows);
+});
+
+db.all(`SELECT * FROM clients_info`, (err, rows) => {
+  if (err) console.log('clients_info못가져옴', err);
   else console.log(rows);
 });
 
