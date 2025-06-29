@@ -16,6 +16,7 @@ exports.userIncrement = async(req, res) => {
       )`);
     if(funnels !== '127.0.0.1') {
       await db.runAsync(`INSERT INTO clients_info (ip_address, funnels) VALUES (?, ?)`, [ipAddr, funnels]);
+      return res.status(200).json({success:true, msg: '관리자 방문 건'});
     }
   } catch (err) {
     if (err) console.log('유입경로 획득 실패, ',err);
