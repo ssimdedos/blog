@@ -355,7 +355,7 @@ exports.createPost = async (req, res) => {
       newThumbnailUrl = newImageUrls[0];
     }
 
-    tempImgPath.forEach((oldPath, index) => {
+    tempImgPath?.forEach((oldPath, index) => {
       const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
       finalContent = finalContent.replace(oldPublicUrl, newImageUrls[index]);
     });
