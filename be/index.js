@@ -13,7 +13,7 @@ const dashboradRoutes = require('./routes/dashboradRoutes');
 const tagRoutes = require('./routes/tagRoutes');
 
 const app = express();
-
+app.set('trust proxy', true);
 const port = process.env.SERVERPORT;
 // const BASE_URL = process.env.BASE_URL;
 
@@ -21,10 +21,10 @@ app.use(cors());
 // app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/images', express.static(path.join(__dirname, process.env.UPLOAD_PATH))); 
 app.use('/images', (req, res, next) => {
-    console.log(`[Backend Log] Image request received: ${req.originalUrl}`);
+    // console.log(`[Backend Log] Image request received: ${req.originalUrl}`);
     // 실제 파일 시스템 경로를 로그로 출력하여 확인
     const requestedFilePath = path.join(process.env.UPLOAD_PATH, req.url.slice(1)); // '/images/' 제거 후 파일 경로 생성
-    console.log(`[Backend Log] Attempting to serve file: ${requestedFilePath}`);
+    // console.log(`[Backend Log] Attempting to serve file: ${requestedFilePath}`);
     next(); // express.static 미들웨어로 요청 전달
 }, express.static(process.env.UPLOAD_PATH, {
     setHeaders: (res, path, stat) => {
