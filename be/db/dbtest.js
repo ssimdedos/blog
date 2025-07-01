@@ -143,3 +143,8 @@ db.all(`SELECT * FROM clients_info`, (err, rows) => {
   else console.log(rows);
 });
 
+db.all(`SELECT id, view_count FROM posts WHERE view_count > 1`, (err, rows) => {
+  if (err) console.log('posts', err);
+  else console.log(rows);
+});
+
