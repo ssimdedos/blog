@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { fetchCategory, fetchSubcategory } from "../api/category";
 import { Link } from "react-router-dom";
 import './Sidebar.css';
+import { getHotPosts } from "../api/posts";
 
 const SidebarComp = () => {
   const [categoryList, setCategoryList] = useState([]);
   const [subcategoryList, setSubcategoryList] = useState([]);
   const [openCategories, setOpenCategories] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+  const [hotPosts, setHotPosts] = useState([]);
 
   useEffect(() => {
     // console.log('useEffect');
@@ -23,7 +25,13 @@ const SidebarComp = () => {
       console.error("서브카테고리 불러오기 실패:", error);
       setSubcategoryList([]); // 에러 발생 시 빈 배열로 설정
     });
+    getHotPosts().then(data => {
+      setHotPosts(data);
+    }).catch(error => {
+      console.error('인기글 가져오기 실패:', error);
+    });
   }, []);
+
 
   // 미디어 쿼리 리스너 설정
   useEffect(() => {
@@ -31,12 +39,10 @@ const SidebarComp = () => {
     const handleMediaQueryChange = (e) => {
       setIsMobile(e.matches);
     };
-
     // 초기 상태 설정
     setIsMobile(mediaQuery.matches);
     // 리스너 등록
     mediaQuery.addEventListener('change', handleMediaQueryChange);
-
     // 컴포넌트 언마운트 시 리스너 해제
     return () => {
       mediaQuery.removeEventListener('change', handleMediaQueryChange);
@@ -55,7 +61,7 @@ const SidebarComp = () => {
 
   return (
     <div>
-      {categoryList.length > 0 && Array.isArray(subcategoryList) && subcategoryList.length > 0 
+      {categoryList.length > 0 && Array.isArray(subcategoryList) && subcategoryList.length > 0
         ? categoryList.map((c, i) => {
           return (
             <div className='category-box' key={`category-box-${i}`} onClick={() => toggleCategory(c.id)} >
@@ -87,8 +93,19 @@ const SidebarComp = () => {
             </div>
           )
         })
-        : <h2>로딩 중</h2>
+        : <h2>메뉴 로딩 중</h2>
       }
+      <h4 className="hotPost-h4" >인기글</h4>
+      <div className="hotPost-container" >
+        {hotPosts.length > 0 ?
+          hotPosts.map((p => (
+            <li className="hotPost-li" key={`category-id-${p.id}`}  >
+              <Link to={`/pages/${p.id}/${p.slug}`} >{p.title}
+              </Link>
+            </ li>
+          )))
+          : <h2>인기글 로딩 중</h2>}
+      </div>
     </div>
   );
 };

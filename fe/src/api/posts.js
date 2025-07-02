@@ -66,3 +66,9 @@ export async function deletePost(id) {
 export async function increaseView(id) {
   await axios.post(`${API_BASE_URL}/${id}/increaseView`);
 }
+
+// 인기 글 목록 가져오기
+export async function getHotPosts() {
+  const res = await axios.get(`${API_BASE_URL}/hotPosts`);
+  return res.data;
+}

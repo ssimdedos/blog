@@ -639,3 +639,14 @@ exports.getPostByTag = async (req, res) => {
     res.status(500).json({ success: false, msg: '태그별 게시글 목록 가져오기 실패', error: err.message });
   }
 }
+
+exports.getHotPosts = async (req, res) => {
+  const query = `SELECT id, title, slug FROM posts ORDER BY view_count DESC LIMIT 5`;
+  try {
+    const postRes = await db.allAsync(query);
+    res.status(200).json(postRes);
+  } catch (err) {
+    console.log('인기글 가져오기 에러, ',err);
+    res.status(500).json({success:false, msg:'인기 게시글 가져오기 에러'});
+  }
+}

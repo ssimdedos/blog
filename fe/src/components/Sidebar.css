@@ -1,25 +1,46 @@
 /* Sidebar.css */
 
-/* --- 기존 스타일 유지 --- */
-.category-li {
+.hotPost-h4 {
+  font-family: 'MaruBuriSemiBold';
+  padding-top: 10px;
+  margin-bottom: 4px;
+}
+.hotPost-container {
+  font-family: 'MaruBuriSemiBold';
+  font-size: 0.8rem;
+  border-bottom: 1px dashed #d3d3d3; /* 항목 구분선 */
+  border-top: 1px dashed #d3d3d3; /* 항목 구분선 */
+}
+.hotPost-li {
   list-style: none;
   padding: 3px 12px;
   margin-bottom: 3px;
-  border-bottom: 1px solid #eee; /* 항목 구분선 */
-  font-family: 'MaruBuriSemiBold';
   /* 추가: 클릭 가능하고, flex 컨테이너로 만들어 토글 아이콘 정렬 */
   display: flex;
   justify-content: space-between; /* 텍스트와 아이콘을 양 끝으로 정렬 */
   align-items: center; /* 수직 중앙 정렬 */
   cursor: pointer; /* 클릭 가능한 요소임을 표시 */
+}
+.category-box {
+  border-bottom: 1px dashed #d3d3d3; /* 항목 구분선 */
+  font-family: 'MaruBuriSemiBold';
   font-size: 0.87rem;
+}
+.category-li {
+  list-style: none;
+  padding: 3px 12px;
+  margin-bottom: 3px;
+  display: flex;
+  justify-content: space-between; /* 텍스트와 아이콘을 양 끝으로 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  cursor: pointer; /* 클릭 가능한 요소임을 표시 */
 }
 
 .subcategory-li {
   list-style: none;
   padding: 3px 12px 3px 12px; /* 서브카테고리 들여쓰기 위해 padding-left 늘림 */
   margin-bottom: 3px;
-  border-bottom: 1px solid #eee; /* 항목 구분선 */
+  /* border-bottom: 1px solid #eee; */
   font-family: 'MaruBuri';
   font-size: 0.87rem;
   cursor: pointer; /* 클릭 가능한 요소임을 표시 */
