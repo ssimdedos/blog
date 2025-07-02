@@ -324,7 +324,7 @@ Gemini
     overflow: hidden; /* 넘치는 텍스트 숨김 */
     text-overflow: ellipsis; /* 넘치는 텍스트 ... 처리 */
     display: -webkit-box; /* 여러 줄 말줄임을 위한 설정 */
-    -webkit-line-clamp: 3; /* 최대 3줄까지 표시 (높이 550px에 맞춰 조정) */
+    -webkit-line-clamp: 3; /* 최대 3줄까지 표시  */
     -webkit-box-orient: vertical;
     flex-grow: 1; /* 제목이 남은 공간을 차지하도록 */
   }
