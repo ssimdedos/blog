@@ -398,24 +398,44 @@ exports.getPost = async (req, res) => {
   FROM tags t 
   JOIN post_tags pt ON t.id = pt.tag_id 
   WHERE pt.post_id = ?`;
-  const query3 = `SELECT id, title, slug, thumbnail FROM posts WHERE id < ? AND is_published = 1 AND deleted_at = 0 ORDER BY id DESC LIMIT 1`;
-  const query4 = `SELECT id, title, slug, thumbnail FROM posts WHERE id > ? AND is_published = 1 AND deleted_at = 0 ORDER BY id LIMIT 1`;
+  const query3 = `SELECT id, title, slug, thumbnail 
+    FROM posts 
+    WHERE id < ? AND 
+    is_published = 1 AND 
+    deleted_at = 0 AND 
+    (
+      (sub_category_id IS NOT NULL AND sub_category_id = (SELECT sub_category_id FROM posts WHERE id = ?))
+      OR
+      (sub_category_id IS NULL AND category_id = (SELECT category_id FROM posts WHERE id = ?))
+    ) 
+    ORDER BY id DESC LIMIT 1`;
+    const query4 = `SELECT id, title, slug, thumbnail 
+    FROM posts 
+    WHERE id > ? AND 
+    is_published = 1 AND 
+    deleted_at = 0 AND 
+    (
+      (sub_category_id IS NOT NULL AND sub_category_id = (SELECT sub_category_id FROM posts WHERE id = ?))
+      OR
+      (sub_category_id IS NULL AND category_id = (SELECT category_id FROM posts WHERE id = ?))
+    ) 
+    ORDER BY id LIMIT 1`;
 
   // 댓글 관련 쿼리
   const queryForComment = `SELECT id, post_id, author, content, parent_comment_id, created_at, deleted_at FROM comments WHERE post_id = ?`;
   try {
     const postInfo = await db.getAsync(query, [postId]);
     const tagArray = await db.allAsync(query2, [postId]);
-    const formerPost = await db.getAsync(query3, [postId]);
-    const nextPost = await db.getAsync(query4, [postId]);
+    const formerPost = await db.getAsync(query3, [postId, postId, postId]);
+    const nextPost = await db.getAsync(query4, [postId, postId, postId]);
     const commentArray = await db.allAsync(queryForComment, [postId]);
-    const modifiedPosts = {...postInfo, created_at: timeUtil.timeFormatting(postInfo['created_at'])};
+    const modifiedPosts = { ...postInfo, created_at: timeUtil.timeFormatting(postInfo['created_at']) };
     const modifiedComments = commentArray.map((cmt) => ({
       ...cmt,
       created_at: timeUtil.timeFormattingDetail(cmt.created_at)
     }));
     const data = { post: modifiedPosts, tags: tagArray, formerPost, nextPost, comments: modifiedComments }
-    res.json({ success: true, msg:'게시글 정보 및 관련 정보 가져오기 완료', data });
+    res.json({ success: true, msg: '게시글 정보 및 관련 정보 가져오기 완료', data });
   } catch (err) {
     console.error('게시글 못가져옴', err);
     res.status(500).json({ success: false, message: '게시글 불러오기 실패' })
@@ -481,7 +501,7 @@ exports.updatePost = async (req, res) => {
           }
         }
       }
-      if(deletedTags) {
+      if (deletedTags) {
         deletedTags.map((tag) => {
           db.run(`DELETE FROM post_tags WHERE post_id = ? AND tag_id = (SELECT id FROM tags WHERE name = ? )`, [id, tag]);
         });
