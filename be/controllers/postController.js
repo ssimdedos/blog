@@ -424,7 +424,9 @@ exports.getPost = async (req, res) => {
     FROM posts p
     JOIN post_tags pt
     ON p.id = pt.post_id
-    WHERE pt.tag_id = ?
+    WHERE pt.tag_id = ? AND
+    p.deleted_at = 0 AND
+    p.is_published = 1
     LIMIT 4`;
 
   // 댓글 관련 쿼리
