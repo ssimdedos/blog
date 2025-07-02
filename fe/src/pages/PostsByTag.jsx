@@ -6,7 +6,8 @@ const PostsByTag = () => {
   const { tagId, tagName } = useParams();
 
   useEffect(() => {
-  },[])
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  },[tagId])
   
 
   return (

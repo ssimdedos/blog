@@ -21,6 +21,7 @@ const Tags = () => {
       console.error('태그 로드 중 에러 발생:', err);
     } finally {
       setLoading(false);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   };
 

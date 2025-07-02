@@ -10,8 +10,6 @@ import PostsByTag from '../pages/PostsByTag';
 const AppRouter = () => {
   return (
     <Router>
-      {/* <HeaderRouter /> */}
-      {/* <SideBarRouter /> */}
       <MainLayout>
         <Routes>
           <Route path='/' element={<Main />} />
