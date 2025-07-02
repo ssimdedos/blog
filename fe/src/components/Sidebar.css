@@ -1,17 +1,17 @@
 /* Sidebar.css */
 
-.hotPost-h4 {
+.hot-post-h4 {
   font-family: 'MaruBuriSemiBold';
   padding-top: 10px;
   margin-bottom: 4px;
 }
-.hotPost-container {
+.hot-post-container {
   font-family: 'MaruBuriSemiBold';
   font-size: 0.8rem;
   border-bottom: 1px dashed #d3d3d3; /* 항목 구분선 */
   border-top: 1px dashed #d3d3d3; /* 항목 구분선 */
 }
-.hotPost-li {
+.hot-post-li {
   list-style: none;
   padding: 3px 12px;
   margin-bottom: 3px;

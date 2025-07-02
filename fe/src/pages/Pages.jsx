@@ -32,6 +32,8 @@ const Pages = () => {
   const [loading, setLoading] = useState(true);
   const [formerPost, setFormerPost] = useState({});
   const [nextPost, setNextPost] = useState({});
+  const [tagRelatedPosts, setTagRelatedPosts] = useState([]);
+  const [relatedPostTagName, setRelatedPostTagName] = useState('');
 
   // 댓글 섹션 상태
   const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
@@ -59,6 +61,8 @@ const Pages = () => {
         setTags(res.data.tags);
         setFormerPost(res.data.formerPost);
         setNextPost(res.data.nextPost);
+        setTagRelatedPosts(res.data.tagRelatedPostArray);
+        setRelatedPostTagName(res.data.highestPosCntTagName);
         if (res.data.comments) {
           const filterDeletedComments = res.data.comments.map(comment =>
             comment.deleted_at !== '0' ? { ...comment, content: '삭제된 댓글입니다.' } : comment
@@ -105,7 +109,7 @@ const Pages = () => {
     }
     if (commentForm.author === 'idea de mis dedos') {
       const authAdminRes = await authAdmin(commentForm.password);
-      if(!authAdminRes.success) {
+      if (!authAdminRes.success) {
         alert('비밀번호가 틀렸습니다.');
         return
       }
@@ -127,7 +131,7 @@ const Pages = () => {
       alert('댓글 제출 중 오류가 발생했습니다.');
     }
   };
-  
+
   // 대댓글 등록 핸들러
   const handleReplySubmit = async (e) => {
     e.preventDefault();
@@ -141,7 +145,7 @@ const Pages = () => {
     }
     if (replyForm.author === 'idea de mis dedos') {
       const authAdminRes = await authAdmin(replyForm.password);
-      if(!authAdminRes.success) {
+      if (!authAdminRes.success) {
         alert('비밀번호가 틀렸습니다.');
         return
       }
@@ -303,7 +307,7 @@ const Pages = () => {
           <div className="post-former">
             <Link to={`/pages/${formerPost.id}/${formerPost.slug}`} >
               <img src={formerPost.thumbnail} alt={`이전 포스트 썸네일: ${formerPost.title}`} />
-              <div className="post-text-content"> 
+              <div className="post-text-content">
                 <span>이전 포스트</span>
                 <span>{formerPost.title}</span>
               </div>
@@ -316,7 +320,7 @@ const Pages = () => {
         {nextPost ? (
           <div className="post-next">
             <Link to={`/pages/${nextPost.id}/${nextPost.slug}`} >
-              <div className="post-text-content"> 
+              <div className="post-text-content">
                 <span>다음 포스트</span>
                 <span>{nextPost.title}</span>
               </div>
@@ -326,6 +330,26 @@ const Pages = () => {
         ) : (
           <div className="post-placeholder next-placeholder"></div>
         )}
+      </div>
+      {/* 관련 태그 게시글 목록 */}
+      <h3 className="related-post-h3" >태그 #{relatedPostTagName} 관련 게시글</h3>
+      <div className="related-posts-outer-wrapper"> {/* 새로 추가된 래퍼 */}
+        <div className="related-posts-container">
+          {tagRelatedPosts.length > 0 ? (
+            tagRelatedPosts.map(p => (
+              <div className="tag-related-post" key={p.id}>
+                <Link to={`/pages/${p.id}/${p.slug}`} className="post-content-wrapper">
+                  <img src={p.thumbnail} alt={p.title} />
+                  <div className="post-title">
+                    {p.title}
+                  </div>
+                </Link>
+              </div>
+            ))
+          ) : (
+            <div></div>
+          )}
+        </div>
       </div>
     </div>
   )

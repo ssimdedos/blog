@@ -394,10 +394,10 @@ exports.getPost = async (req, res) => {
   // 게시글 관련 쿼리
   const query = `SELECT * FROM posts WHERE id = ?`;
   const query2 = `
-  SELECT t.id id, t.name name, (SELECT COUNT(pt.post_id) FROM post_tags pt WHERE pt.tag_id = t.id) postCnt
-  FROM tags t 
-  JOIN post_tags pt ON t.id = pt.tag_id 
-  WHERE pt.post_id = ?`;
+    SELECT t.id id, t.name name, (SELECT COUNT(pt.post_id) FROM post_tags pt WHERE pt.tag_id = t.id) postCnt
+    FROM tags t 
+    JOIN post_tags pt ON t.id = pt.tag_id 
+    WHERE pt.post_id = ?`;
   const query3 = `SELECT id, title, slug, thumbnail 
     FROM posts 
     WHERE id < ? AND 
@@ -409,7 +409,7 @@ exports.getPost = async (req, res) => {
       (sub_category_id IS NULL AND category_id = (SELECT category_id FROM posts WHERE id = ?))
     ) 
     ORDER BY id DESC LIMIT 1`;
-    const query4 = `SELECT id, title, slug, thumbnail 
+  const query4 = `SELECT id, title, slug, thumbnail 
     FROM posts 
     WHERE id > ? AND 
     is_published = 1 AND 
@@ -420,6 +420,12 @@ exports.getPost = async (req, res) => {
       (sub_category_id IS NULL AND category_id = (SELECT category_id FROM posts WHERE id = ?))
     ) 
     ORDER BY id LIMIT 1`;
+  const query5 = `SELECT p.id id, p.title title, p.slug slug, p.thumbnail thumbnail 
+    FROM posts p
+    JOIN post_tags pt
+    ON p.id = pt.post_id
+    WHERE pt.tag_id = ?
+    LIMIT 4`;
 
   // 댓글 관련 쿼리
   const queryForComment = `SELECT id, post_id, author, content, parent_comment_id, created_at, deleted_at FROM comments WHERE post_id = ?`;
@@ -429,12 +435,24 @@ exports.getPost = async (req, res) => {
     const formerPost = await db.getAsync(query3, [postId, postId, postId]);
     const nextPost = await db.getAsync(query4, [postId, postId, postId]);
     const commentArray = await db.allAsync(queryForComment, [postId]);
+
+    let highestPostCnt = -1;
+    let highestPostCntTagId = null;
+    let highestPosCntTagName = null;
+    for (const t of tagArray) {
+      if(t.postCnt > highestPostCnt) {
+        highestPostCnt = t.postCnt;
+        highestPostCntTagId = t.id;
+        highestPosCntTagName = t.name;
+      }
+    }
+    const tagRelatedPostArray = await db.allAsync(query5, [highestPostCntTagId]);
     const modifiedPosts = { ...postInfo, created_at: timeUtil.timeFormatting(postInfo['created_at']) };
     const modifiedComments = commentArray.map((cmt) => ({
       ...cmt,
       created_at: timeUtil.timeFormattingDetail(cmt.created_at)
     }));
-    const data = { post: modifiedPosts, tags: tagArray, formerPost, nextPost, comments: modifiedComments }
+    const data = { post: modifiedPosts, tags: tagArray, formerPost, nextPost, comments: modifiedComments, tagRelatedPostArray, highestPosCntTagName }
     res.json({ success: true, msg: '게시글 정보 및 관련 정보 가져오기 완료', data });
   } catch (err) {
     console.error('게시글 못가져옴', err);

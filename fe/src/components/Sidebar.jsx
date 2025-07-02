@@ -95,11 +95,11 @@ const SidebarComp = () => {
         })
         : <h2>메뉴 로딩 중</h2>
       }
-      <h4 className="hotPost-h4" >인기글</h4>
-      <div className="hotPost-container" >
+      <h4 className="hot-post-h4" >인기글</h4>
+      <div className="hot-post-container" >
         {hotPosts.length > 0 ?
           hotPosts.map((p => (
-            <li className="hotPost-li" key={`category-id-${p.id}`}  >
+            <li className="hot-post-li" key={`post-id-${p.id}`}  >
               <Link to={`/pages/${p.id}/${p.slug}`} >{p.title}
               </Link>
             </ li>
