@@ -404,9 +404,9 @@ exports.getPost = async (req, res) => {
     is_published = 1 AND 
     deleted_at = 0 AND 
     (
-      (sub_category_id IS NOT NULL AND sub_category_id = (SELECT sub_category_id FROM posts WHERE id = ?))
+      (sub_category_id IS NOT 0 AND sub_category_id = (SELECT sub_category_id FROM posts WHERE id = ?))
       OR
-      (sub_category_id IS NULL AND category_id = (SELECT category_id FROM posts WHERE id = ?))
+      (sub_category_id IS 0 AND category_id = (SELECT category_id FROM posts WHERE id = ?))
     ) 
     ORDER BY id DESC LIMIT 1`;
   const query4 = `SELECT id, title, slug, thumbnail 
@@ -415,9 +415,9 @@ exports.getPost = async (req, res) => {
     is_published = 1 AND 
     deleted_at = 0 AND 
     (
-      (sub_category_id IS NOT NULL AND sub_category_id = (SELECT sub_category_id FROM posts WHERE id = ?))
+      (sub_category_id IS NOT 0 AND sub_category_id = (SELECT sub_category_id FROM posts WHERE id = ?))
       OR
-      (sub_category_id IS NULL AND category_id = (SELECT category_id FROM posts WHERE id = ?))
+      (sub_category_id IS 0 AND category_id = (SELECT category_id FROM posts WHERE id = ?))
     ) 
     ORDER BY id LIMIT 1`;
   const query5 = `SELECT p.id id, p.title title, p.slug slug, p.thumbnail thumbnail 
