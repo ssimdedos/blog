@@ -50,7 +50,7 @@ function App() {
             <input
               type='password'
               placeholder='비밀번호를 입력해주세요.'
-              value={password}
+              value={password || ''}
               onChange={(e) => { setPassword(e.target.value) }}
               onKeyDown={handleKeyPress}
             />
