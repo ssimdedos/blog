@@ -62,9 +62,38 @@
   gap: 30px;
 }
 
+.order-1 {
+    order: 1;
+}
+.order-2 {
+    order: 2;
+}
+.order-3 {
+    order: 3;
+}
+.order-4 {
+    order: 4;
+}
+.order-5 {
+    order: 5;
+}
+.order-6 {
+    order: 6;
+}
+
 @media (min-width: 768px) {
   .dashboard-sections {
     grid-template-columns: 1fr 1fr; /* 768px 이상에서는 2열로 */
+  }
+
+}
+
+@media (max-width: 768px) {
+  .order-4 {
+    order: 3;
+  }
+  .order-3 {
+    order: 4;
   }
 }
 

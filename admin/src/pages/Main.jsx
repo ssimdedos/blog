@@ -33,7 +33,7 @@ const Main = () => {
             totalPosts,
             topPostList,
             topPostGraph,
-            visitorGraph 
+            visitorGraph
           } = res.data;
 
           let parsedTopPostList = [];
@@ -150,7 +150,7 @@ const Main = () => {
 
       {/* 상세 통계 섹션 */}
       <div className="dashboard-sections">
-        <div className="dashboard-section chart-section">
+        <div className="dashboard-section chart-section order-1">
           <h2>일일 방문자 추이</h2>
           <div className="placeholder-chart">
             <ul>
@@ -166,7 +166,7 @@ const Main = () => {
             </ul>
           </div>
         </div>
-        <div className="dashboard-section chart-section">
+        <div className="dashboard-section chart-section order-2">
           <h2>인기 게시글 (Top 5)</h2>
           <div className="placeholder-chart">
             <ul>
@@ -182,7 +182,7 @@ const Main = () => {
             </ul>
           </div>
         </div>
-        <div className="dashboard-section top-posts-section">
+        <div className="dashboard-section top-posts-section order-4">
           <ul className="top-posts-list">
             {dashboardData.topPostList.length > 0 ? (
               <table className="top-posts-table">
@@ -208,20 +208,17 @@ const Main = () => {
             )}
           </ul>
         </div>
-      </div>
-
-      {/* 추가 통계 섹션 (필요시 확장) */}
-      {/* <div className="dashboard-sections">
-        <div className="dashboard-section">
+        <div className="dashboard-section order-3">
           <h2>최근 댓글</h2>
           <p>여기에 최근 댓글 목록이 표시됩니다.</p>
         </div>
-        <div className="dashboard-section">
-          <h2>유입 경로</h2>
+        <div className="dashboard-section order-5">
+          <h2>접근 목록</h2>
           <p>여기에 유입 경로 통계가 표시됩니다.</p>
         </div>
-      </div> */}
+      </div>
     </div>
+
   );
 };
 
