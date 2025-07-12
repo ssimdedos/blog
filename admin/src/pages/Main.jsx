@@ -13,6 +13,7 @@ const Main = () => {
     topPostList: [],
     topPostGraph: null,
     visitorGraph: null,
+    recentComments: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,7 +34,8 @@ const Main = () => {
             totalPosts,
             topPostList,
             topPostGraph,
-            visitorGraph
+            visitorGraph,
+            recentComments
           } = res.data;
 
           let parsedTopPostList = [];
@@ -57,6 +59,7 @@ const Main = () => {
             topPostList: parsedTopPostList,
             topPostGraph: parsedPostGraph, // 파싱된 그래프 JSON 데이터 저장
             visitorGraph: parsedVisitorGraph,
+            recentComments
           });
         } else {
           setError(res.msg || '대시보드 데이터 불러오기 실패');
@@ -185,7 +188,7 @@ const Main = () => {
         <div className="dashboard-section top-posts-section order-4">
           <ul className="top-posts-list">
             {dashboardData.topPostList.length > 0 ? (
-              <table className="top-posts-table">
+              <table className="top-posts-table dashboard-table">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -196,9 +199,9 @@ const Main = () => {
                 <tbody>
                   {dashboardData.topPostList.map((post) => (
                     <tr key={post.id}>
-                      <td>{post.id}</td>
-                      <td>{post.title}</td>
-                      <td>{post.view_count.toLocaleString()}</td>
+                      <td data-label="ID">{post.id}</td>
+                      <td data-label="제목">{post.title}</td>
+                      <td data-label="조회수">{post.view_count.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -210,7 +213,30 @@ const Main = () => {
         </div>
         <div className="dashboard-section order-3">
           <h2>최근 댓글</h2>
-          <p>여기에 최근 댓글 목록이 표시됩니다.</p>
+          <ul className='recent-comment-list'>
+            {dashboardData.recentComments.length > 0 ? (
+              <table className="recent-comment-table dashboard-table">
+                <thead>
+                  <tr>
+                    <th>작성자</th>
+                    <th>내용</th>
+                    <th>등록 날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dashboardData.recentComments.map((cmt) => (
+                    <tr key={cmt.id}>
+                      <td data-label="작성자">{cmt.author}</td>
+                      <td data-label="내용">{cmt.content}</td>
+                      <td data-label="등록 날짜">{cmt.created_at}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>최근 작성된 댓글이 없습니다.</p>
+            )}
+          </ul>
         </div>
         <div className="dashboard-section order-5">
           <h2>접근 목록</h2>

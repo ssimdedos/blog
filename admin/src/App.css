@@ -80,7 +80,8 @@ body {
     box-sizing: border-box;
     flex-direction: column;
     gap: 10px;
-  }
+    width: 95vw;
+}
 }
 
 /* 모바일 뷰를 위한 반응형 조정 */
