@@ -8,7 +8,14 @@ exports.getDashboardInfo = async (req, res) => {
     let query = `SELECT SUM(unique_visitors_count) total_unique_visitors, SUM(today_total_page_view) total_page_view FROM visitors`;
     let query2 = `SELECT unique_visitors_count, today_total_page_view FROM visitors WHERE visit_date = ?`;
     let query3 = `SELECT COUNT(id) cnt FROM posts WHERE deleted_at = 0`;
-    let query4 = `SELECT id, post_id, author, content, created_at from comments WHERE author != 'idea de mis dedos' AND deleted_at = 0 ORDER BY id DESC LIMIT 7`;
+    let query4 = `
+    SELECT c.id id, c.post_id post_id, c.author author, c.content content, c.created_at created_at, p.slug slug 
+    FROM comments c 
+    LEFT JOIN posts p ON c.post_id = p.id 
+    WHERE c.author != 'idea de mis dedos' 
+    AND c.deleted_at = 0 
+    ORDER BY c.id DESC 
+    LIMIT 7`;
     const [totalRow, todayRow, totalPostCnt, recentComments] = await Promise.all([
       // 총 방문자 수 및 총 페이지 뷰
       db.getAsync(query),
@@ -37,7 +44,13 @@ exports.getDashboardInfo = async (req, res) => {
       const topPostList = JSON.parse(topPostData.top_post_list);
       const visitorsGraphRes = await fetch('http://localhost:7304/visitors_graph');
       const visitorData = await visitorsGraphRes.json();
-      resData = { ...resData, topPostGraph: topPostData.graph_data, topPostList, visitorGraph: visitorData.graph_data }
+      const funnelsRes = await fetch('http://localhost:7304/funnels_data');
+      const FunnelsData = await funnelsRes.json();
+      const top10Country = JSON.parse(FunnelsData.top_10_country);
+      const top10City = JSON.parse(FunnelsData.top_10_city);
+      const funnels100 = JSON.parse(FunnelsData.funnels_100);
+      const funnelsData = {top10City, top10Country, funnels100};
+      resData = { ...resData, topPostGraph: topPostData.graph_data, topPostList, visitorGraph: visitorData.graph_data, funnelsGraph: FunnelsData.graph_data, funnelsData };
       return res.status(200).json({ success: true, msg: '대시보드 데이터 불러오기 성공', data: resData });
     } catch (err) {
       console.log(err);

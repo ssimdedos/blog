@@ -61,39 +61,80 @@
     grid-template-columns: 1fr; /* 기본적으로 1열 */
     gap: 30px;
 }
-
-/* ORDERING FOR SMALL SCREENS (default) */
-/* HTML 순서와 다르게 모바일에서 보여주고 싶을 때 사용 */
-/* 예시: top-posts-section (목록)이 chart-section (그래프)보다 위에 오게 */
-.top-posts-section { /* `dashboard-section top-posts-section` */
-    order: 1; 
+.order-1 {
+    order: 1;
 }
-.chart-section { /* `dashboard-section chart-section` */
+.order-2 {
     order: 2;
 }
+.order-3 {
+    order: 3;
+}
+.order-4 {
+    order: 4;
+}
+.order-5 {
+    order: 5;
+}
 
-/* 일일 방문자 추이도 chart-section 클래스를 공유한다면 순서에 영향을 받음 */
-/* 만약 일일 방문자 추이가 세 번째로 오고 싶다면: */
-/* .daily-visitors-trend-section { order: 3; } */
+.access-list-container {
+    width: 100%;
+    height: 500px;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
 
+.td-funnels {
+    width: 300px; /* 고정 너비 설정 */
+    white-space: normal; /* 기본값, 명시적으로 설정해도 됨 */
+    word-wrap: break-word; /* 긴 단어가 잘리지 않고 줄바꿈되도록 (IE 호환성) */
+    word-break: break-word; /* 매우 긴 단어의 경우 (CSS3) */
+    /* overflow: hidden; */ /* 더 이상 필요 없을 수 있음 */
+    /* text-overflow: ellipsis; */ /* 더 이상 필요 없을 수 있음 */
+}
+
+.access-list-table th:nth-child(1),
+.access-list-table td:nth-child(1) {
+    width: 15%; /* IP 주소 */
+    min-width: 80px; /* 모바일에서도 최소한 이 너비는 유지 */
+}
+
+.access-list-table th:nth-child(2),
+.access-list-table td:nth-child(2) {
+    width: 45%; /* 유입 경로 */
+    min-width: 150px; /* 유입 경로가 너무 짧아지지 않도록 */
+}
+
+.access-list-table th:nth-child(3),
+.access-list-table td:nth-child(3) {
+    width: 19%; /* 접근 시각 */
+    min-width: 120px;
+}
+
+.access-list-table th:nth-child(4),
+.access-list-table td:nth-child(4) {
+    width: 11%; /* 접근 국가 */
+    min-width: 80px;
+}
+
+.access-list-table th:nth-child(5),
+.access-list-table td:nth-child(5) {
+    width: 10%; /* 접근 도시 */
+    min-width: 80px;
+}
 
 /* ---------------------------------------------------- */
 /* 데스크톱/큰 화면 (768px 이상) */
-@media (min-width: 768px) {
+@media (min-width: 960px) {
     .dashboard-sections {
         grid-template-columns: 1fr 1fr; /* 768px 이상에서는 2열로 */
     }
 
-    /* 데스크톱/큰 화면에서 원하는 순서 (기본 HTML 순서대로) */
-    .top-posts-section {
-        order: unset; /* order를 초기화하여 HTML 순서로 돌아감 */
-    }
-    .chart-section {
-        order: unset; /* order를 초기화하여 HTML 순서로 돌아감 */
-    }
+
         /* 데스크톱/큰 화면에서만 적용되는 최소 너비 또는 유연한 너비 */
     .dashboard-section {
         min-width: auto; /* 기본값으로 리셋하거나 필요에 따라 최소값 설정 */
+        max-width: 594px;
         /* flex: 1; (grid일 때는 grid-template-columns에 의해 제어되므로 필요 없을 수 있음) */
     }
     .chart-section {
@@ -112,8 +153,8 @@
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     padding: 25px;
-    /* 모바일에서 너비 최적화 */
     width: 100%; /* 부모(grid) 너비에 꽉 차게 */
+    max-width: 580px;
     box-sizing: border-box; /* padding이 너비 계산에 포함되도록 */
     min-width: unset;
   }
@@ -244,34 +285,11 @@
     cursor: pointer;
 }
 
-/* 특정 컬럼 너비 조정 (선택 사항) */
-/* .dashboard-table th:nth-child(1),
-.dashboard-table td:nth-child(1) {
-    width: 15%;
-    white-space: wrap;
-    overflow: hidden;
-}
-
-.dashboard-table th:nth-child(2),
-.dashboard-table td:nth-child(2) {
-    width: 55%;
-    white-space: normal;
-    word-break: break-word; 
-}
-
-.dashboard-table th:nth-child(3),
-.dashboard-table td:nth-child(3) {
-    width: 30%;
-    white-space: wrap;
-    overflow: hidden;
-} */
-
-
 /* 모바일 반응형 (테이블 스크롤) */
 @media (max-width: 768px) {
     /* dashboard-section의 너비 최적화 */
     .dashboard-section {
-        width: calc(90vw - 20px); /* 좌우 10px 패딩을 고려하여 100% 너비 */
+        width: calc(87vw - 20px); /* 좌우 10px 패딩을 고려하여 100% 너비 */
         margin: 0 auto; /* 중앙 정렬 */
         padding: 15px;
     }
@@ -313,5 +331,11 @@
         font-weight: bold;
         text-align: left;
         color: #555;
+    }
+    .order-3 {
+        order: 4;
+    }
+    .order-4 {
+        order: 3;
     }
 }
