@@ -39,12 +39,12 @@ exports.getDashboardInfo = async (req, res) => {
     };
 
     try {
-      const postsGraphRes = await fetch('http://localhost:7304/top_posts_graph');
+      const postsGraphRes = await fetch(`${process.env.FLASK_URL}/top_posts_graph`);
       const topPostData = await postsGraphRes.json();
       const topPostList = JSON.parse(topPostData.top_post_list);
-      const visitorsGraphRes = await fetch('http://localhost:7304/visitors_graph');
+      const visitorsGraphRes = await fetch(`${process.env.FLASK_URL}/visitors_graph`);
       const visitorData = await visitorsGraphRes.json();
-      const funnelsRes = await fetch('http://localhost:7304/funnels_data');
+      const funnelsRes = await fetch(`${process.env.FLASK_URL}/funnels_data`);
       const FunnelsData = await funnelsRes.json();
       const top10Country = JSON.parse(FunnelsData.top_10_country);
       const top10City = JSON.parse(FunnelsData.top_10_city);

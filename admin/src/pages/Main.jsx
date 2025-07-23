@@ -59,7 +59,8 @@ const Main = () => {
               created_at: funnelsData.funnels100.created_at[key],
               country: funnelsData.funnels100.country[key],
               city: funnelsData.funnels100.city[key],
-            }))
+            }));
+            parsedFunnels100.sort((a, b) => b.id - a.id);
           }
           // console.log(visitorGraph);
           const parsedPostGraph = JSON.parse(topPostGraph);
