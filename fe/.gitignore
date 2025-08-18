@@ -25,3 +25,4 @@ yarn-error.log*
 
 .env
 
+/public/ads.txt
