@@ -1,4 +1,6 @@
 const sql = require('sqlite3').verbose();
+const { SitemapStream, streamToPromise } = require('sitemap');
+const fs = require('fs');
 const path = require('path');
 const db_path = path.resolve(__dirname, 'blog.db');
 const util = require('util');
@@ -32,5 +34,49 @@ db.runAsync = function(sql, ...params) {
 //     }
 //   }
 // )
+
+
+// sitemap 생성 함수
+async function generateSitemap() {
+  const sitemap = new SitemapStream({ hostname: 'https://ideademisdedos.com' });
+
+  // DB에서 게시글 가져오기
+  db.all('SELECT id, slug FROM posts', async (err, rows) => {
+    if (err) {
+      console.error('DB 오류:', err);
+      return;
+    }
+    //홈 
+    sitemap.write({
+      url: `/`,
+      changefreq: 'monthly',
+      priority: 1,
+    });
+    //태그 
+    sitemap.write({
+      url: `/tag`,
+      changefreq: 'monthly',
+      priority: 0.7,
+    });
+    // 각 게시글을 sitemap에 추가
+    rows.forEach(row => {
+      sitemap.write({
+        url: `/pages/${row.id}/${row.slug}`,
+        changefreq: 'monthly',
+        priority: 0.8,
+      });
+    });
+
+    sitemap.end();
+
+    // XML 파일로 저장
+    const xml = await streamToPromise(sitemap);
+    const sitemapPath = path.resolve(__dirname, '../../fe/public/sitemap.xml');
+    fs.writeFileSync(sitemapPath, xml.toString(), 'utf8');
+    console.log('✅ sitemap.xml 생성 완료!');
+  });
+}
+
+generateSitemap();
 
 module.exports = db;

@@ -1,0 +1,37 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!--  홈  -->
+<url>
+<loc>https://ideademisdedos.com/</loc>
+<changefreq>weekly</changefreq>
+<priority>1.0</priority>
+</url>
+<!--  태그 목록  -->
+<url>
+<loc>https://ideademisdedos.com/tag</loc>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<!--  예시 페이지  -->
+<url>
+<loc>https://ideademisdedos.com/pages/44/argentina-palermo-pizza</loc>
+<changefreq>monthly</changefreq>
+<priority>0.9</priority>
+</url>
+<!--  예시 카테고리  -->
+<url>
+<loc>https://ideademisdedos.com/category/1</loc>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://ideademisdedos.com/category/1/sub/2</loc>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+<!--  예시 태그별 포스트  -->
+<url>
+<loc>https://ideademisdedos.com/tag/food/Food</loc>
+<changefreq>weekly</changefreq>
+<priority>0.7</priority>
+</url>
+</urlset>
