@@ -41,7 +41,6 @@ export async function fetchPostsByTag(id, pageNum) {
 // 게시글 하나 가져오기
 export async function fetchPost(id) {
   const res = await axios.get(`${API_BASE_URL}/${id}`);
-  console.log(res.data);
   return res.data;
 }
 

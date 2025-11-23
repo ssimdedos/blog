@@ -433,6 +433,10 @@ exports.getPost = async (req, res) => {
   const queryForComment = `SELECT id, post_id, author, content, parent_comment_id, created_at, deleted_at FROM comments WHERE post_id = ?`;
   try {
     const postInfo = await db.getAsync(query, [postId]);
+    if (!postInfo) {
+      console.warn(`게시글 ID ${postId}에 해당하는 게시글이 없습니다.`);
+      return res.status(404).json({ success: false, message: '게시글이 존재하지 않습니다.' });
+    }
     const tagArray = await db.allAsync(query2, [postId]);
     const formerPost = await db.getAsync(query3, [postId, postId, postId]);
     const nextPost = await db.getAsync(query4, [postId, postId, postId]);
@@ -442,7 +446,7 @@ exports.getPost = async (req, res) => {
     let highestPostCntTagId = null;
     let highestPosCntTagName = null;
     for (const t of tagArray) {
-      if(t.postCnt > highestPostCnt) {
+      if (t.postCnt > highestPostCnt) {
         highestPostCnt = t.postCnt;
         highestPostCntTagId = t.id;
         highestPosCntTagName = t.name;
@@ -459,7 +463,7 @@ exports.getPost = async (req, res) => {
     res.json({ success: true, msg: '게시글 정보 및 관련 정보 가져오기 완료', data });
   } catch (err) {
     console.error('게시글 못가져옴', err);
-    res.status(500).json({ success: false, message: '게시글 불러오기 실패' })
+    return res.status(500).json({ success: false, message: '게시글 불러오기 실패' });
   }
 }
 
@@ -667,7 +671,7 @@ exports.getHotPosts = async (req, res) => {
     const postRes = await db.allAsync(query);
     res.status(200).json(postRes);
   } catch (err) {
-    console.log('인기글 가져오기 에러, ',err);
-    res.status(500).json({success:false, msg:'인기 게시글 가져오기 에러'});
+    console.log('인기글 가져오기 에러, ', err);
+    res.status(500).json({ success: false, msg: '인기 게시글 가져오기 에러' });
   }
 }

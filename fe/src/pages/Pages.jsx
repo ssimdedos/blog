@@ -57,9 +57,10 @@ const Pages = () => {
 
   const getPost = async (id) => {
     try {
-      fetchPost(id).then((res) => {
+      const res = await fetchPost(id);
         if(!slug) {
           navigate(`/pages/${id}/${res.data.post.slug}`, { replace: true });
+          return;
         }
         setPostData(res.data.post);
         setTags(res.data.tags);
@@ -74,9 +75,9 @@ const Pages = () => {
           setComments(filterDeletedComments); // 플랫 목록 저장
           setCommentTree(buildCommentTree(filterDeletedComments)); // 트리 구조 생성 및 저장
         }
-      });
     } catch (err) {
-      console.err('Error', err);
+      console.error('Error', err);
+      navigate('/', { replace: true });
     } finally {
       setLoading(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -85,7 +86,7 @@ const Pages = () => {
 
   useEffect(() => {
     getPost(id);
-  }, [id]);
+  }, [id, slug]);
 
   useEffect(() => {
     setCommentTree(buildCommentTree(comments));
