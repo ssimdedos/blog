@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { fetchPost, increaseView } from "../api/posts";
 import parse from "html-react-parser";
 import { addComment, deleteComment } from "../api/comment";
@@ -25,7 +25,8 @@ const buildCommentTree = (flatComments, parentId = null) => {
 
 
 const Pages = () => {
-  const { id } = useParams();
+  const navigate = useNavigate();
+  const { id, slug } = useParams();
   const [cookie, setCookie] = useCookies([`viewedPost_${id}`]);
   const [postData, setPostData] = useState({});
   const [tags, setTags] = useState({});
@@ -57,6 +58,9 @@ const Pages = () => {
   const getPost = async (id) => {
     try {
       fetchPost(id).then((res) => {
+        if(!slug) {
+          navigate(`/pages/${id}/${res.data.post.slug}`, { replace: true });
+        }
         setPostData(res.data.post);
         setTags(res.data.tags);
         setFormerPost(res.data.formerPost);

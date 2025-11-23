@@ -16,6 +16,7 @@ const AppRouter = () => {
           <Route path='/category/:id' element={<Category /> } />
           <Route path='/category/:id/sub/:sub_id' element={<Category /> } />
           <Route path='/pages/:id/:slug' element={<Pages />} />
+          <Route path='/pages/:id' element={<Pages />} />
           <Route path='/tag' element={<Tags />} />
           <Route path='/tag/:tagId/:tagName' element={<PostsByTag />} />
         </Routes>

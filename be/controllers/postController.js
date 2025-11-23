@@ -454,7 +454,8 @@ exports.getPost = async (req, res) => {
       ...cmt,
       created_at: timeUtil.timeFormattingDetail(cmt.created_at)
     }));
-    const data = { post: modifiedPosts, tags: tagArray, formerPost, nextPost, comments: modifiedComments, tagRelatedPostArray, highestPosCntTagName }
+    const data = { post: modifiedPosts, tags: tagArray, formerPost, nextPost, comments: modifiedComments, tagRelatedPostArray, highestPosCntTagName };
+    // console.log(data);
     res.json({ success: true, msg: '게시글 정보 및 관련 정보 가져오기 완료', data });
   } catch (err) {
     console.error('게시글 못가져옴', err);
