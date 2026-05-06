@@ -41,7 +41,7 @@ async function generateSitemap() {
   const sitemap = new SitemapStream({ hostname: 'https://ideademisdedos.com' });
 
   // DB에서 게시글 가져오기
-  db.all('SELECT id, slug FROM posts', async (err, rows) => {
+  db.all(`SELECT id, slug, updated_at FROM posts WHERE is_published = 1 AND deleted_at = '0'`, async (err, rows) => {
     if (err) {
       console.error('DB 오류:', err);
       return;
@@ -63,6 +63,7 @@ async function generateSitemap() {
       sitemap.write({
         url: `/pages/${row.id}/${row.slug}`,
         changefreq: 'monthly',
+        lastmod: new Date(parseInt(row.updated_at)).toISOString(),
         priority: 0.8,
       });
     });

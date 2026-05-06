@@ -6,10 +6,13 @@ import { addComment, deleteComment } from "../api/comment";
 import { useCookies } from 'react-cookie';
 import CommentItem from "../components/CommentItem";
 import { useToast, ToastContainer } from "../components/Toast";
+import { Helmet } from "react-helmet-async";
 import './Pages.css';
 import './PagesPostDetails.css';
 import './PostComment.css';
 import { authAdmin } from "../api/users";
+
+const stripHtml = (html) => html ? html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : '';
 
 const buildCommentTree = (flatComments, parentId = null) => {
   const tree = [];
@@ -219,8 +222,45 @@ const Pages = () => {
     return <div className="post-not-found">게시글을 찾을 수 없습니다.</div>;
   }
 
+  const pageDescription = postData.sub_title || stripHtml(postData.content).substring(0, 160);
+  const pageUrl = `https://ideademisdedos.com/pages/${postData.id}/${postData.slug}`;
+
   return (
     <div className="post-detail-container">
+      <Helmet>
+        <title>{postData.title} | Idea de mis dedos</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={pageUrl} />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={postData.title} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={postData.thumbnail} />
+        <meta property="og:url" content={pageUrl} />
+
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": postData.title,
+            "description": pageDescription,
+            "image": postData.thumbnail,
+            "url": pageUrl,
+            "datePublished": postData.created_at_raw ? new Date(parseInt(postData.created_at_raw)).toISOString() : undefined,
+            "dateModified": postData.updated_at ? new Date(parseInt(postData.updated_at)).toISOString() : undefined,
+            "author": {
+              "@type": "Person",
+              "name": postData.author
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Idea de mis dedos",
+              "url": "https://ideademisdedos.com"
+            },
+            "mainEntityOfPage": pageUrl
+          })}
+        </script>
+      </Helmet>
       <ToastContainer toasts={toasts} onClose={removeToast} />
       {postData.thumbnail && (
         <div className="post-thumbnail-wrapper">

@@ -460,7 +460,11 @@ exports.getPost = async (req, res) => {
       }
     }
     const tagRelatedPostArray = await db.allAsync(query5, [highestPostCntTagId]);
-    const modifiedPosts = { ...postInfo, created_at: timeUtil.timeFormatting(postInfo['created_at']) };
+    const modifiedPosts = {
+      ...postInfo,
+      created_at: timeUtil.timeFormatting(postInfo['created_at']),
+      created_at_raw: postInfo['created_at'],
+    };
     const modifiedComments = commentArray.map((cmt) => ({
       ...cmt,
       created_at: timeUtil.timeFormattingDetail(cmt.created_at)
