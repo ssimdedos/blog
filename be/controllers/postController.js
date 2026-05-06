@@ -8,9 +8,13 @@ const timeUtil = require('../utils/timeFormat');
 
 const UPLOAD_PATH = path.join(__dirname, '../', process.env.UPLOAD_PATH);
 const BASE_URL = process.env.BASE_URL;
-const date = new Date();
-const date2 = String(date.getFullYear()) + '_' + (date.getMonth() + 1).toString().padStart(2, '0') + '_' + date.getDate().toString().padStart(2, '0');
-const todayUploadDir = path.join(UPLOAD_PATH, date2);
+function getTodayUploadDir() {
+  const now = new Date();
+  const d = String(now.getFullYear()) + '_'
+    + (now.getMonth() + 1).toString().padStart(2, '0') + '_'
+    + now.getDate().toString().padStart(2, '0');
+  return path.join(UPLOAD_PATH, d);
+}
 // 없으면 업로드폴더 생성
 try {
   fs.mkdirSync(UPLOAD_PATH, { recursive: true }); // recursive: true는 상위 디렉토리도 함께 생성
@@ -23,9 +27,10 @@ try {
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // 이미지 저장 경로 지정
-    fs.mkdir(todayUploadDir, { recursive: true }, (err) => {
+    const todayDir = getTodayUploadDir();
+    fs.mkdir(todayDir, { recursive: true }, (err) => {
       if (err) return cb(err);
-      cb(null, todayUploadDir);
+      cb(null, todayDir);
     });
   },
   filename: function (req, file, cb) {
@@ -91,7 +96,7 @@ exports.getAllPosts = (req, res) => {
     // console.log('all들어옴');
   }
   if (pageNum) {
-    query = query + ` LIMIT ${limit} OFFSET ${pageNum > 1 ? (pageNum - 1) * limit - 1 : 0}`
+    query = query + ` LIMIT ${limit} OFFSET ${(pageNum - 1) * limit}`
     // query = query + ` LIMIT ${9} OFFSET 0`;
   }
   db.all(query, (err, rows1) => {
@@ -278,9 +283,10 @@ exports.moveImagesToPostFolder = async (oldFilePaths, postId) => {
       }
     }
     try {
-      if (fs.existsSync(todayUploadDir)) {
-        await fs.promises.rm(todayUploadDir, { recursive: true, force: true });
-        console.log(`임시 이미지 폴더 삭제: ${todayUploadDir}`);
+      const todayDir = getTodayUploadDir();
+      if (fs.existsSync(todayDir)) {
+        await fs.promises.rm(todayDir, { recursive: true, force: true });
+        console.log(`임시 이미지 폴더 삭제: ${todayDir}`);
       }
     } catch (err) {
       console.error(`Error deleting image directory for post ID ${postId}: ${err}`);
@@ -468,72 +474,68 @@ exports.getPost = async (req, res) => {
 }
 
 exports.updatePost = async (req, res) => {
-  const date = new Date();
-  const now = date.getTime();
+  const now = Date.now();
   const updateKeys = Object.keys(req.body);
-  let updateData = [];
+  const updateData = [];
   const { tags, deletedTags, tempImgPath, content, thumbnail } = req.body;
   const { id } = req.params;
-  // console.log(thumbnail);
+
   let query = `UPDATE posts SET `;
-  updateKeys.map((e, i) => {
+  updateKeys.forEach((e) => {
     if (e !== 'tags' && e !== 'tempImgPath' && e !== 'deletedTags') {
-      query = query + `${e} = ?, `;
+      query += `${e} = ?, `;
       updateData.push(req.body[e]);
     }
   });
-  query = query + ` updated_at = ?`;
-  // query = query.slice(0, -2);
-  query = query + ` WHERE id = ?`;
-  updateData.push(now);
-  updateData.push(id);
-  // console.log(updateData);
-  db.run(query, updateData, async (err) => {
-    if (err) {
-      console.error('게시글 업데이트 실패', err);
-      res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
+  query += `updated_at = ? WHERE id = ?`;
+  updateData.push(now, id);
+
+  try {
+    await new Promise((resolve, reject) => {
+      db.run(query, updateData, (err) => (err ? reject(err) : resolve()));
+    });
+
+    let newThumbnailUrl = thumbnail || `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
+
+    if (tempImgPath?.length) {
+      const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, id);
+      let finalContent = content;
+      if (newImageUrls[0] !== undefined) newThumbnailUrl = newImageUrls[0];
+      tempImgPath.forEach((oldPath, index) => {
+        const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
+        finalContent = finalContent.replace(oldPublicUrl, newImageUrls[index]);
+      });
+      console.log(`[POST UPDATE]: ${id}, thumbnail: ${newThumbnailUrl}`);
+      await new Promise((resolve, reject) => {
+        db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, id], (err) => (err ? reject(err) : resolve()));
+      });
+    } else {
+      await new Promise((resolve, reject) => {
+        db.run(`UPDATE posts SET thumbnail = ? WHERE id = ?`, [newThumbnailUrl, id], (err) => (err ? reject(err) : resolve()));
+      });
     }
-    else {
-      // console.log(tempImgPath);
-      // let newThumbnailUrl = `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
-      let newThumbnailUrl = thumbnail ? thumbnail : `${BASE_URL}/images/${path.join('logo', 'logo192.png').replace(/\\/g, '/')}`;
-      if (tempImgPath !== undefined && tempImgPath.length) {
-        const newImageUrls = await this.moveImagesToPostFolder(tempImgPath, id);
-        // console.log(newImageUrls);
-        let finalContent = content;
-        if (newImageUrls[0] !== undefined) {
-          newThumbnailUrl = newImageUrls[0];
-        }
-        tempImgPath.forEach((oldPath, index) => {
-          const oldPublicUrl = `/images/${path.relative(UPLOAD_PATH, oldPath).replace(/\\/g, '/')}`;
-          finalContent = finalContent.replace(oldPublicUrl, newImageUrls[index]);
-        });
-        console.log(`[POST UPDATE]: ${id}, thumbnail: ${newThumbnailUrl}`);
-        // 바뀐 content로 업데이트
-        db.run(`UPDATE posts SET content = ?, thumbnail = ? WHERE id = ?`, [finalContent, newThumbnailUrl, id]);
-      } else {
-        // 썸네일이 있다가 사라진 경우도 있어서
-        db.run(`UPDATE posts SET thumbnail = ? WHERE id = ?`, [newThumbnailUrl, id]);
+
+    if (tags?.length) {
+      const tagArray = tags.replace(/\s+/g, '').split(',');
+      for (const tagName of tagArray) {
+        const tagId = await getOrCreateTagId(tagName);
+        await db.runAsync(`INSERT OR IGNORE INTO post_tags(post_id, tag_id) VALUES(${id}, ${tagId})`);
       }
-      if (tags !== undefined && tags.length) {
-        // tag 등록 및 tag post 관계 설정
-        const tagArray = tags.replace(/\s+/g, '').split(',');
-        console.log(tagArray);
-        if (tagArray.length > 0) {
-          for (let i = 0; i < tagArray.length; i++) {
-            const tagId = await getOrCreateTagId(tagArray[i]);
-            db.run(`INSERT OR IGNORE INTO post_tags(post_id, tag_id) VALUES(${id}, ${tagId})`);
-          }
-        }
-      }
-      if (deletedTags) {
-        deletedTags.map((tag) => {
-          db.run(`DELETE FROM post_tags WHERE post_id = ? AND tag_id = (SELECT id FROM tags WHERE name = ? )`, [id, tag]);
+    }
+
+    if (deletedTags) {
+      for (const tag of deletedTags) {
+        await new Promise((resolve, reject) => {
+          db.run(`DELETE FROM post_tags WHERE post_id = ? AND tag_id = (SELECT id FROM tags WHERE name = ? )`, [id, tag], (err) => (err ? reject(err) : resolve()));
         });
       }
-      res.status(200).json({ success: true, msg: '게시글 업데이트 완료' })
-    };
-  });
+    }
+
+    res.status(200).json({ success: true, msg: '게시글 업데이트 완료' });
+  } catch (err) {
+    console.error('게시글 업데이트 실패', err);
+    res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
+  }
 }
 
 exports.getPostForUpdate = (req, res) => {
@@ -638,7 +640,7 @@ exports.getPostByTag = async (req, res) => {
     FROM posts p JOIN post_tags pt ON p.id = pt.post_id
     WHERE p.is_published = 1 AND p.deleted_at = '0' AND pt.tag_id = ?
     ORDER BY CAST(p.created_at as INTEGER) DESC
-    LIMIT ${limit} OFFSET ${pageNum > 1 ? (pageNum - 1) * limit - 1 : 0}
+    LIMIT ${limit} OFFSET ${(pageNum - 1) * limit}
     `;
     const query2 = `
     SELECT COUNT(p.id) postCnt FROM posts p 
@@ -666,7 +668,7 @@ exports.getPostByTag = async (req, res) => {
 }
 
 exports.getHotPosts = async (req, res) => {
-  const query = `SELECT id, title, slug FROM posts ORDER BY view_count DESC LIMIT 5`;
+  const query = `SELECT id, title, slug FROM posts WHERE is_published = 1 AND deleted_at = '0' ORDER BY view_count DESC LIMIT 5`;
   try {
     const postRes = await db.allAsync(query);
     res.status(200).json(postRes);

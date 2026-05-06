@@ -339,3 +339,50 @@ Gemini
   border-bottom: 2px solid #eee;
   padding-bottom: 10px;
 }
+
+/* 스켈레톤 로딩 */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+.skeleton {
+  background-color: #e8e8e8;
+  border-radius: 4px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-thumbnail {
+  width: 100%;
+  height: 280px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.skeleton-title {
+  width: 55%;
+  height: 30px;
+  margin: 0 auto 16px;
+}
+
+.skeleton-subtitle {
+  width: 38%;
+  height: 20px;
+  margin: 0 auto 26px;
+}
+
+.skeleton-meta {
+  width: 28%;
+  height: 14px;
+  margin: 0 auto 40px;
+}
+
+.skeleton-line {
+  width: 100%;
+  height: 15px;
+  margin-bottom: 12px;
+}
+
+.skeleton-line-short {
+  width: 65%;
+}
