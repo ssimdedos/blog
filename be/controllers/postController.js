@@ -388,6 +388,7 @@ exports.createPost = async (req, res) => {
     }
     console.log(`게시글 등록 완료 postID: ${postId}, tags: ${tagArray}`);
     res.status(201).json({ success: true, message: '게시글 등록 완료', postId: postId, newImageUrls: newImageUrls });
+    db.generateSitemap();
   } catch (err) {
     console.error('Error creating post:', err);
     res.status(500).json({ success: false, message: '게시글 등록 실패' });
@@ -532,6 +533,7 @@ exports.updatePost = async (req, res) => {
     }
 
     res.status(200).json({ success: true, msg: '게시글 업데이트 완료' });
+    db.generateSitemap();
   } catch (err) {
     console.error('게시글 업데이트 실패', err);
     res.status(500).json({ success: false, msg: '게시글 업데이트 실패' });
@@ -600,6 +602,7 @@ exports.deletePost = async (req, res) => {
       else {
         // await db.runAsync(`DELETE FROM post_tags WHERE post_id = ?`, id);
         res.status(200).json({ success: true, msg: '게시글 삭제 완료' });
+        db.generateSitemap();
       }
     });
 }

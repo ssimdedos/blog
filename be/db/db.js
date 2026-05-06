@@ -80,3 +80,4 @@ async function generateSitemap() {
 generateSitemap();
 
 module.exports = db;
+module.exports.generateSitemap = generateSitemap;
