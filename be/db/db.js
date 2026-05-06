@@ -71,8 +71,13 @@ async function generateSitemap() {
 
     // XML 파일로 저장
     const xml = await streamToPromise(sitemap);
-    const sitemapPath = path.resolve(__dirname, '../../fe/public/sitemap.xml');
-    fs.writeFileSync(sitemapPath, xml.toString(), 'utf8');
+    const xmlStr = xml.toString();
+    const publicPath = path.resolve(__dirname, '../../fe/public/sitemap.xml');
+    const buildPath = path.resolve(__dirname, '../../fe/build/sitemap.xml');
+    fs.writeFileSync(publicPath, xmlStr, 'utf8');
+    if (fs.existsSync(path.dirname(buildPath))) {
+      fs.writeFileSync(buildPath, xmlStr, 'utf8');
+    }
     console.log('✅ sitemap.xml 생성 완료!');
   });
 }
