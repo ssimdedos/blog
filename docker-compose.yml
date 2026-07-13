@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # 1. 프론트엔드 자동 빌더 (Node 이미지로 빌드만 하고 정적 파일만 남김)
+  frontend-builder:
+    image: node:18-alpine
+    container_name: blog-fe-builder
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: >
+      /bin/sh -c "
+        echo '=== Start Main FE Build ===' &&
+        cd /app/fe && npm install && npm run build &&
+        echo '=== Start Admin FE Build ===' &&
+        cd /app/admin && npm install && npm run build &&
+        echo '=== All Builds Completed ==='
+      "
+
+  # 2. 백엔드 API 서버 (7303 포트)
+  backend:
+    image: node:18-alpine
+    container_name: blog-be-api
+    restart: always
+    ports:
+      - "7303:7303"
+    volumes:
+      - ./be:/app
+      - ./fe:/fe
+    working_dir: /app
+    command: >
+      /bin/sh -c "
+        npm install &&
+        node index.js
+      "
+    networks:
+      - proxy-network
+
+  # 3. 대시보드 그래프/통계용 Flask 서버 (7304 포트, 백엔드 내부 전용)
+  flask:
+    image: python:3.11-slim
+    container_name: blog-flask
+    restart: always
+    volumes:
+      - ../blog-flask:/app
+      - ./be/db:/app/db:ro
+    working_dir: /app
+    environment:
+      - DB_PATH=/app/db/blog.db
+      - GEOIP_DB_PATH=/app/GeoLite2-City.mmdb
+    command: >
+      /bin/sh -c "
+        pip install --no-cache-dir -r requirements.txt &&
+        python app.py
+      "
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    external: true
+    name: proxy-network

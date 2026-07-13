@@ -46,40 +46,46 @@ async function generateSitemap() {
       console.error('DB 오류:', err);
       return;
     }
-    //홈 
-    sitemap.write({
-      url: `/`,
-      changefreq: 'monthly',
-      priority: 1,
-    });
-    //태그 
-    sitemap.write({
-      url: `/tag`,
-      changefreq: 'monthly',
-      priority: 0.7,
-    });
-    // 각 게시글을 sitemap에 추가
-    rows.forEach(row => {
+    try {
+      //홈
       sitemap.write({
-        url: `/pages/${row.id}/${row.slug}`,
+        url: `/`,
         changefreq: 'monthly',
-        lastmod: new Date(parseInt(row.updated_at)).toISOString(),
-        priority: 0.8,
+        priority: 1,
       });
-    });
+      //태그
+      sitemap.write({
+        url: `/tag`,
+        changefreq: 'monthly',
+        priority: 0.7,
+      });
+      // 각 게시글을 sitemap에 추가
+      rows.forEach(row => {
+        sitemap.write({
+          url: `/pages/${row.id}/${row.slug}`,
+          changefreq: 'monthly',
+          lastmod: new Date(parseInt(row.updated_at)).toISOString(),
+          priority: 0.8,
+        });
+      });
 
-    sitemap.end();
+      sitemap.end();
 
-    // XML 파일로 저장
-    const xml = await streamToPromise(sitemap);
-    const xmlStr = xml.toString();
-    const publicPath = path.resolve(__dirname, '../../fe/public/sitemap.xml');
-    const buildPath = path.resolve(__dirname, '../../fe/build/sitemap.xml');
-    fs.writeFileSync(publicPath, xmlStr, 'utf8');
-    if (fs.existsSync(path.dirname(buildPath))) {
-      fs.writeFileSync(buildPath, xmlStr, 'utf8');
+      // XML 파일로 저장
+      const xml = await streamToPromise(sitemap);
+      const xmlStr = xml.toString();
+      const publicPath = path.resolve(__dirname, '../../fe/public/sitemap.xml');
+      const buildPath = path.resolve(__dirname, '../../fe/build/sitemap.xml');
+      if (fs.existsSync(path.dirname(publicPath))) {
+        fs.writeFileSync(publicPath, xmlStr, 'utf8');
+      }
+      if (fs.existsSync(path.dirname(buildPath))) {
+        fs.writeFileSync(buildPath, xmlStr, 'utf8');
+      }
+      console.log('✅ sitemap.xml 생성 완료!');
+    } catch (writeErr) {
+      console.error('sitemap.xml 생성 실패 (서버는 계속 실행됩니다):', writeErr);
     }
-    console.log('✅ sitemap.xml 생성 완료!');
   });
 }
 
