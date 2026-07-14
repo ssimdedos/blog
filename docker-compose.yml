@@ -17,13 +17,11 @@ services:
         echo '=== All Builds Completed ==='
       "
 
-  # 2. 백엔드 API 서버 (7303 포트)
+  # 2. 백엔드 API 서버 (7303 포트, nginx만 내부망으로 접근 - 호스트 포트 매핑 없음)
   backend:
     image: node:18-alpine
     container_name: blog-be-api
     restart: always
-    ports:
-      - "7303:7303"
     volumes:
       - ./be:/app
       - ./fe:/fe

@@ -2,21 +2,21 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import AppRouter from './routers/Router';
 import { useCookies } from 'react-cookie';
+import axios from 'axios';
 import { authAdmin } from './api/users';
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [password, setPassword] = useState(null);
-  const [cookie, setCookie] = useCookies(['dedosAdmin']);
+  const [cookie, setCookie] = useCookies(['dedosAdminToken']);
   const loginCheck = async () => {
     const authAdminRes = await authAdmin(password);
     if (authAdminRes.success) {
-      if (!cookie['dedosAdmin']) {
-        const expires = new Date();
-        expires.setHours(expires.getHours() + 2);
-        setCookie('dedosAdmin', 'true', { path: '/', expires });
-        setIsLogin(true);
-      }
+      const expires = new Date();
+      expires.setHours(expires.getHours() + 2);
+      setCookie('dedosAdminToken', authAdminRes.token, { path: '/', expires });
+      axios.defaults.headers.common['Authorization'] = `Bearer ${authAdminRes.token}`;
+      setIsLogin(true);
     } else {
       alert('비밀번호가 틀렸습니다.');
     }
@@ -24,7 +24,8 @@ function App() {
   }
 
   useEffect(() => {
-    if (cookie['dedosAdmin']) {
+    if (cookie['dedosAdminToken']) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${cookie['dedosAdminToken']}`;
       setIsLogin(true);
     } else {
       setIsLogin(false);

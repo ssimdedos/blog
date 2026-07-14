@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const db = require('../db/db');
 const timeUtil = require('../utils/timeFormat');
 
@@ -55,7 +56,8 @@ exports.authAdmin = async (req, res) => {
   const isMatch = await bcrypt.compare(password, row.password);
   // console.log(isMatch);
   if (isMatch) {
-    res.status(200).json({ success: true, msg: '비밀번호 확인 완료.' });
+    const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    res.status(200).json({ success: true, msg: '비밀번호 확인 완료.', token });
   } else {
     res.status(200).json({ success: false, msg: '비밀번호가 틀렸습니다.' });
   }
